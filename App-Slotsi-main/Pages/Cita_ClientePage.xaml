@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:slotsi_citas.ViewModels"
+             xmlns:models="clr-namespace:slotsi_citas.Models"
+             x:Class="slotsi_citas.Pages.Cita_ClientePage"
+             x:DataType="vm:Cita_clienteViewModel"
+             BackgroundColor="#F8FAFC"
+             NavigationPage.HasNavigationBar="False"
+             Title="Citas de Clientes">
+
+    <ContentPage.BindingContext>
+        <vm:Cita_clienteViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto">
+
+        <!-- Encabezado con navegación de fecha -->
+        <VerticalStackLayout Grid.Row="0" 
+                             BackgroundColor="White" 
+                             Padding="16,12,16,8" 
+                             Spacing="10">
+            <Label Text="Calendario de citas..." 
+                   FontSize="20" 
+                   FontAttributes="Bold" 
+                   TextColor="#2563EB" 
+                   HorizontalOptions="Center"/>
+
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto" 
+                  VerticalOptions="Center">
+                <ImageButton Grid.Column="0" 
+                             Source="arrow_left.png" 
+                             Command="{Binding SemanaAnteriorCommand}" 
+                             HeightRequest="20" 
+                             WidthRequest="20"/>
+                <Label Grid.Column="1" 
+                       Text="{Binding RangoSemanal}" 
+                       FontSize="15" 
+                       FontAttributes="Bold" 
+                       TextColor="#1E293B" 
+                       HorizontalOptions="Center" 
+                       VerticalOptions="Center"/>
+                <ImageButton Grid.Column="2" 
+                             Source="arrow_right.png" 
+                             Command="{Binding SemanaSiguienteCommand}" 
+                             HeightRequest="20" 
+                             WidthRequest="20" 
+                             Margin="0,0,10,0"/>
+                <Button Grid.Column="3" 
+                        Text="Hoy" 
+                        BackgroundColor="#F97316" 
+                        TextColor="White" 
+                        CornerRadius="8" 
+                        HeightRequest="32" 
+                        Padding="12,0" 
+                        FontSize="12" 
+                        FontAttributes="Bold"/>
+            </Grid>
+        </VerticalStackLayout>
+
+        <!-- Cabecera Días de la Semana -->
+        <Grid Grid.Row="1" 
+              ColumnDefinitions="*,*,*,*,*,*,*" 
+              Padding="10,8,10,12" 
+              BackgroundColor="White">
+
+            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="4">
+                <Label Text="L" TextColor="#94A3B8" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
+                <Label Text="17" TextColor="#1E293B" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="4">
+                <Label Text="M" TextColor="#94A3B8" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
+                <Label Text="18" TextColor="#1E293B" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="4">
+                <Label Text="Mi" TextColor="#94A3B8" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
+                <Label Text="19" TextColor="#1E293B" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" Spacing="4">
+                <Label Text="J" TextColor="#94A3B8" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
+                <Label Text="20" TextColor="#1E293B" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="4" HorizontalOptions="Center" Spacing="2">
+                <Label Text="V" TextColor="#F97316" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
+                <Border StrokeShape="RoundRectangle 16" 
+                        BackgroundColor="#2563EB" 
+                        HeightRequest="32" 
+                        WidthRequest="32" 
+                        StrokeThickness="0">
+                    <Label Text="21" TextColor="White" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                </Border>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="5" HorizontalOptions="Center" Spacing="4">
+                <Label Text="S" TextColor="#94A3B8" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
+                <Label Text="22" TextColor="#1E293B" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="6" HorizontalOptions="Center" Spacing="4">
+                <Label Text="D" TextColor="#94A3B8" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
+                <Label Text="23" TextColor="#1E293B" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Lista de Rangos Horarios -->
+        <CollectionView Grid.Row="2" 
+                        ItemsSource="{Binding RangosHorarios}" 
+                        Margin="16,10">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:RangoHorario">
+                    <Grid ColumnDefinitions="75,*">
+                        <Label Grid.Column="0" 
+                               Text="{Binding HoraDisplay}" 
+                               TextColor="#94A3B8" 
+                               FontSize="13" 
+                               FontAttributes="Bold" 
+                               VerticalOptions="Center"/>
+
+                        <!-- Slot Disponible -->
+                        <Border Grid.Column="1" 
+                                StrokeShape="RoundRectangle 10" 
+                                BackgroundColor="White" 
+                                Stroke="#E2E8F0" 
+                                StrokeThickness="1" 
+                                Padding="15,12">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding Cita}" Value="{x:Null}">
+                                    <Setter Property="IsVisible" Value="True"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:Cita_clienteViewModel}}, Path=AgendarCitaClienteCommand}" 
+                                                     CommandParameter="{Binding .}"/>
+                            </Border.GestureRecognizers>
+                            <Label Text="Agendar cita" 
+                                   TextColor="#2563EB" 
+                                   FontAttributes="Bold" 
+                                   FontSize="14" 
+                                   VerticalOptions="Center"/>
+                        </Border>
+
+                        <!-- Slot Ocupado -->
+                        <Border Grid.Column="1" 
+                                StrokeShape="RoundRectangle 10" 
+                                BackgroundColor="#FFFBEB" 
+                                StrokeThickness="0" 
+                                IsVisible="False" 
+                                Padding="0">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding Cita.Estado}" Value="Ocupado">
+                                    <Setter Property="IsVisible" Value="True"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Grid ColumnDefinitions="6,*">
+                                <BoxView Grid.Column="0" Color="#F59E0B" CornerRadius="10,0,0,10"/>
+                                <VerticalStackLayout Grid.Column="1" Padding="12,10" Spacing="2">
+                                    <Label Text="Ocupado" FontAttributes="Bold" TextColor="#1E293B" FontSize="14"/>
+                                    <Label Text="{Binding Cita.NombreCliente, StringFormat='Reservado {0}'}" FontSize="12" TextColor="#64748B"/>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                        <!-- Slot No Disponible -->
+                        <Border Grid.Column="1" 
+                                StrokeShape="RoundRectangle 10" 
+                                BackgroundColor="#F1F5F9" 
+                                StrokeThickness="0" 
+                                IsVisible="False" 
+                                Padding="0">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding Cita.Estado}" Value="NoDisponible">
+                                    <Setter Property="IsVisible" Value="True"/>
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <Grid ColumnDefinitions="6,*">
+                                <BoxView Grid.Column="0" Color="#64748B" CornerRadius="10,0,0,10"/>
+                                <VerticalStackLayout Grid.Column="1" Padding="12,10" Spacing="2">
+                                    <Label Text="No disponible" FontAttributes="Bold" TextColor="#334155" FontSize="14"/>
+                                    <Label Text="(1:00 - 2:00)" FontSize="12" TextColor="#64748B"/>
+                                </VerticalStackLayout>
+                            </Grid>
+                        </Border>
+
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- Barra de Navegación Inferior -->
+        <Grid Grid.Row="3" 
+              ColumnDefinitions="*,*,*,*" 
+              BackgroundColor="White" 
+              HeightRequest="60" 
+              Padding="0,6">
+            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <Image Source="home.png" HeightRequest="22" WidthRequest="22"/>
+                <Label Text="Inicio" FontSize="11" TextColor="#94A3B8"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <Image Source="calendar.png" HeightRequest="22" WidthRequest="22"/>
+                <Label Text="Citas" FontSize="11" TextColor="#2563EB" FontAttributes="Bold"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <Image Source="location.png" HeightRequest="22" WidthRequest="22"/>
+                <Label Text="Sucursal" FontSize="11" TextColor="#94A3B8"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <Image Source="profile.png" HeightRequest="22" WidthRequest="22"/>
+                <Label Text="Perfil" FontSize="11" TextColor="#94A3B8"/>
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>

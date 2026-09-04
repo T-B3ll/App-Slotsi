@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="slotsi_citas.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:pages="clr-namespace:slotsi_citas.Pages"
+    Title="Slotsi">
+
+    <TabBar>
+        <!-- Pestaña 1: Vista del Cliente -->
+        <Tab Title="Vista Cliente" Icon="calendar.png">
+            <ShellContent
+                Title="Citas Cliente"
+                ContentTemplate="{DataTemplate pages:Cita_ClientePage}"
+                Route="Cita_ClientePage" />
+        </Tab>
+
+        <!-- Pestaña 2: Vista del Usuario / Barbero -->
+        <Tab Title="Vista Barbero" Icon="profile.png">
+            <ShellContent
+                Title="Citas Barbero"
+                ContentTemplate="{DataTemplate pages:Cita_UsuarioPage}"
+                Route="Cita_UsuarioPage" />
+        </Tab>
+    </TabBar>
+
+</Shell>
