@@ -28,6 +28,6 @@ namespace slotsi_citas.Services
 #endif
 
         // Nombre de la base de datos que creaste en Compass (paso 1.2).
-        public const string DatabaseName = "AppDeTareasDB";
+        public const string DatabaseName = "Slotsi-BaseDatos";
     }
 }

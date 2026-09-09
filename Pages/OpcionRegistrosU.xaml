@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="slotsi_citas.Pages.OpcionRegistrosU"
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto, Auto, *">
+
+        <!-- Botón Atrás -->
+        <Grid Grid.Row="0" Padding="20,50,20,10">
+            <Button Text="‹ Atrás" 
+                    BackgroundColor="Transparent" 
+                    TextColor="#2563EB" 
+                    FontSize="17"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Start"
+                    VerticalOptions="Center"
+                    Padding="0"
+                    MinimumWidthRequest="80"
+                    Clicked="OnBackClicked"/>
+        </Grid>
+
+        <!-- Títulos -->
+        <VerticalStackLayout Grid.Row="1" Padding="24,10,24,30" Spacing="8">
+            <Label Text="¿Cómo deseas registrarte?" 
+                   FontSize="28" 
+                   FontAttributes="Bold" 
+                   TextColor="#2563EB" 
+                   LineBreakMode="WordWrap"/>
+
+            <Label Text="Selecciona el tipo de perfil que desea utilizar" 
+                   FontSize="15" 
+                   TextColor="#6B7280" 
+                   LineBreakMode="WordWrap"/>
+        </VerticalStackLayout>
+
+        <!-- Opciones -->
+        <ScrollView Grid.Row="2">
+            <VerticalStackLayout Padding="24,0,24,40" Spacing="16">
+
+                <!-- Usuario Básico -->
+                <Frame BackgroundColor="White" 
+                       BorderColor="#E5E7EB"
+                       CornerRadius="16" 
+                       Padding="16"
+                       HasShadow="False">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBasicUserSelected"/>
+                    </Frame.GestureRecognizers>
+
+                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="16">
+                        <Border Grid.Column="0" 
+                                BackgroundColor="#DBEAFE" 
+                                StrokeShape="RoundRectangle 12" 
+                                WidthRequest="48" 
+                                HeightRequest="48"
+                                VerticalOptions="Center">
+                            <Label Text="👤" FontSize="22" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
+                            <Label Text="Usuario Básico" FontSize="16" FontAttributes="Bold" TextColor="#111827"/>
+                            <Label Text="Reserva citas y gestiona tus reservas de manera rápida" 
+                                   FontSize="13" TextColor="#6B7280" LineBreakMode="WordWrap"/>
+                        </VerticalStackLayout>
+
+                        <Label Grid.Column="2" Text="›" FontSize="28" TextColor="#9CA3AF" VerticalOptions="Center"/>
+                    </Grid>
+                </Frame>
+
+                <!-- Dueño de Negocio -->
+                <Frame BackgroundColor="White" 
+                       BorderColor="#E5E7EB"
+                       CornerRadius="16" 
+                       Padding="16"
+                       HasShadow="False">
+                    <Frame.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBusinessOwnerSelected"/>
+                    </Frame.GestureRecognizers>
+
+                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="16">
+                        <Border Grid.Column="0" 
+                                BackgroundColor="#DBEAFE" 
+                                StrokeShape="RoundRectangle 12" 
+                                WidthRequest="48" 
+                                HeightRequest="48"
+                                VerticalOptions="Center">
+                            <Label Text="💼" FontSize="22" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        </Border>
+
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
+                            <Label Text="Dueño de Negocio" FontSize="16" FontAttributes="Bold" TextColor="#111827"/>
+                            <Label Text="Registra tu negocio, publica tus servicios y recibe clientes" 
+                                   FontSize="13" TextColor="#6B7280" LineBreakMode="WordWrap"/>
+                        </VerticalStackLayout>
+
+                        <Label Grid.Column="2" Text="›" FontSize="28" TextColor="#9CA3AF" VerticalOptions="Center"/>
+                    </Grid>
+                </Frame>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

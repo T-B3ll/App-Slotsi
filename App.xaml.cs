@@ -1,15 +1,22 @@
-﻿namespace slotsi_citas
+﻿using Microsoft.Extensions.DependencyInjection;
+using slotsi_citas.Pages;
+
+namespace slotsi_citas
 {
     public partial class App : Application
     {
-        public App()
+        private readonly IServiceProvider _serviceProvider;
+
+        public App(IServiceProvider serviceProvider)
         {
             InitializeComponent();
+            _serviceProvider = serviceProvider;
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new AppShell());
+            var loginPage = _serviceProvider.GetRequiredService<LoginPage>();
+            return new Window(new NavigationPage(loginPage));
         }
     }
 }

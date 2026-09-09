@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="slotsi_citas.Pages.LoginPage"
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="*, Auto">
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Padding="24,60,24,24" Spacing="0">
+
+                <Image Source="logo_slotsi.png" 
+                       WidthRequest="220" 
+                       HeightRequest="220"
+                       HorizontalOptions="Center"
+                       Aspect="AspectFit"
+                       Margin="0,0,0,40"/>
+
+                <!-- Título Iniciar Sesión -->
+                <Label Text="Iniciar Sesión" 
+                       FontSize="28" 
+                       FontAttributes="Bold" 
+                       TextColor="#111827" 
+                       HorizontalOptions="Start"
+                       Margin="0,0,0,30"/>
+
+                <Label Text="Usuario " 
+                       FontSize="14" 
+                       TextColor="#4B5563" 
+                       Margin="0,0,0,8"/>
+
+                <Frame BackgroundColor="#F3F4F6" 
+                       BorderColor="Transparent"
+                       CornerRadius="12" 
+                       Padding="16,0"
+                       HeightRequest="56"
+                       HasShadow="False"
+                       Margin="0,0,0,20">
+                    <Entry Placeholder="ejemplo@correo.com" 
+                           Text="{Binding Email}" 
+                           Keyboard="Email"
+                           FontSize="16"
+                           TextColor="#111827" 
+                           PlaceholderColor="#9CA3AF"
+                           BackgroundColor="Transparent"
+                           VerticalOptions="Center"/>
+                </Frame>
+
+                <!-- Campo Contraseña -->
+                <Label Text="Contraseña" 
+                       FontSize="14" 
+                       TextColor="#4B5563" 
+                       Margin="0,0,0,8"/>
+
+                <Frame BackgroundColor="#F3F4F6" 
+                       BorderColor="Transparent"
+                       CornerRadius="12" 
+                       Padding="16,0"
+                       HeightRequest="56"
+                       HasShadow="False">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <Entry x:Name="PasswordEntry"
+                               Grid.Column="0"
+                               Placeholder="••••••••" 
+                               Text="{Binding Password}" 
+                               IsPassword="True"
+                               FontSize="16"
+                               TextColor="#111827" 
+                               PlaceholderColor="#9CA3AF"
+                               BackgroundColor="Transparent"
+                               VerticalOptions="Center"/>
+
+                        <ImageButton Grid.Column="1"
+                                     Source="eye.png"
+                                     WidthRequest="24"
+                                     HeightRequest="24"
+                                     BackgroundColor="Transparent"
+                                     VerticalOptions="Center"
+                                     Clicked="OnTogglePasswordVisibility"
+                                     Margin="0,0,8,0"/>
+                    </Grid>
+                </Frame>
+
+                <!-- Redirige ahora a la pantalla de Crear Cuenta -->
+                <Label Text="¿Recuperar contraseña?" 
+                TextColor="#2563EB" 
+                FontSize="14"
+                FontAttributes="Bold"
+                HorizontalOptions="End"
+                Margin="0,15,0,30">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnForgotPasswordTapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
+
+                <Button Text="Iniciar Sesión"
+                        BackgroundColor="#2563EB"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        CornerRadius="12"
+                        HeightRequest="56"
+                        Command="{Binding LoginCommand}"
+                        Margin="0,0,0,25"/>
+
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
+                    <Label Text="¿No tienes cuenta?" TextColor="#6B7280" FontSize="14"/>
+                    <Label Text="Crear cuenta" TextColor="#2563EB" FontAttributes="Bold" FontSize="14">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnCreateAccountTapped"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <BoxView Grid.Row="1"
+                 BackgroundColor="#D1D5DB"
+                 CornerRadius="2"
+                 WidthRequest="134"
+                 HeightRequest="4"
+                 HorizontalOptions="Center"
+                 Margin="0,8,0,8"/>
+    </Grid>
+</ContentPage>
