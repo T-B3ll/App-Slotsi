@@ -17,16 +17,15 @@ public static class MauiProgram
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialIcons");
             });
 
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
 
-        // Registrar ViewModels
         builder.Services.AddTransient<Cita_UsuarioViewModel>();
 
-        // Registrar Páginas
         builder.Services.AddTransient<Cita_ClientePage>();
 
         return builder.Build();

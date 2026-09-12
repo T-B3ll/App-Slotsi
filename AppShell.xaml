@@ -22,6 +22,20 @@
                 ContentTemplate="{DataTemplate pages:Cita_UsuarioPage}"
                 Route="Cita_UsuarioPage" />
         </Tab>
+
+        <Tab Title="Catalogo de servicios" Icon="profile.png">
+            <ShellContent
+            Title="Servicios disponibles"
+            ContentTemplate="{DataTemplate pages:catalogoservicios}"
+            Route="cataloservicios" />
+        </Tab>
+
+        <Tab Title="Catalogo de cliente" Icon="profile.png">
+            <ShellContent
+                Title="Clientes"
+                ContentTemplate="{DataTemplate pages:CatalogoCliente}"
+                Route="catalogocliente" />
+        </Tab>
     </TabBar>
 
 </Shell>

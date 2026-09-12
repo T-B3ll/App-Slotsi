@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="slotsi_citas.Pages.catalogoservicios"
+             Title="Gestión de Servicios"
+             BackgroundColor="#F3F4F6"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *">
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="20,20,20,15" BackgroundColor="#FFFFFF">
+            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                <Label Text="Gestión de Catálogo" FontSize="22" FontAttributes="Bold" TextColor="#111827" />
+                <Label Text="12 servicios activos" FontSize="13" TextColor="#6B7280" />
+            </VerticalStackLayout>
+            <ImageButton Grid.Column="1" BackgroundColor="Transparent" WidthRequest="28" HeightRequest="28" VerticalOptions="Center" ToolTipProperties.Text="Configuración">
+                <ImageButton.Source>
+                    <FontImageSource FontFamily="MaterialIcons" 
+                         Glyph="&#xe8b8;" 
+                         Color="#6B7280" 
+                         Size="28"/>
+                </ImageButton.Source>
+            </ImageButton>
+        </Grid>
+
+        <!--lista de servicos activos-->
+        <ScrollView Grid.Row="1" Padding="16,10,16,80">
+            <VerticalStackLayout Spacing="12">
+
+                <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#FFFFFF" Padding="10">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
+                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
+                        <Border Grid.Column="0" WidthRequest="60" HeightRequest="60" BackgroundColor="#F3F4F6" StrokeShape="RoundRectangle 8">
+                            <Label Text="Imagen" FontSize="12" TextColor="#9CA3AF" HorizontalOptions="Center"/>
+                        </Border>
+
+                        <!-- Detalles -->
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                            <Label Text="Corte Clásico" FontSize="15" FontAttributes="Bold" TextColor="#1F2937" />
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="$25" FontSize="13" FontAttributes="Bold" TextColor="#10B981" />
+           
+                                <Label Text="•" FontSize="13" TextColor="#9CA3AF"/>
+                                <Label Text="30 min" FontSize="13" TextColor="#6B7280" />
+                            </HorizontalStackLayout>
+                            <Label Text="Categoría: Cortes" FontSize="11" TextColor="#9CA3AF" />
+                        </VerticalStackLayout>
+
+                        <!-- Acciones -->
+                        <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="10" HorizontalOptions="End">
+                            <Switch IsToggled="True" OnColor="#2563EB" HorizontalOptions="End"/>
+                            <HorizontalStackLayout Spacing="15" HorizontalOptions="End">
+                                <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24">
+                                    <ImageButton.Source>
+                                        <FontImageSource FontFamily="MaterialIcons" 
+                                                         Glyph="&#xe3c9;" 
+                                                         Color="#2563EB" 
+                                                         Size="24"/>
+                                    </ImageButton.Source>
+                                </ImageButton>
+
+                                <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24">
+                                    <ImageButton.Source>
+                                        <FontImageSource FontFamily="MaterialIcons" 
+                                                         Glyph="&#xe872;" 
+                                                         Color="#EF4444" 
+                                                         Size="24"/>
+                                    </ImageButton.Source>
+                                </ImageButton>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!--Lista de servicios inactivos-->
+                <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#F9FAFB" Padding="10" Opacity="0.6">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="10" />
+                    </Border.StrokeShape>
+                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
+                        <Border Grid.Column="0" WidthRequest="60" HeightRequest="60" BackgroundColor="#E5E7EB" StrokeShape="RoundRectangle 8">
+                            <Label Text="Imagen" FontSize="12" TextColor="#9CA3AF" HorizontalOptions="Center"/>
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                            <Label Text="Tinte Completo" FontSize="15" FontAttributes="Bold" TextColor="#1F2937" TextDecorations="Strikethrough"/>
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="$60" FontSize="13" FontAttributes="Bold" TextColor="#6B7280" />
+                                <Label Text="•" FontSize="13" TextColor="#9CA3AF"/>
+                                <Label Text="120 min" FontSize="13" TextColor="#6B7280" />
+                            </HorizontalStackLayout>
+                            <Label Text="Categoría: Colorimetría" FontSize="11" TextColor="#9CA3AF" />
+                        </VerticalStackLayout>
+                        <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="10" HorizontalOptions="End">
+                            <Switch IsToggled="False" OnColor="#2563EB" HorizontalOptions="End"/>
+                            <HorizontalStackLayout Spacing="15" HorizontalOptions="End">
+
+                                <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24">
+                                    <ImageButton.Source>
+                                        <FontImageSource FontFamily="MaterialIcons" 
+                                                         Glyph="&#xe3c9;" 
+                                                         Color="#2563EB" 
+                                                         Size="24"/>
+                                    </ImageButton.Source>
+                                </ImageButton>
+
+                                <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24">
+                                    <ImageButton.Source>
+                                        <FontImageSource FontFamily="MaterialIcons" 
+                                                         Glyph="&#xe872;" 
+                                                         Color="#EF4444" 
+                                                         Size="24"/>
+                                    </ImageButton.Source>
+                                </ImageButton>
+
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!---Boton para nuevo servicio-->
+        <Button Grid.Row="1" 
+                Text="+" 
+                FontSize="30" 
+                FontAttributes="Bold"
+                TextColor="White" 
+                BackgroundColor="#2563EB" 
+                WidthRequest="60" 
+                HeightRequest="60" 
+                CornerRadius="30"
+                HorizontalOptions="End" 
+                VerticalOptions="End" 
+                Margin="0,0,20,30">
+            <Button.Shadow>
+                <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.2" />
+            </Button.Shadow>
+        </Button>
+
+    </Grid>
+</ContentPage>
