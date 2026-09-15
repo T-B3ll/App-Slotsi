@@ -7,7 +7,6 @@
 
     <Grid RowDefinitions="Auto, Auto, *">
 
-        <!-- Botón Atrás -->
         <Grid Grid.Row="0" Padding="20,50,20,10">
             <Button Text="‹ Atrás" 
                     BackgroundColor="Transparent" 
@@ -21,7 +20,7 @@
                     Clicked="OnBackClicked"/>
         </Grid>
 
-        <!-- Títulos -->
+   
         <VerticalStackLayout Grid.Row="1" Padding="24,10,24,30" Spacing="8">
             <Label Text="¿Cómo deseas registrarte?" 
                    FontSize="28" 
@@ -35,11 +34,11 @@
                    LineBreakMode="WordWrap"/>
         </VerticalStackLayout>
 
-        <!-- Opciones -->
+ 
         <ScrollView Grid.Row="2">
             <VerticalStackLayout Padding="24,0,24,40" Spacing="16">
 
-                <!-- Usuario Básico -->
+               
                 <Frame BackgroundColor="White" 
                        BorderColor="#E5E7EB"
                        CornerRadius="16" 
@@ -69,7 +68,6 @@
                     </Grid>
                 </Frame>
 
-                <!-- Dueño de Negocio -->
                 <Frame BackgroundColor="White" 
                        BorderColor="#E5E7EB"
                        CornerRadius="16" 

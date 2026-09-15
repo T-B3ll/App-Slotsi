@@ -20,7 +20,7 @@ namespace slotsi_citas.ViewModel
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        // Propiedades para bindar con la vista
+
         public string Email
         {
             get => _email;
@@ -39,7 +39,6 @@ namespace slotsi_citas.ViewModel
             set { _isBusy = value; OnPropertyChanged(); }
         }
 
-        // Comando para el botón de Login
         public ICommand LoginCommand { get; }
 
         public LoginViewModel(AuthService authService)
@@ -52,7 +51,7 @@ namespace slotsi_citas.ViewModel
         {
             if (IsBusy) return;
 
-            // Validación básica
+           
             if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
             {
                 await Application.Current.MainPage.DisplayAlert("Error", "Ingresa correo y contraseña", "OK");

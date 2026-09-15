@@ -12,26 +12,25 @@ namespace slotsi_citas.Services
     {
         private readonly Client _supabaseClient;
 
-        // Constructor: Recibe el cliente de Supabase que configuramos antes
+       
         public AuthService(Client supabaseClient)
         {
             _supabaseClient = supabaseClient;
         }
 
   
-        /// Intenta iniciar sesión con email y contraseña
+      
       
         public async Task<Usuario> LoginAsync(string email, string password)
         {
             try
             {
-                // 1. Le pedimos a Supabase que valide las credenciales
+               
                 var session = await _supabaseClient.Auth.SignIn(email, password);
 
                 if (session != null && session.User != null)
                 {
-                    // 2. Si es válido, creamos nuestro objeto Usuario local
-                    //    con los datos que vienen de Supabase
+                  
                     return new Usuario
                     {
                         Id = session.User.Id,
@@ -40,11 +39,11 @@ namespace slotsi_citas.Services
                     };
                 }
 
-                return null; // Si no hubo sesión, falló el login
+                return null;
             }
             catch (Exception ex)
             {
-                // Aquí podrías loguear el error
+                
                 Console.WriteLine($"Error al login: {ex.Message}");
                 return null;
             }

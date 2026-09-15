@@ -16,7 +16,7 @@
                        Aspect="AspectFit"
                        Margin="0,0,0,40"/>
 
-                <!-- Título Iniciar Sesión -->
+              
                 <Label Text="Iniciar Sesión" 
                        FontSize="28" 
                        FontAttributes="Bold" 
@@ -24,7 +24,7 @@
                        HorizontalOptions="Start"
                        Margin="0,0,0,30"/>
 
-                <Label Text="Usuario " 
+                <Label Text="Usuario o gmail " 
                        FontSize="14" 
                        TextColor="#4B5563" 
                        Margin="0,0,0,8"/>
@@ -46,7 +46,7 @@
                            VerticalOptions="Center"/>
                 </Frame>
 
-                <!-- Campo Contraseña -->
+             
                 <Label Text="Contraseña" 
                        FontSize="14" 
                        TextColor="#4B5563" 
@@ -81,7 +81,7 @@
                     </Grid>
                 </Frame>
 
-                <!-- Redirige ahora a la pantalla de Crear Cuenta -->
+              
                 <Label Text="¿Recuperar contraseña?" 
                 TextColor="#2563EB" 
                 FontSize="14"

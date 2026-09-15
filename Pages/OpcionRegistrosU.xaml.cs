@@ -9,14 +9,13 @@ public partial class OpcionRegistrosU : ContentPage
 
     private async void OnBackClicked(object sender, EventArgs e)
     {
-        // Regresa a la pantalla anterior (Login)
+     
         await Navigation.PopAsync();
     }
 
     private async void OnBasicUserSelected(object sender, EventArgs e)
     {
-        
-        await DisplayAlert("Selección", "Ir a registro de Usuario Básico", "OK");
+        await Navigation.PushAsync(new RegistroUsuarioBasico());
     }
 
     private async void OnBusinessOwnerSelected(object sender, EventArgs e)

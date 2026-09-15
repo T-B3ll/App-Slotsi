@@ -19,20 +19,23 @@ public static class MauiProgram
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+
+
+                fonts.AddFont("MauiMaterialAssets.ttf", "MaterialIcons");
             });
 
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
 
-        // --- 1. CONFIGURACIÓN DE SUPABASE ---
+        
         var supabaseUrl = "https://vnasklmkkamytgwymzih.supabase.co";
         var supabaseKey = "sb_publishable_z8qlsYsGV7mYU4iJGGu8NA_fljnaFtq";
 
         var options = new SupabaseOptions();
         var client = new Client(supabaseUrl, supabaseKey, options);
 
-        //
+       
 
         client.InitializeAsync().Wait();
 

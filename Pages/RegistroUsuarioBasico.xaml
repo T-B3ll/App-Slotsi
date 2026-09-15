@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="slotsi_citas.Pages.RegistroUsuarioBasico"
+             Title="Crear Cuenta"
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="24" Spacing="16">
+
+            <!-- Botón Atrás -->
+            <Button Text="← Atrás" 
+                    BackgroundColor="Transparent" 
+                    TextColor="#2563EB" 
+                    FontSize="17"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Start"
+                    Padding="0"
+                    Margin="0,20,0,-10"
+                    Clicked="OnBackClicked"/>
+
+            <!-- Títulos -->
+            <Label Text="Crear Cuenta" FontSize="32" FontAttributes="Bold" TextColor="#2563EB" />
+            <Label Text="Usuario Básico" FontSize="16" TextColor="#6B7280" Margin="0,-5,0,0"/>
+            <Label Text="Los campos que tengan un &quot;*&quot; son obligatorios" FontSize="13" TextColor="#6B7280" Margin="0,15,0,5"/>
+
+            <!-- Nombre -->
+            <Label Text="Nombre completo *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
+            <Frame BackgroundColor="#F3F4F6" BorderColor="Transparent" CornerRadius="12" Padding="16,0" HeightRequest="56" HasShadow="False">
+                <Entry x:Name="EntryNombre" Placeholder="Juan Pérez" PlaceholderColor="#9CA3AF" TextColor="#111827" FontSize="16" BackgroundColor="Transparent" VerticalOptions="Center"/>
+            </Frame>
+
+            <!-- Correo -->
+            <Label Text="Correo electrónico *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
+            <Frame BackgroundColor="#F3F4F6" BorderColor="Transparent" CornerRadius="12" Padding="16,0" HeightRequest="56" HasShadow="False">
+                <Entry x:Name="EntryCorreo" Placeholder="juan@ejemplo.com" Keyboard="Email" PlaceholderColor="#9CA3AF" TextColor="#111827" FontSize="16" BackgroundColor="Transparent" VerticalOptions="Center"/>
+            </Frame>
+
+            <!-- Teléfono (CON FORMATO AUTOMÁTICO) -->
+            <Label Text="Teléfono *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
+            <Frame BackgroundColor="#F3F4F6" BorderColor="Transparent" CornerRadius="12" Padding="16,0" HeightRequest="56" HasShadow="False">
+                <Entry x:Name="EntryTelefono" 
+                       Placeholder="+505 8888-8888" 
+                       Keyboard="Telephone" 
+                       PlaceholderColor="#9CA3AF" 
+                       TextColor="#111827" 
+                       FontSize="16" 
+                       BackgroundColor="Transparent" 
+                       VerticalOptions="Center"
+                       TextChanged="OnTelefonoChanged"/>
+            </Frame>
+
+            <!-- Cédula (CON FORMATO AUTOMÁTICO) -->
+            <Label Text="Cédula *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
+            <Frame BackgroundColor="#F3F4F6" BorderColor="Transparent" CornerRadius="12" Padding="16,0" HeightRequest="56" HasShadow="False">
+                <Entry x:Name="EntryCedula" 
+                       Placeholder="0000-0000-0000J" 
+                       Keyboard="Text" 
+                       PlaceholderColor="#9CA3AF" 
+                       TextColor="#111827" 
+                       FontSize="16" 
+                       BackgroundColor="Transparent" 
+                       VerticalOptions="Center"
+                       TextChanged="OnCedulaChanged"/>
+            </Frame>
+
+            <!-- Contraseña (CON IMAGEN PNG PROFESIONAL) -->
+            <Label Text="Establecer contraseña *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
+            <Frame BackgroundColor="#F3F4F6" BorderColor="Transparent" CornerRadius="12" Padding="16,0" HeightRequest="56" HasShadow="False">
+                <Grid ColumnDefinitions="*,Auto">
+                    <Entry x:Name="PasswordEntry"
+                           Grid.Column="0"
+                           Placeholder="••••••••" 
+                           IsPassword="True"
+                           PlaceholderColor="#9CA3AF"
+                           TextColor="#111827"
+                           FontSize="16"
+                           BackgroundColor="Transparent"
+                           VerticalOptions="Center"/>
+
+                    <!-- ImageButton usando tus archivos PNG locales -->
+                    <ImageButton x:Name="BtnTogglePassword"
+                                 Grid.Column="1"
+                                 Source="eye_open.png"
+                                 WidthRequest="24"
+                                 HeightRequest="24"
+                                 Aspect="AspectFit"
+                                 BackgroundColor="Transparent"
+                                 VerticalOptions="Center"
+                                 Clicked="OnTogglePasswordVisibility"
+                                 Margin="0,0,8,0"/>
+                </Grid>
+            </Frame>
+
+            <!-- Espacio y Botón -->
+            <BoxView HeightRequest="30" Color="Transparent"/>
+            <Button Text="Registrarse" 
+                    BackgroundColor="#2563EB" 
+                    TextColor="White" 
+                    FontAttributes="Bold"
+                    FontSize="18"
+                    HeightRequest="58"
+                    CornerRadius="14"
+                    Margin="0,0,0,20"
+                    Clicked="OnRegisterClicked"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
