@@ -83,6 +83,9 @@
 	  <MauiXaml Update="Pages\RegistroUsuarioBasico.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Pages\RegistroUsuarioNegocio.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	</ItemGroup>
 
 </Project>

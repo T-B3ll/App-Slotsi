@@ -61,13 +61,12 @@ namespace slotsi_citas.ViewModel
             IsBusy = true;
             try
             {
-                // Llamamos al servicio que creamos antes
+            
                 var user = await _authService.LoginAsync(Email, Password);
 
                 if (user != null)
                 {
-                    // LOGIN EXITOSO: Navegar a la página principal
-                    // Asegúrate de tener una ruta "//MainPage" definida en AppShell.xaml
+                   
                     await Shell.Current.GoToAsync("//MainPage");
                 }
                 else

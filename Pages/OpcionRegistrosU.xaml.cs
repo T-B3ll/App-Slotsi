@@ -21,6 +21,6 @@ public partial class OpcionRegistrosU : ContentPage
     private async void OnBusinessOwnerSelected(object sender, EventArgs e)
     {
        
-        await DisplayAlert("Selección", "Ir a registro de Dueño de Negocio", "OK");
+        await Navigation.PushAsync(new RegistroUsuarioNegocio());
     }
 }
