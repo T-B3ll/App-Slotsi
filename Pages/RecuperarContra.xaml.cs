@@ -32,6 +32,6 @@ public partial class RecuperarContra : ContentPage
             return;
         }
 
-       ///* await Navigation.PushAsync(new NuevaContra()*/);
+       await Navigation.PushAsync(new NuevaContra());
     }
 }
