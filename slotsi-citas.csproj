@@ -80,6 +80,9 @@
 	  <MauiXaml Update="Pages\OpcionRegistrosU.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Pages\RecuperarContra.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\RegistroUsuarioBasico.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

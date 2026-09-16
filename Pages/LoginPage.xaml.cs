@@ -13,7 +13,7 @@ public partial class LoginPage : ContentPage
 
     private async void OnForgotPasswordTapped(object sender, EventArgs e)
     {
-        await DisplayAlert("Info", "Recuperación de contraseña", "OK");
+        await Navigation.PushAsync(new RecuperarContra());
 
     }
 
