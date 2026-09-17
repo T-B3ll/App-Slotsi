@@ -24,28 +24,31 @@
             <Frame WidthRequest="80" HeightRequest="80" CornerRadius="40" 
                    BackgroundColor="#EFF6FF" HasShadow="False" 
                    Padding="0" HorizontalOptions="Center" Margin="0,20,0,10">
-
-                <Label Text="🛡️" FontSize="40" HorizontalOptions="Center" VerticalOptions="Center"/>
+                <Image Source="icon_lock.png" 
+                       WidthRequest="40" HeightRequest="40" 
+                       Aspect="AspectFit" 
+                       HorizontalOptions="Center" VerticalOptions="Center"/>
             </Frame>
-
 
             <Label Text="Crea tu nueva contraseña de seguridad para mantener tu cuenta resguardada." 
                    FontSize="15" TextColor="#6B7280" 
                    HorizontalTextAlignment="Center" LineBreakMode="WordWrap"
                    Margin="0,0,0,20"/>
 
-
+        
             <Label Text="Nueva contraseña" FontSize="14" FontAttributes="Bold" TextColor="#111827"/>
             <Frame BackgroundColor="#F9FAFB" BorderColor="Transparent" CornerRadius="12" Padding="16,0" HeightRequest="56" HasShadow="False">
                 <Grid ColumnDefinitions="Auto,*,Auto">
-
-                    <Label Text="🔒" FontSize="20" VerticalOptions="Center" Margin="0,0,10,0"/>
+                    <Image Source="icon_key.png" 
+                           Grid.Column="0" 
+                           WidthRequest="24" HeightRequest="24" 
+                           Aspect="AspectFit" 
+                           VerticalOptions="Center" Margin="0,0,10,0"/>
 
                     <Entry x:Name="EntryNewPassword" Grid.Column="1" Placeholder="••••••••" 
                            IsPassword="True" PlaceholderColor="#9CA3AF" TextColor="#111827" 
                            FontSize="16" BackgroundColor="Transparent" VerticalOptions="Center"
                            TextChanged="OnPasswordTextChanged"/>
-
 
                     <ImageButton x:Name="BtnToggleNewPass" Grid.Column="2" Source="eye_open.png" 
                                  WidthRequest="24" HeightRequest="24" Aspect="AspectFit" 
@@ -54,11 +57,15 @@
                 </Grid>
             </Frame>
 
-
+  
             <Label Text="Confirmar contraseña" FontSize="14" FontAttributes="Bold" TextColor="#111827"/>
             <Frame BackgroundColor="#F9FAFB" BorderColor="Transparent" CornerRadius="12" Padding="16,0" HeightRequest="56" HasShadow="False">
                 <Grid ColumnDefinitions="Auto,*,Auto">
-                    <Label Text="" FontSize="20" VerticalOptions="Center" Margin="0,0,10,0"/>
+                    <Image Source="icon_key.png" 
+                           Grid.Column="0" 
+                           WidthRequest="24" HeightRequest="24" 
+                           Aspect="AspectFit" 
+                           VerticalOptions="Center" Margin="0,0,10,0"/>
 
                     <Entry x:Name="EntryConfirmPassword" Grid.Column="1" Placeholder="••••••••" 
                            IsPassword="True" PlaceholderColor="#9CA3AF" TextColor="#111827" 
@@ -73,13 +80,9 @@
             </Frame>
 
 
-            <VerticalStackLayout Spacing="6" Margin="0,10,0,20">
-                <Label Text="La contraseña debe tener al menos 8 caracteres." FontSize="13" TextColor="#6B7280"/>
-                <Label Text="Letras: Mayúsculas (A-Z) y minúsculas (a-z)." FontSize="13" TextColor="#6B7280"/>
-                <Label Text="Números: Dígitos del 0 al 9." FontSize="13" TextColor="#6B7280"/>
-                <Label Text="Símbolos y signos: Caracteres especiales como !, @, #, $, %, &amp;, *." FontSize="13" TextColor="#6B7280"/>
-            </VerticalStackLayout>
-
+            <Label Text="Mínimo 8 caracteres" 
+                   FontSize="13" TextColor="#6B7280" 
+                   Margin="0,10,0,20"/>
 
             <Button Text="Guardar contraseña" 
                     BackgroundColor="#2563EB" TextColor="White" 
