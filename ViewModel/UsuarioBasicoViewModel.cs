@@ -1,15 +1,16 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using slotsi_citas.Models;
+using System.Windows.Input;
+using slotsi_citas.Models; 
 using slotsi_citas.Services;
-namespace slotsi_citas.ViewModel
+
+namespace slotsi_citas.ViewModel 
 {
-    class UsuarioBasicoViewModel
+    public class UsuarioBasicoViewModel : INotifyPropertyChanged
     {
         private readonly UsuarioService _usuarioService;
 
-       
         private string _nombreCompleto = string.Empty;
         public string NombreCompleto
         {
@@ -45,13 +46,14 @@ namespace slotsi_citas.ViewModel
             set { _contrasena = value; OnPropertyChanged(); }
         }
 
-      
         private bool _estaCargando;
         public bool EstaCargando
         {
             get => _estaCargando;
             set { _estaCargando = value; OnPropertyChanged(); }
         }
+
+        public ICommand RegistrarCommand { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -60,15 +62,27 @@ namespace slotsi_citas.ViewModel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public UsuarioBasicoViewModel()
+        public UsuarioBasicoViewModel(UsuarioService usuarioService)
         {
-            _usuarioService = new UsuarioService();
+            _usuarioService = usuarioService;
+
+            RegistrarCommand = new Command(async () =>
+            {
+                var resultado = await RegistrarUsuarioAsync();
+
+                if (resultado.Exito)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Éxito", resultado.Mensaje, "OK");
+                }
+                else
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", resultado.Mensaje, "OK");
+                }
+            });
         }
 
-      
         public async Task<(bool Exito, string Mensaje)> RegistrarUsuarioAsync()
         {
-         
             if (string.IsNullOrWhiteSpace(NombreCompleto) ||
                 string.IsNullOrWhiteSpace(Correo) ||
                 string.IsNullOrWhiteSpace(Contrasena))
@@ -85,14 +99,12 @@ namespace slotsi_citas.ViewModel
 
             try
             {
-             
                 var usuarioExistente = await _usuarioService.ObtenerPorCorreoAsync(Correo);
                 if (usuarioExistente != null)
                 {
                     return (false, "Este correo electrónico ya está registrado.");
                 }
 
-              
                 var nuevoUsuario = new Usuario
                 {
                     NombreCompleto = NombreCompleto.Trim(),
@@ -100,11 +112,10 @@ namespace slotsi_citas.ViewModel
                     Telefono = Telefono.Trim(),
                     Cedula = Cedula.Trim(),
                     Contrasena = Contrasena,
-                    TipoUsuario = false,   
-                    EstaActivo = true        
+                    TipoUsuario = false,
+                    EstaActivo = true
                 };
 
-                
                 await _usuarioService.CrearAsync(nuevoUsuario);
 
                 return (true, "¡Cuenta creada exitosamente!");
@@ -118,6 +129,5 @@ namespace slotsi_citas.ViewModel
                 EstaCargando = false;
             }
         }
-
     }
 }

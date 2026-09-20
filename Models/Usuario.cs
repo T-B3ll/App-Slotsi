@@ -11,7 +11,7 @@ namespace slotsi_citas.Models
     public class Usuario
     {
         [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; } // ID automático de Mongo
+        public string? Id { get; set; } 
 
         public string NombreCompleto { get; set; } = string.Empty;
         public string Correo { get; set; } = string.Empty;

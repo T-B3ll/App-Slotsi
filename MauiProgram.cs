@@ -4,6 +4,7 @@ using slotsi_citas.ViewModel;
 using Syncfusion.Maui.Toolkit.Hosting;
 using Supabase;
 using slotsi_citas.Services;
+using slotsi_citas.Pages;
 
 namespace slotsi_citas;
 
@@ -41,14 +42,17 @@ public static class MauiProgram
 
         // 2. Registrar Servicios Nuevos
         builder.Services.AddSingleton(client);        
-        builder.Services.AddSingleton<AuthService>();  
+        builder.Services.AddSingleton<AuthService>();
+        builder.Services.AddSingleton<UsuarioService>();
 
-       
+
         builder.Services.AddTransient<Cita_UsuarioViewModel>();
-        builder.Services.AddTransient<LoginViewModel>(); 
+        builder.Services.AddTransient<LoginViewModel>();
+        builder.Services.AddTransient<UsuarioBasicoViewModel>();
 
         builder.Services.AddTransient<Cita_ClientePage>();
-        builder.Services.AddTransient<LoginPage>();      
+        builder.Services.AddTransient<LoginPage>();
+        builder.Services.AddTransient<RegistroUsuarioBasico>();
 
 
         // Registrar ViewModels
