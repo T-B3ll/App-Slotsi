@@ -34,8 +34,8 @@ namespace slotsi_citas.Services
                     return new Usuario
                     {
                         Id = session.User.Id,
-                        Email = session.User.Email,
-                        Nombre = session.User.UserMetadata?["name"]?.ToString() ?? "Usuario"
+                        //Email = session.User.Email,
+                        //Nombre = session.User.UserMetadata?["name"]?.ToString() ?? "Usuario"
                     };
                 }
 
