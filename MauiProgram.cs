@@ -62,8 +62,14 @@ public static class MauiProgram
         builder.Services.AddTransient<Cita_ClientePage>();
 
 
+        builder.Services.AddSingleton<RecuperacionService>();
+        builder.Services.AddTransient<RecuperarContra>();
+        builder.Services.AddTransient<NuevaContra>();
 
 
+        builder.Services.AddSingleton<EmailJSService>();
+        builder.Services.AddSingleton<RecuperacionService>(); 
+        builder.Services.AddTransient<RecuperarContrasenaViewModel>();
         return builder.Build();
     }
 }

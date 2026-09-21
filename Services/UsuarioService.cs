@@ -74,7 +74,12 @@ namespace slotsi_citas.Services
             await _usuarios.UpdateOneAsync(filtro, actualizacion);
         }
 
-
+        public async Task ActualizarContrasenaAsync(string correo, string nuevaContrasena)
+        {
+            var filtro = Builders<Usuario>.Filter.Eq(u => u.Correo, correo.ToLower().Trim());
+            var update = Builders<Usuario>.Update.Set(u => u.Contrasena, nuevaContrasena);
+            await _usuarios.UpdateOneAsync(filtro, update);
+        }
 
     }
 }

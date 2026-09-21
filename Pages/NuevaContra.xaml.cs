@@ -1,15 +1,28 @@
 namespace slotsi_citas.Pages;
+using slotsi_citas.Services;
+using Microsoft.Maui.Controls;
 
 public partial class NuevaContra : ContentPage
 {
     private bool _isNewPassVisible = false;
     private bool _isConfirmPassVisible = false;
 
+
+    private string _solicitudId;
+    private string _correoUsuario;
     public NuevaContra()
     {
         InitializeComponent();
     }
 
+
+    public NuevaContra(string solicitudId, string correo)
+    {
+        InitializeComponent();
+
+        _solicitudId = solicitudId;
+        _correoUsuario = correo;
+    }
     private async void OnBackClicked(object sender, EventArgs e)
     {
         await Navigation.PopAsync();
@@ -38,7 +51,10 @@ public partial class NuevaContra : ContentPage
     }
     private async void OnForgotPasswordTapped(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new RecuperarContra());
+        var recuperacionService = new RecuperacionService();
+
+      
+        await Navigation.PushAsync(new RecuperarContra(recuperacionService));
     }
 
 
@@ -46,26 +62,42 @@ public partial class NuevaContra : ContentPage
 
     private async void OnGuardarClicked(object sender, EventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(EntryNewPassword.Text) || string.IsNullOrWhiteSpace(EntryConfirmPassword.Text))
+        var nuevaPass = EntryNewPassword.Text?.Trim();
+        var confirmPass = EntryConfirmPassword.Text?.Trim();
+
+        if (string.IsNullOrWhiteSpace(nuevaPass) || nuevaPass.Length < 8)
         {
-            await DisplayAlert("Error", "Por favor completa ambos campos.", "OK");
+            await DisplayAlert("Atención", "La contraseña debe tener al menos 8 caracteres.", "OK");
             return;
         }
 
-        if (EntryNewPassword.Text != EntryConfirmPassword.Text)
+        if (nuevaPass != confirmPass)
         {
             await DisplayAlert("Error", "Las contraseñas no coinciden.", "OK");
             return;
         }
 
-        if (EntryNewPassword.Text.Length < 8)
+        try
         {
-            await DisplayAlert("Error", "La contraseña debe tener al menos 8 caracteres.", "OK");
-            return;
+            // Creamos las instancias de los servicios aquí mismo para no romper tu MauiProgram
+            var usuarioService = new UsuarioService();
+            var recuperacionService = new RecuperacionService();
+
+            // Actualizamos la contraseña del usuario en Mongo
+            await usuarioService.ActualizarContrasenaAsync(_correoUsuario, nuevaPass);
+
+            // Marcamos el código de recuperación como usado para que no se pueda reutilizar
+            await recuperacionService.MarcarComoUsadoAsync(_solicitudId);
+
+            await DisplayAlert("Éxito", "Tu contraseña ha sido actualizada correctamente.", "OK");
+
+            // Regresamos al inicio o login
+            await Navigation.PopToRootAsync();
         }
-
-
-        await DisplayAlert("Éxito", "Contraseña actualizada correctamente.", "OK");
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"No se pudo guardar: {ex.Message}", "OK");
+        }
 
     }
 }
