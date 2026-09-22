@@ -27,19 +27,16 @@
                             <Label Text="Imagen" FontSize="12" TextColor="#9CA3AF" HorizontalOptions="Center"/>
                         </Border>
 
-                        <!-- Detalles -->
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
                             <Label Text="Corte Clásico" FontSize="15" FontAttributes="Bold" TextColor="#1F2937" />
                             <HorizontalStackLayout Spacing="8">
                                 <Label Text="$25" FontSize="13" FontAttributes="Bold" TextColor="#10B981" />
-           
                                 <Label Text="•" FontSize="13" TextColor="#9CA3AF"/>
                                 <Label Text="30 min" FontSize="13" TextColor="#6B7280" />
                             </HorizontalStackLayout>
                             <Label Text="Categoría: Cortes" FontSize="11" TextColor="#9CA3AF" />
                         </VerticalStackLayout>
 
-                        <!-- Acciones -->
                         <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="10" HorizontalOptions="End">
                             <Switch IsToggled="True" OnColor="#2563EB" HorizontalOptions="End"/>
                             <HorizontalStackLayout Spacing="15" HorizontalOptions="End">

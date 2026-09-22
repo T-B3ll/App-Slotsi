@@ -23,7 +23,7 @@
 
             <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
                 <HorizontalStackLayout Spacing="10">
-                    <Button Text="Todos" BackgroundColor="#111827" TextColor="White" CornerRadius="20" HeightRequest="35" Padding="15,0"/>
+                    <Button Text="Todos" BackgroundColor="#2563EB" TextColor="White" CornerRadius="20" HeightRequest="35" Padding="15,0"/>
                     <Button Text="Cortes" BackgroundColor="#E5E7EB" TextColor="#374151" CornerRadius="20" HeightRequest="35" Padding="15,0"/>
                     <Button Text="Barba" BackgroundColor="#E5E7EB" TextColor="#374151" CornerRadius="20" HeightRequest="35" Padding="15,0"/>
                 </HorizontalStackLayout>
@@ -50,7 +50,7 @@
                             <Label Text="30 min" FontSize="12" TextColor="#6B7280" />
                             <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,0" VerticalOptions="End">
                                 <Label Grid.Column="0" Text="$25" FontSize="16" FontAttributes="Bold" TextColor="#2563EB" VerticalOptions="Center"/>
-                                <Button Grid.Column="1" Text="Agendar" BackgroundColor="#111827" TextColor="White" FontSize="11" CornerRadius="8" Padding="10,0" HeightRequest="30"/>
+                                <Button Grid.Column="1" Text="Agendar" BackgroundColor="#2563EB" TextColor="White" FontSize="11" CornerRadius="8" Padding="10,0" HeightRequest="30"/>
                             </Grid>
                         </VerticalStackLayout>
                     </VerticalStackLayout>
@@ -73,7 +73,7 @@
                             <Label Text="45 min" FontSize="12" TextColor="#6B7280" />
                             <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,0" VerticalOptions="End">
                                 <Label Grid.Column="0" Text="$40" FontSize="16" FontAttributes="Bold" TextColor="#2563EB" VerticalOptions="Center"/>
-                                <Button Grid.Column="1" Text="Agendar" BackgroundColor="#111827" TextColor="White" FontSize="11" CornerRadius="8" Padding="10,0" HeightRequest="30"/>
+                                <Button Grid.Column="1" Text="Agendar" BackgroundColor="#2563EB" TextColor="White" FontSize="11" CornerRadius="8" Padding="10,0" HeightRequest="30"/>
                             </Grid>
                         </VerticalStackLayout>
                     </VerticalStackLayout>
