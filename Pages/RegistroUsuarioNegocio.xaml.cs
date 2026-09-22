@@ -117,9 +117,12 @@ public partial class RegistroUsuarioNegocio : ContentPage
     }
     private async void OnCrearCuentaClicked(object sender, EventArgs e)
     {
-        
+
         _viewModel.Nombre = EntryNombre.Text;
         _viewModel.Correo = EntryCorreo.Text;
+        _viewModel.Telefono = EntryTelefono.Text?.Replace("-", "");
+        _viewModel.Contrasena = PasswordEntry.Text; 
+        _viewModel.CedulaJuridica = EntryCedula.Text?.Replace("-", "");
         _viewModel.Direccion = EntryUbicacion.Text;
         _viewModel.NumeroRuc = EntryRuc.Text;
 
