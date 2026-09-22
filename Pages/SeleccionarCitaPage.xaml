@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
+             x:Class="slotsi_citas.Pages.SeleccionarCitaPage"
+             BackgroundColor="White"
+             NavigationPage.HasNavigationBar="False">
+
+    <ContentPage.BindingContext>
+        <vm:SeleccionarCitaViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- Header / Barra Superior -->
+        <Grid Grid.Row="0" Padding="20,15" ColumnDefinitions="Auto, *">
+            <Label Grid.Column="0" Text="&lt;" FontSize="22" FontAttributes="Bold" TextColor="#1F2937" VerticalOptions="Center"/>
+            <Label Grid.Column="1" Text="Seleccionar Cita" FontSize="18" FontAttributes="Bold" TextColor="#1F2937" Margin="15,0,0,0" VerticalOptions="Center"/>
+        </Grid>
+
+        <!-- Contenido Desplazable -->
+        <ScrollView Grid.Row="1" Padding="20,10">
+            <VerticalStackLayout Spacing="20">
+
+                <!-- Usuario Perfil -->
+                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="15">
+                    <Border Grid.Column="0" WidthRequest="50" HeightRequest="50" StrokeShape="RoundRectangle 25" BackgroundColor="#E5E7EB" StrokeThickness="0"/>
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                        <Label Text="{Binding ClienteNombre}" FontSize="16" FontAttributes="Bold" TextColor="#1F2937"/>
+                        <Label Text="{Binding SucursalTexto}" FontSize="12" TextColor="#6B7280"/>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Elige tu servicio -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Elige tu servicio" FontSize="14" FontAttributes="Bold" TextColor="#1F2937"/>
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <HorizontalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding Servicios}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BackgroundColor="{Binding ColorFondo}" StrokeThickness="0" StrokeShape="RoundRectangle 10" Padding="14,8">
+                                        <Label Text="{Binding Nombre}" TextColor="{Binding ColorTexto}" FontSize="13" FontAttributes="Bold"/>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+                    <Label Text="Selecciona una opción para tu próxima visita." FontSize="11" TextColor="#6B7280"/>
+                </VerticalStackLayout>
+
+                <!-- Detalles del pedido -->
+                <VerticalStackLayout Spacing="10">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Detalles del pedido" FontSize="15" FontAttributes="Bold" TextColor="#1F2937"/>
+                            <Label Text="Lo que se registrará en tu cita" FontSize="11" TextColor="#6B7280"/>
+                        </VerticalStackLayout>
+
+                        <Border Grid.Column="1" BackgroundColor="#2563EB" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="12,6">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AgregarExtrasCommand}"/>
+                            </Border.GestureRecognizers>
+                            <Label Text="Agregar extras &gt;" TextColor="White" FontSize="12" FontAttributes="Bold"/>
+                        </Border>
+                    </Grid>
+
+                    <!-- Lista Horizontal de Tarjetas -->
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <HorizontalStackLayout Spacing="12" BindableLayout.ItemsSource="{Binding DetallesPedido}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Border WidthRequest="160" BackgroundColor="#F9FAFB" Stroke="#E5E7EB" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="0">
+                                        <VerticalStackLayout Spacing="8">
+                                            <!-- Box Imagen Mock -->
+                                            <Grid HeightRequest="110" BackgroundColor="#F3F4F6">
+                                                <Label Text="{Binding PlaceholderImagen}" FontSize="10" TextColor="#9CA3AF" HorizontalOptions="Center" VerticalOptions="Center" HorizontalTextAlignment="Center" Margin="10"/>
+                                                <Border IsVisible="{Binding TieneTag}" BackgroundColor="#E5E7EB" StrokeThickness="0" StrokeShape="RoundRectangle 4" Padding="6,2" HorizontalOptions="Start" VerticalOptions="Start" Margin="8">
+                                                    <Label Text="{Binding Tag}" FontSize="9" TextColor="#4B5563"/>
+                                                </Border>
+                                            </Grid>
+
+                                            <!-- Info -->
+                                            <VerticalStackLayout Padding="10,0,10,10" Spacing="4">
+                                                <Label Text="{Binding Titulo}" FontSize="12" FontAttributes="Bold" TextColor="#1F2937" MaxLines="1"/>
+                                                <Label Text="{Binding Duracion}" FontSize="11" TextColor="#4B5563"/>
+                                                <HorizontalStackLayout Spacing="8" Margin="0,4,0,0">
+                                                    <Label Text="+" FontSize="14" FontAttributes="Bold" TextColor="#1F2937"/>
+                                                    <Label Text="⭐" FontSize="12" VerticalOptions="Center"/>
+                                                </HorizontalStackLayout>
+                                            </VerticalStackLayout>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+                </VerticalStackLayout>
+
+                <!-- Selecciona un método -->
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Selecciona un método" FontSize="14" FontAttributes="Bold" TextColor="#1F2937"/>
+                    <VerticalStackLayout Spacing="10" BindableLayout.ItemsSource="{Binding MetodosPago}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate>
+                                <Border Stroke="{Binding ColorBorde}" StrokeThickness="1.5" StrokeShape="RoundRectangle 12" Padding="15,12" BackgroundColor="White">
+                                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                                        <Border Grid.Column="0" WidthRequest="36" HeightRequest="36" StrokeShape="RoundRectangle 18" BackgroundColor="{Binding ColorFondoIcono}" StrokeThickness="0">
+                                            <Label Text="💳" HorizontalOptions="Center" VerticalOptions="Center" FontSize="14"/>
+                                        </Border>
+                                        <Label Grid.Column="1" Text="{Binding Titulo}" FontSize="13" FontAttributes="Bold" TextColor="#1F2937" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <!-- Resumen de tu cita -->
+                <VerticalStackLayout Spacing="12" Margin="0,10,0,0">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Resumen de tu cita" FontSize="15" FontAttributes="Bold" TextColor="#1F2937"/>
+                            <Label Text="Antes de confirmar" FontSize="11" TextColor="#6B7280"/>
+                        </VerticalStackLayout>
+                        <Border Grid.Column="1" BackgroundColor="#2563EB" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="12,6">
+                            <Label Text="Confirmar &gt;" TextColor="White" FontSize="12" FontAttributes="Bold"/>
+                        </Border>
+                    </Grid>
+
+                    <!-- Ítems del Resumen -->
+                    <VerticalStackLayout Spacing="12">
+                        <!-- Cliente -->
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <Label Grid.Column="0" Text="👤" FontSize="16" VerticalOptions="Center" Margin="0,0,10,0"/>
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="Cliente" FontSize="13" FontAttributes="Bold" TextColor="#1F2937"/>
+                                <Label Text="Juan Pérez" FontSize="11" TextColor="#6B7280"/>
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="Nombre guardado" FontSize="11" TextColor="#6B7280" VerticalOptions="Center"/>
+                        </Grid>
+
+                        <!-- Servicio -->
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <Label Grid.Column="0" Text="✂️" FontSize="16" VerticalOptions="Center" Margin="0,0,10,0"/>
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="Servicio" FontSize="13" FontAttributes="Bold" TextColor="#1F2937"/>
+                                <Label Text="Corte + Barba Completo" FontSize="11" TextColor="#6B7280"/>
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="Pedido seleccionado" FontSize="11" TextColor="#6B7280" VerticalOptions="Center"/>
+                        </Grid>
+
+                        <!-- Pago -->
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <Label Grid.Column="0" Text="💳" FontSize="16" VerticalOptions="Center" Margin="0,0,10,0"/>
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="Pago" FontSize="13" FontAttributes="Bold" TextColor="#1F2937"/>
+                                <Label Text="Tarjeta (débito/crédito)" FontSize="11" TextColor="#6B7280"/>
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="Método seleccionado" FontSize="11" TextColor="#6B7280" VerticalOptions="Center"/>
+                        </Grid>
+
+                        <!-- Hora -->
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <Label Grid.Column="0" Text="🕒" FontSize="16" VerticalOptions="Center" Margin="0,0,10,0"/>
+                            <VerticalStackLayout Grid.Column="1">
+                                <Label Text="Hora" FontSize="13" FontAttributes="Bold" TextColor="#1F2937"/>
+                                <Label Text="Hoy • 6:30 PM" FontSize="11" TextColor="#6B7280"/>
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="Pendiente de ajuste" FontSize="11" TextColor="#6B7280" VerticalOptions="Center"/>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <!-- Botones de Acción -->
+                    <Border Stroke="#D1D5DB" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="0,10" BackgroundColor="White">
+                        <Label Text="Editar" HorizontalOptions="Center" TextColor="#4B5563" FontAttributes="Bold" FontSize="14"/>
+                    </Border>
+
+                    <Border Stroke="#D1D5DB" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="0,10" BackgroundColor="White">
+                        <Label Text="Cancelar" HorizontalOptions="Center" TextColor="#4B5563" FontAttributes="Bold" FontSize="14"/>
+                    </Border>
+
+                    <!-- Botón Principal Azul -->
+                    <Border BackgroundColor="#2563EB" StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="0,14" Margin="0,5,0,10">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ConfirmarCitaCommand}"/>
+                        </Border.GestureRecognizers>
+                        <Label Text="Confirmar cita" TextColor="White" FontAttributes="Bold" FontSize="15" HorizontalOptions="Center"/>
+                    </Border>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Menú de Navegación Inferior -->
+        <Grid Grid.Row="2" ColumnDefinitions="*, *, *, *" Padding="10,10" BackgroundColor="White">
+            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center">
+                <Label Text="🏠" HorizontalOptions="Center" FontSize="14"/>
+                <Label Text="Inicio" TextColor="#2563EB" FontSize="11" HorizontalOptions="Center" FontAttributes="Bold"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center">
+                <Label Text="📅" HorizontalOptions="Center" FontSize="14"/>
+                <Label Text="Citas" TextColor="#9CA3AF" FontSize="11" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center">
+                <Label Text="📍" HorizontalOptions="Center" FontSize="14"/>
+                <Label Text="Sucursal" TextColor="#9CA3AF" FontSize="11" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center">
+                <Label Text="👤" HorizontalOptions="Center" FontSize="14"/>
+                <Label Text="Perfil" TextColor="#9CA3AF" FontSize="11" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+        </Grid>
+
+    </Grid>
+</ContentPage>

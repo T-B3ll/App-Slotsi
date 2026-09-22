@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
+             x:Class="slotsi_citas.Pages.CalendarioPage"
+             Title="Calendario"
+             BackgroundColor="White">
+
+    <ContentPage.BindingContext>
+        <vm:CalendarioViewModel />
+    </ContentPage.BindingContext>
+
+    <Grid RowDefinitions="Auto, Auto, Auto, *, Auto">
+
+        <!-- 1. Título principal -->
+        <Label Grid.Row="0"
+               Text="Calendario"
+               FontSize="24"
+               FontAttributes="Bold"
+               TextColor="#2F6BFF"
+               HorizontalOptions="Center"
+               Margin="0,15,0,15" />
+
+        <!-- 2. Navegador de Fecha y Botón Hoy -->
+        <Grid Grid.Row="1" ColumnDefinitions="Auto, Auto, *, Auto" Padding="20,0" Margin="0,0,0,15">
+            <Label Grid.Column="0" Text="&lt;" FontSize="18" FontAttributes="Bold" TextColor="#1C1C1E" VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding AnterioresCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <Label Grid.Column="1"
+                   Text="{Binding RangoFecha}"
+                   FontSize="16"
+                   FontAttributes="Bold"
+                   TextColor="#1C1C1E"
+                   VerticalOptions="Center"
+                   Margin="10,0" />
+
+            <Label Grid.Column="2" Text="&gt;" FontSize="18" FontAttributes="Bold" TextColor="#1C1C1E" VerticalOptions="Center">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SiguientesCommand}" />
+                </Label.GestureRecognizers>
+            </Label>
+
+            <!-- Botón Hoy -->
+            <Border Grid.Column="3"
+                    BackgroundColor="#FF9500"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 12"
+                    Padding="16,6">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding HoyCommand}" />
+                </Border.GestureRecognizers>
+                <Label Text="Hoy" TextColor="White" FontAttributes="Bold" FontSize="13" />
+            </Border>
+        </Grid>
+
+        <!-- 3. Franja de días de la semana -->
+        <StackLayout Grid.Row="2">
+            <BoxView HeightRequest="1" BackgroundColor="#E5E5EA" />
+            <CollectionView ItemsSource="{Binding DiasSemana}" HorizontalScrollBarVisibility="Never" Margin="10,10">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="12" />
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <StackLayout WidthRequest="38" HorizontalOptions="Center">
+                            <Label Text="{Binding LetraDia}"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="{Binding ColorTextoDia}"
+                                   HorizontalOptions="Center" />
+                            <Border StrokeThickness="0"
+                                    BackgroundColor="{Binding ColorFondoNumero}"
+                                    StrokeShape="RoundRectangle 18"
+                                    WidthRequest="34"
+                                    HeightRequest="34"
+                                    Margin="0,4,0,0"
+                                    HorizontalOptions="Center">
+                                <Label Text="{Binding NumeroDia}"
+                                       FontSize="15"
+                                       FontAttributes="Bold"
+                                       TextColor="{Binding ColorTextoNumero}"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center" />
+                            </Border>
+                        </StackLayout>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            <BoxView HeightRequest="1" BackgroundColor="#E5E5EA" />
+        </StackLayout>
+
+        <!-- 4. Lista de horas y tarjetas de citas -->
+        <ScrollView Grid.Row="3" Padding="15,20">
+            <StackLayout Spacing="20">
+
+                <!-- Hora 8:00 AM -->
+                <Grid ColumnDefinitions="70, *">
+                    <Label Grid.Column="0" Text="8:00 AM" TextColor="#8E8E93" FontSize="13" VerticalOptions="Start" />
+                    <BoxView Grid.Column="1" HeightRequest="1" BackgroundColor="#F2F2F7" VerticalOptions="Start" Margin="0,8,0,0" />
+                </Grid>
+
+                <!-- Hora 9:00 AM con Tarjeta de María González -->
+                <Grid ColumnDefinitions="70, *">
+                    <StackLayout Grid.Column="0" VerticalOptions="Start">
+                        <Label Text="9:00 AM" TextColor="#8E8E93" FontSize="13" />
+                        <Label Text="10:00 AM" TextColor="#8E8E93" FontSize="13" Margin="0,35,0,0" />
+                    </StackLayout>
+
+                    <Border Grid.Column="1"
+                            BackgroundColor="#EDFAF4"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="0">
+                        <Grid ColumnDefinitions="6, *">
+                            <BoxView Grid.Column="0" BackgroundColor="#00C781" CornerRadius="3,0,0,3" />
+                            <StackLayout Grid.Column="1" Padding="12,10">
+                                <Label Text="María González" FontAttributes="Bold" TextColor="#1C1C1E" FontSize="15" />
+                                <Label Text="Corte Clásico (9:00 - 10:00)" TextColor="#636366" FontSize="12" Margin="0,2,0,0" />
+                            </StackLayout>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <!-- Hora 11:00 AM con Tarjeta de Carlos Mendoza -->
+                <Grid ColumnDefinitions="70, *">
+                    <Label Grid.Column="0" Text="11:00 AM" TextColor="#8E8E93" FontSize="13" VerticalOptions="Start" />
+
+                    <Border Grid.Column="1"
+                            BackgroundColor="#FFF8ED"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 12"
+                            Padding="0">
+                        <Grid ColumnDefinitions="6, *">
+                            <BoxView Grid.Column="0" BackgroundColor="#FF9500" CornerRadius="3,0,0,3" />
+                            <StackLayout Grid.Column="1" Padding="12,10">
+                                <Label Text="Carlos Mendoza" FontAttributes="Bold" TextColor="#1C1C1E" FontSize="15" />
+                                <Label Text="Afeitado de Barba (11:00 - 11:30)" TextColor="#636366" FontSize="12" Margin="0,2,0,0" />
+                            </StackLayout>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+            </StackLayout>
+        </ScrollView>
+
+        <!-- 5. Barra de Navegación Inferior (Bottom Bar) -->
+        <Grid Grid.Row="4" ColumnDefinitions="*, *, *, *" BackgroundColor="#F9F9F9" Padding="0,10,0,15">
+            <BoxView Grid.ColumnSpan="4" HeightRequest="1" BackgroundColor="#E5E5EA" VerticalOptions="Start" />
+
+            <StackLayout Grid.Column="0" HorizontalOptions="Center">
+                <Image Source="home_icon.png" WidthRequest="22" HeightRequest="22" />
+                <Label Text="Inicio" FontSize="11" TextColor="#8E8E93" HorizontalOptions="Center" Margin="0,2,0,0" />
+            </StackLayout>
+
+            <StackLayout Grid.Column="1" HorizontalOptions="Center">
+                <Image Source="calendar_icon.png" WidthRequest="22" HeightRequest="22" />
+                <Label Text="Citas" FontSize="11" TextColor="#FF9500" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,2,0,0" />
+            </StackLayout>
+
+            <StackLayout Grid.Column="2" HorizontalOptions="Center">
+                <Image Source="location_icon.png" WidthRequest="22" HeightRequest="22" />
+                <Label Text="Sucursal" FontSize="11" TextColor="#8E8E93" HorizontalOptions="Center" Margin="0,2,0,0" />
+            </StackLayout>
+
+            <StackLayout Grid.Column="3" HorizontalOptions="Center">
+                <Image Source="profile_icon.png" WidthRequest="22" HeightRequest="22" />
+                <Label Text="Perfil" FontSize="11" TextColor="#8E8E93" HorizontalOptions="Center" Margin="0,2,0,0" />
+            </StackLayout>
+        </Grid>
+
+    </Grid>
+</ContentPage>

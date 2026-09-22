@@ -22,6 +22,30 @@
                 ContentTemplate="{DataTemplate pages:Cita_UsuarioPage}"
                 Route="Cita_UsuarioPage" />
         </Tab>
+        
+       <!-- Pestaña 3: Resgistro de Usuario -->
+        <Tab Title="Registro" Icon="Profile.png">
+            <ShellContent
+                    Title="Registro"
+                    ContentTemplate="{DataTemplate pages:RegistroUsuariosPage}"
+                    Route="RegistroUsuariosPage" />
+        </Tab>
+        
+        <!-- Pestaña 4: Calendario Citas -->
+        <Tab Title="Calendario" Icon="calendar.png">
+            <ShellContent
+                    Title="Calendario"
+                    ContentTemplate="{DataTemplate pages:CalendarioPage}"
+                    Route="CalendarioPage" />
+        </Tab>
+        
+        <!-- Pestaña 5: Seleccionar Cita -->
+        <Tab Title="Seleccionar Cita" Icon="calendar.png">
+            <ShellContent
+        Title="Seleccionar Cita"
+        ContentTemplate="{DataTemplate pages:SeleccionarCitaPage}"
+        Route="SeleccionarCitaPage" />
+        </Tab>
     </TabBar>
 
 </Shell>

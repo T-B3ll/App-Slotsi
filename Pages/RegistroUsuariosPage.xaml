@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
+             x:Class="slotsi_citas.Pages.RegistroUsuariosPage"
+             Title="Registro de usuarios"
+             BackgroundColor="White">
+
+    <ContentPage.BindingContext>
+        <vm:RegistroUsuariosViewModel />
+    </ContentPage.BindingContext>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="InicialButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="TextColor" Value="Black" />
+                <Setter Property="BorderColor" Value="#E0E0E0" />
+                <Setter Property="BorderWidth" Value="1" />
+                <Setter Property="CornerRadius" Value="20" />
+                <Setter Property="WidthRequest" Value="40" />
+                <Setter Property="HeightRequest" Value="40" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Margin" Value="2" />
+            </Style>
+
+            <Style x:Key="ActionButtonStyle" TargetType="Border">
+                <Setter Property="Stroke" Value="Black" />
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 10" />
+                <Setter Property="Padding" Value="15,10" />
+                <Setter Property="Margin" Value="0,5" />
+            </Style>
+
+            <Style x:Key="ActionButtonTextStyle" TargetType="Label">
+                <Setter Property="TextColor" Value="Black" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <Grid RowDefinitions="Auto, Auto, *, Auto" Padding="20">
+
+            <!-- Encabezado -->
+            <Label Grid.Row="0"
+                   Text="Registro de usuarios"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   TextColor="Black"
+                   Margin="0,0,0,25" />
+
+            <!-- Filtro y Búsqueda -->
+            <StackLayout Grid.Row="1" Margin="0,0,0,25">
+                <Label Text="Buscar por inicial"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="Black" />
+                <Label Text="Filtra la lista por letra"
+                       FontSize="14"
+                       TextColor="#757575"
+                       Margin="0,0,0,10" />
+
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,0,0,15">
+                    <HorizontalStackLayout Spacing="5">
+                        <Button Text="A" Style="{StaticResource InicialButtonStyle}" />
+                        <Button Text="B" Style="{StaticResource InicialButtonStyle}" />
+                        <Button Text="C" Style="{StaticResource InicialButtonStyle}" />
+                        <Button Text="D" Style="{StaticResource InicialButtonStyle}" />
+                        <Button Text="E" Style="{StaticResource InicialButtonStyle}" />
+                        <Button Text="F" Style="{StaticResource InicialButtonStyle}" />
+                        <Button Text="G" Style="{StaticResource InicialButtonStyle}" />
+                        <Button Text="H" Style="{StaticResource InicialButtonStyle}" />
+                        <Button Text="I" Style="{StaticResource InicialButtonStyle}" />
+                        <Button Text="J" Style="{StaticResource InicialButtonStyle}" />
+                    </HorizontalStackLayout>
+                </ScrollView>
+
+                <Border Stroke="#E0E0E0"
+                        StrokeShape="RoundRectangle 8"
+                        Padding="10,5"
+                        BackgroundColor="White">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Entry Grid.Column="0"
+                               Placeholder="Buscar usuarios"
+                               PlaceholderColor="#9E9E9E"
+                               TextColor="Black"
+                               FontSize="16" />
+                        <Image Grid.Column="1"
+                               Source="search_icon.png"
+                               WidthRequest="24"
+                               HeightRequest="24"
+                               VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+                <Label Text="Nombre, correo o ID"
+                       FontSize="12"
+                       TextColor="#9E9E9E"
+                       Margin="5,2,0,0" />
+            </StackLayout>
+
+            <!-- Lista de Usuarios -->
+            <StackLayout Grid.Row="2" Margin="0,0,0,25">
+                <Label Text="Usuarios existentes"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="Black" />
+                <Label Text="Resultados sincronizados con la app"
+                       FontSize="14"
+                       TextColor="#757575"
+                       Margin="0,0,0,15" />
+
+                <CollectionView ItemsSource="{Binding Usuarios}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Padding="0,10" ColumnDefinitions="Auto, *, Auto">
+                                <BoxView Grid.ColumnSpan="3"
+                                         HeightRequest="1"
+                                         BackgroundColor="#EEEEEE"
+                                         VerticalOptions="End" />
+
+                                <Image Grid.Column="0"
+                                       Source="profile_placeholder.png"
+                                       WidthRequest="40"
+                                       HeightRequest="40"
+                                       Margin="0,0,15,0"
+                                       VerticalOptions="Center" />
+
+                                <StackLayout Grid.Column="1" VerticalOptions="Center">
+                                    <Label Text="{Binding Nombre}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="Black" />
+                                    <Label Text="{Binding Email}"
+                                           FontSize="14"
+                                           TextColor="#757575" />
+                                </StackLayout>
+
+                                <Label Grid.Column="2"
+                                       Text="{Binding IdTexto}"
+                                       FontSize="14"
+                                       FontAttributes="Bold"
+                                       TextColor="Black"
+                                       VerticalOptions="Center"
+                                       HorizontalOptions="End" />
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+
+            <!-- Botones de Acción -->
+            <StackLayout Grid.Row="3" Margin="0,10,0,0">
+                <Border Style="{StaticResource ActionButtonStyle}" BackgroundColor="White">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding VerDetallesCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="Ver detalles" Style="{StaticResource ActionButtonTextStyle}" />
+                </Border>
+
+                <Border Style="{StaticResource ActionButtonStyle}" BackgroundColor="White">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding ImportarListaCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="Importar lista" Style="{StaticResource ActionButtonTextStyle}" />
+                </Border>
+
+                <Border Style="{StaticResource ActionButtonStyle}" BackgroundColor="Black" Stroke="Black">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding RegistrarNuevoCommand}" />
+                    </Border.GestureRecognizers>
+                    <Label Text="Registrar nuevo usuario"
+                           Style="{StaticResource ActionButtonTextStyle}"
+                           TextColor="White" />
+                </Border>
+            </StackLayout>
+
+        </Grid>
+    </ScrollView>
+</ContentPage>
