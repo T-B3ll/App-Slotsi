@@ -10,16 +10,8 @@
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="20,20,20,15" BackgroundColor="#FFFFFF">
             <VerticalStackLayout Grid.Column="0" Spacing="2">
                 <Label Text="Gestión de Catálogo" FontSize="22" FontAttributes="Bold" TextColor="#111827" />
-                <Label Text="12 servicios activos" FontSize="13" TextColor="#6B7280" />
+                <Label Text="1 servicios activos" FontSize="13" TextColor="#6B7280" />
             </VerticalStackLayout>
-            <ImageButton Grid.Column="1" BackgroundColor="Transparent" WidthRequest="28" HeightRequest="28" VerticalOptions="Center" ToolTipProperties.Text="Configuración">
-                <ImageButton.Source>
-                    <FontImageSource FontFamily="MaterialIcons" 
-                         Glyph="&#xe8b8;" 
-                         Color="#6B7280" 
-                         Size="28"/>
-                </ImageButton.Source>
-            </ImageButton>
         </Grid>
 
         <!--lista de servicos activos-->

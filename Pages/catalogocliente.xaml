@@ -12,18 +12,6 @@
             <Grid ColumnDefinitions="*, Auto">
                 <Label Grid.Column="0" Text="¿Qué te harás hoy?" FontSize="24" FontAttributes="Bold" TextColor="#111827" />
 
-                <ImageButton Grid.Column="1" 
-                             BackgroundColor="Transparent" 
-                             WidthRequest="28" 
-                             HeightRequest="28"
-                             VerticalOptions="Center">
-                    <ImageButton.Source>
-                        <FontImageSource FontFamily="MaterialIcons" 
-                                         Glyph="&#xf1cc;" 
-                                         Color="#111827" 
-                                         Size="28"/>
-                    </ImageButton.Source>
-                </ImageButton>
             </Grid>
 
             <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#F3F4F6" Padding="12,0">
