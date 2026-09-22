@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using Microsoft.Maui.Controls;
+using slotsi_citas.ViewModel;
+
 
 namespace slotsi_citas.Pages;
 
@@ -9,27 +11,34 @@ public partial class RegistroUsuarioNegocio : ContentPage
     private bool _isPasswordVisible = false;
     private string _tipoNegocio = "";
 
-    public RegistroUsuarioNegocio() => InitializeComponent();
 
-    // ✅ ESTE ES EL MÉTODO QUE FALTABA Y CAUSABA EL ERROR
+    private RegistrarNegocioViewModel _viewModel;
+
+
+    public RegistroUsuarioNegocio()
+    {
+        InitializeComponent();
+
+        _viewModel = new RegistrarNegocioViewModel();
+        BindingContext = _viewModel;
+    }
+
     private void OnTipoNegocioSelected(object sender, TappedEventArgs e)
     {
         string opcion = e.Parameter?.ToString();
         if (string.IsNullOrEmpty(opcion)) return;
 
-        _tipoNegocio = opcion;
+        _viewModel.TipoServicio = opcion;
 
-        // Resetear todos a gris/blanco
+       
         FrameSede.BorderColor = Color.FromArgb("#E5E7EB");
         FrameSede.BackgroundColor = Colors.White;
-
         FrameDomicilio.BorderColor = Color.FromArgb("#E5E7EB");
         FrameDomicilio.BackgroundColor = Colors.White;
-
         FrameMixta.BorderColor = Color.FromArgb("#E5E7EB");
         FrameMixta.BackgroundColor = Colors.White;
 
-        // Activar el seleccionado en azul
+       
         Frame activo = opcion switch
         {
             "Sede" => FrameSede,
@@ -45,7 +54,7 @@ public partial class RegistroUsuarioNegocio : ContentPage
         }
     }
 
-    // --- FORMATO TELÉFONO ---
+
     private void OnTelefonoChanged(object sender, TextChangedEventArgs e)
     {
         if (_isUpdating) return;
@@ -58,10 +67,15 @@ public partial class RegistroUsuarioNegocio : ContentPage
             EntryTelefono.Text = formatted;
             EntryTelefono.CursorPosition = formatted.Length;
             _isUpdating = false;
+
+
+            _viewModel.Telefono = digits;
+
+            _isUpdating = false;
         });
     }
 
-    // --- FORMATO CÉDULA ---
+    
     private void OnCedulaChanged(object sender, TextChangedEventArgs e)
     {
         if (_isUpdating) return;
@@ -76,11 +90,14 @@ public partial class RegistroUsuarioNegocio : ContentPage
             _isUpdating = true;
             EntryCedula.Text = formatted;
             EntryCedula.CursorPosition = formatted.Length;
+
+
+            _viewModel.CedulaJuridica = clean;
             _isUpdating = false;
         });
     }
 
-    // --- CONTRASEÑA ---
+    
     private void OnTogglePasswordVisibility(object sender, EventArgs e)
     {
         _isPasswordVisible = !_isPasswordVisible;
@@ -88,8 +105,29 @@ public partial class RegistroUsuarioNegocio : ContentPage
         ((ImageButton)sender).Source = _isPasswordVisible ? "eye_closed.png" : "eye_open.png";
     }
 
-    // --- BOTONES ---
-    private async void OnSubirPdfClicked(object sender, EventArgs e) => await DisplayAlert("Info", "Pendiente", "OK");
-    private async void OnCancelarClicked(object sender, EventArgs e) => await Navigation.PopAsync();
-    private async void OnCrearCuentaClicked(object sender, EventArgs e) => await DisplayAlert("Listo", "Datos validados", "OK");
+
+    private async void OnSubirPdfClicked(object sender, EventArgs e)
+    {
+        _viewModel.SeleccionarDocumentoCommand.Execute(null);
+    }
+
+    private async void OnCancelarClicked(object sender, EventArgs e)
+    {
+        await Navigation.PopAsync();
+    }
+    private async void OnCrearCuentaClicked(object sender, EventArgs e)
+    {
+        
+        _viewModel.Nombre = EntryNombre.Text;
+        _viewModel.Correo = EntryCorreo.Text;
+        _viewModel.Direccion = EntryUbicacion.Text;
+        _viewModel.NumeroRuc = EntryRuc.Text;
+
+        _viewModel.RegistrarCommand.Execute(null);
+    }
+
+    private async void OnSubirFotoClicked(object sender, EventArgs e)
+    {
+        _viewModel.SeleccionarFotoCommand.Execute(null);
+    }
 }
