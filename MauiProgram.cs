@@ -20,20 +20,20 @@ public static class MauiProgram
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-<<<<<<< HEAD
+
 
 
                 fonts.AddFont("MauiMaterialAssets.ttf", "MaterialIcons");
-=======
+
                 fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialIcons");
->>>>>>> servicios_negocio
+
             });
 
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
 
-<<<<<<< HEAD
+
         
         var supabaseUrl = "https://vnasklmkkamytgwymzih.supabase.co";
         var supabaseKey = "sb_publishable_z8qlsYsGV7mYU4iJGGu8NA_fljnaFtq";
@@ -61,8 +61,7 @@ public static class MauiProgram
 
 
         // Registrar ViewModels
-=======
->>>>>>> servicios_negocio
+
         builder.Services.AddTransient<Cita_UsuarioViewModel>();
 
         builder.Services.AddTransient<Cita_ClientePage>();
@@ -75,7 +74,7 @@ public static class MauiProgram
 
        
         builder.Services.AddTransient<CalendarioPage>();
-
+        builder.Services.AddTransient<catalogoservicios>();
 
         builder.Services.AddSingleton<EmailJSService>();
         builder.Services.AddSingleton<RecuperacionService>(); 
