@@ -79,8 +79,6 @@
 	  <MauiXaml Update="Pages\Cita_UsuarioPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-
-		
 	  <MauiXaml Update="Pages\LoginPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -96,15 +94,8 @@
 	  <MauiXaml Update="Pages\RegistroUsuarioBasico.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-		<MauiXaml Update="Pages\RegistroUsuarioNegocio.xaml">
-			<Generator>MSBuild:Compile</Generator>
-		</MauiXaml>
-
-	  <MauiXaml Update="Pages\RegistroUsuariosPage.xaml">
+	  <MauiXaml Update="Pages\RegistroUsuarioNegocio.xaml">
 	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Pages\SeleccionarCitaPage.xaml">
-	    <Generator>MSBuild:Compile</Generator> 
 	  </MauiXaml>
 	</ItemGroup>
 
