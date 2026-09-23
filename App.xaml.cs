@@ -15,8 +15,8 @@ namespace slotsi_citas
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            var calendarioPage = _serviceProvider.GetRequiredService<CalendarioPage>();
-            return new Window(new NavigationPage(calendarioPage));
+            var Login   = _serviceProvider.GetRequiredService<LoginPage>();
+            return new Window(new NavigationPage(Login));
         }
     }
 }
