@@ -22,6 +22,7 @@
                 ContentTemplate="{DataTemplate pages:Cita_UsuarioPage}"
                 Route="Cita_UsuarioPage" />
         </Tab>
+<<<<<<< HEAD
         
        <!-- Pestaña 3: Resgistro de Usuario -->
         <Tab Title="Registro" Icon="Profile.png">
@@ -45,6 +46,21 @@
         Title="Seleccionar Cita"
         ContentTemplate="{DataTemplate pages:SeleccionarCitaPage}"
         Route="SeleccionarCitaPage" />
+=======
+
+        <Tab Title="Catalogo de servicios" Icon="profile.png">
+            <ShellContent
+            Title="Servicios disponibles"
+            ContentTemplate="{DataTemplate pages:catalogoservicios}"
+            Route="cataloservicios" />
+        </Tab>
+
+        <Tab Title="Catalogo de cliente" Icon="profile.png">
+            <ShellContent
+                Title="Clientes"
+                ContentTemplate="{DataTemplate pages:CatalogoCliente}"
+                Route="catalogocliente" />
+>>>>>>> servicios_negocio
         </Tab>
     </TabBar>
 

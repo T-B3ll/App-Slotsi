@@ -1,4 +1,4 @@
-﻿	<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">android-arm64;android-arm</RuntimeIdentifiers>
@@ -70,7 +70,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
+<<<<<<< HEAD
 	  <MauiXaml Update="Pages\CalendarioPage.xaml">
+=======
+	  <MauiXaml Update="Pages\catalogocliente.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\catalogoservicios.xaml">
+>>>>>>> servicios_negocio
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\Cita_ClientePage.xaml">
