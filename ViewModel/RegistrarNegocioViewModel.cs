@@ -90,8 +90,13 @@ namespace slotsi_citas.ViewModel
             get => _negocioData.UrlDocumentoTitulo;
             set { _negocioData.UrlDocumentoTitulo = value; OnPropertyChanged(); }
         }
+        public string CategoriaNegocio
+        {
+            get => _negocioData.Categoria;
+            set { _negocioData.Categoria = value; OnPropertyChanged(); }
+        }
 
-       
+
         private async Task RegistrarNegocioAsync()
         {
             if (string.IsNullOrWhiteSpace(Nombre) || string.IsNullOrWhiteSpace(Contrasena))

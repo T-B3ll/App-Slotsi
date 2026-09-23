@@ -12,6 +12,10 @@ namespace slotsi_citas.ViewModel
         private readonly UsuarioService _usuarioService;
 
         private string _nombreCompleto = string.Empty;
+
+
+        private Negocio _negocioData = new Negocio();
+        private Usuario _usuarioData = new Usuario();
         public string NombreCompleto
         {
             get => _nombreCompleto;
@@ -52,7 +56,11 @@ namespace slotsi_citas.ViewModel
             get => _estaCargando;
             set { _estaCargando = value; OnPropertyChanged(); }
         }
-
+        public string CategoriaNegocio
+        {
+            get => _negocioData.Categoria;
+            set { _negocioData.Categoria = value; OnPropertyChanged(); }
+        }
         public ICommand RegistrarCommand { get; }
 
         public event PropertyChangedEventHandler? PropertyChanged;

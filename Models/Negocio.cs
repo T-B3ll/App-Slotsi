@@ -21,7 +21,8 @@ namespace slotsi_citas.Models
 
 
         public string UrlFotoPerfil { get; set; } = string.Empty;
-        public string UrlDocumentoTitulo { get; set; } = string.Empty; 
+        public string UrlDocumentoTitulo { get; set; } = string.Empty;
+        public string Categoria { get; set; } = string.Empty;
 
         public DateTime FechaRegistro { get; set; } = DateTime.UtcNow;
     }

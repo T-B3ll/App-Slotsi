@@ -12,6 +12,9 @@ public partial class RegistroUsuarioNegocio : ContentPage
     private string _tipoNegocio = "";
 
 
+
+
+
     private RegistrarNegocioViewModel _viewModel;
 
 
@@ -97,7 +100,15 @@ public partial class RegistroUsuarioNegocio : ContentPage
         });
     }
 
-    
+    private void OnTipoNegocioChanged(object sender, EventArgs e)
+    {
+        var picker = (Picker)sender;
+        if (picker.SelectedItem != null)
+        {
+           
+            _viewModel.CategoriaNegocio = picker.SelectedItem.ToString();
+        }
+    }
     private void OnTogglePasswordVisibility(object sender, EventArgs e)
     {
         _isPasswordVisible = !_isPasswordVisible;

@@ -107,7 +107,43 @@
                    HeightRequest="50" Margin="0,0,0,5"/>
             <Label Text="Te enviaremos confirmaciones" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,10"/>
 
-            
+            <Label Text="Tipo de negocio *" 
+                   TextColor="#111827" 
+                   FontSize="14" 
+                   FontAttributes="Bold" 
+                   Margin="0,10,0,0"/>
+
+      
+            <Frame BackgroundColor="#F9FAFB" 
+                   BorderColor="Transparent" 
+                   CornerRadius="8" 
+                   Padding="12,0" 
+                   HeightRequest="50" 
+                   HasShadow="False">
+
+                <Picker x:Name="PickerTipoNegocio" 
+                        Title="Selecciona una opción" 
+                        TitleColor="#9CA3AF"
+                        TextColor="#111827" 
+                        FontSize="16" 
+                        BackgroundColor="Transparent"
+                        VerticalOptions="Center"
+                        SelectedIndexChanged="OnTipoNegocioChanged">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Barbería</x:String>
+                            <x:String>Salón de Belleza</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+            </Frame>
+
+            <Label Text="Elige según tus servicios principales" 
+                   FontSize="12" 
+                   TextColor="#6B7280" 
+                   Margin="0,-5,0,10"/>
+
+
             <Label Text="Contraseña *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
             <Frame BackgroundColor="#F9FAFB" BorderColor="Transparent" CornerRadius="8" Padding="12,0" HeightRequest="50" HasShadow="False">
                 <Grid ColumnDefinitions="*,Auto">
