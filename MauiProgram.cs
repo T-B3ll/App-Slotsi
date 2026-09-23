@@ -67,6 +67,10 @@ public static class MauiProgram
         builder.Services.AddTransient<NuevaContra>();
 
 
+       
+        builder.Services.AddTransient<CalendarioPage>();
+
+
         builder.Services.AddSingleton<EmailJSService>();
         builder.Services.AddSingleton<RecuperacionService>(); 
         builder.Services.AddTransient<RecuperarContrasenaViewModel>();
