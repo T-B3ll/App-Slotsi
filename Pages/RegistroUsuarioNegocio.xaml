@@ -14,10 +14,7 @@
             <Label Text="Completa tus datos para crear tu cuenta" FontSize="14" TextColor="#6B7280" Margin="0,-5,0,10"/>
             <Label Text="Los campos que tengan un &quot;*&quot; son obligatorios" FontSize="12" TextColor="#EF4444" Margin="0,0,0,5"/>
 
-   
             <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10" Margin="0,0,0,20">
-
-         
                 <Frame x:Name="FrameSede" Grid.Column="0" CornerRadius="12" BorderColor="#E5E7EB" BackgroundColor="White" Padding="10" HasShadow="False">
                     <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
                         <Frame WidthRequest="50" HeightRequest="50" CornerRadius="25" BackgroundColor="#F3F4F6" HasShadow="False" Padding="0" IsClippedToBounds="True">
@@ -30,7 +27,6 @@
                     </Frame.GestureRecognizers>
                 </Frame>
 
-          
                 <Frame x:Name="FrameDomicilio" Grid.Column="1" CornerRadius="12" BorderColor="#E5E7EB" BackgroundColor="White" Padding="10" HasShadow="False">
                     <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
                         <Frame WidthRequest="50" HeightRequest="50" CornerRadius="25" BackgroundColor="#F3F4F6" HasShadow="False" Padding="0" IsClippedToBounds="True">
@@ -43,7 +39,6 @@
                     </Frame.GestureRecognizers>
                 </Frame>
 
-                
                 <Frame x:Name="FrameMixta" Grid.Column="2" CornerRadius="12" BorderColor="#E5E7EB" BackgroundColor="White" Padding="10" HasShadow="False">
                     <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
                         <Frame WidthRequest="50" HeightRequest="50" CornerRadius="25" BackgroundColor="#F3F4F6" HasShadow="False" Padding="0" IsClippedToBounds="True">
@@ -57,28 +52,21 @@
                 </Frame>
             </Grid>
 
-
          
             <Label Text="Foto de perfil *" TextColor="#111827" FontSize="14" FontAttributes="Bold" Margin="0,10,0,0"/>
             <Label Text="Sube una foto clara de tu rostro o logo" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,5"/>
-
             <Frame x:Name="FrameFoto" BorderColor="#E5E7EB" BackgroundColor="#F9FAFB" CornerRadius="12" Padding="16" HasShadow="False">
                 <HorizontalStackLayout Spacing="16" VerticalOptions="Center">
-                    
                     <Image Source="profile picture.png" WidthRequest="32" HeightRequest="32" Aspect="AspectFit"/>
-
                     <VerticalStackLayout VerticalOptions="Center">
                         <Label Text="Seleccionar foto" FontSize="16" TextColor="#2563EB" FontAttributes="Bold"/>
                         <Label x:Name="LabelFotoStatus" Text="Ninguna foto seleccionada" FontSize="12" TextColor="#6B7280"/>
                     </VerticalStackLayout>
                 </HorizontalStackLayout>
-
-               
                 <Frame.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnSubirFotoClicked"/>
                 </Frame.GestureRecognizers>
             </Frame>
-
 
             <Label Text="Nombre completo *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
             <Entry x:Name="EntryNombre" Placeholder="Ingresa tu nombre completo" PlaceholderColor="#9CA3AF" 
@@ -86,41 +74,27 @@
                    HeightRequest="50" Margin="0,0,0,5"/>
             <Label Text="Nombre y apellidos" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,10"/>
 
-         
             <Label Text="Teléfono *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
             <Entry x:Name="EntryTelefono" Placeholder="Ingresa tu número" Keyboard="Telephone" 
                    PlaceholderColor="#9CA3AF" TextColor="#111827" FontSize="16" BackgroundColor="#F9FAFB" 
                    HeightRequest="50" Margin="0,0,0,5" TextChanged="OnTelefonoChanged"/>
             <Label Text="Ej: +505 234 5678" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,10"/>
 
-           
             <Label Text="Cédula *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
             <Entry x:Name="EntryCedula" Placeholder="4411206101009b" Keyboard="Text" 
                    PlaceholderColor="#9CA3AF" TextColor="#111827" FontSize="16" BackgroundColor="#F9FAFB" 
                    HeightRequest="50" Margin="0,0,0,5" TextChanged="OnCedulaChanged"/>
             <Label Text="Sin puntos, espacios ni guiones" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,10"/>
 
-            
             <Label Text="Correo *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
             <Entry x:Name="EntryCorreo" Placeholder="tucorreo@ejemplo.com" Keyboard="Email" 
                    PlaceholderColor="#9CA3AF" TextColor="#111827" FontSize="16" BackgroundColor="#F9FAFB" 
                    HeightRequest="50" Margin="0,0,0,5"/>
             <Label Text="Te enviaremos confirmaciones" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,10"/>
 
-            <Label Text="Tipo de negocio *" 
-                   TextColor="#111827" 
-                   FontSize="14" 
-                   FontAttributes="Bold" 
-                   Margin="0,10,0,0"/>
-
-      
-            <Frame BackgroundColor="#F9FAFB" 
-                   BorderColor="Transparent" 
-                   CornerRadius="8" 
-                   Padding="12,0" 
-                   HeightRequest="50" 
-                   HasShadow="False">
-
+          
+            <Label Text="Tipo de negocio *" TextColor="#111827" FontSize="14" FontAttributes="Bold" Margin="0,10,0,0"/>
+            <Frame BackgroundColor="#F9FAFB" BorderColor="Transparent" CornerRadius="8" Padding="12,0" HeightRequest="50" HasShadow="False">
                 <Picker x:Name="PickerTipoNegocio" 
                         Title="Selecciona una opción" 
                         TitleColor="#9CA3AF"
@@ -137,20 +111,26 @@
                     </Picker.ItemsSource>
                 </Picker>
             </Frame>
+            <Label Text="Elige según tus servicios principales" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,10"/>
 
-            <Label Text="Elige según tus servicios principales" 
-                   FontSize="12" 
-                   TextColor="#6B7280" 
-                   Margin="0,-5,0,10"/>
+            <Label Text="Nombre del negocio *" TextColor="#111827" FontSize="14" FontAttributes="Bold" Margin="0,10,0,0"/>
+            <Entry x:Name="EntryNombreNegocio" 
+                   Placeholder="Ej: Barbería El Pele" 
+                   PlaceholderColor="#9CA3AF" 
+                   TextColor="#111827" 
+                   FontSize="16" 
+                   BackgroundColor="#F9FAFB" 
+                   HeightRequest="50" 
+                   Margin="0,0,0,5"/>
+            <Label Text="Como aparecerá en la aplicación" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,10"/>
 
-
+        
             <Label Text="Contraseña *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
             <Frame BackgroundColor="#F9FAFB" BorderColor="Transparent" CornerRadius="8" Padding="12,0" HeightRequest="50" HasShadow="False">
                 <Grid ColumnDefinitions="*,Auto">
                     <Entry x:Name="PasswordEntry" Grid.Column="0" Placeholder="Crea una contraseña" 
                            IsPassword="True" PlaceholderColor="#9CA3AF" TextColor="#111827" 
                            FontSize="16" BackgroundColor="Transparent" VerticalOptions="Center"/>
-
                     <ImageButton x:Name="BtnTogglePassword" Grid.Column="1" Source="eye_open.png" 
                                  WidthRequest="24" HeightRequest="24" Aspect="AspectFit" 
                                  BackgroundColor="Transparent" VerticalOptions="Center" 
@@ -159,35 +139,31 @@
             </Frame>
             <Label Text="Mínimo 8 caracteres" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,10"/>
 
-         
             <Label Text="Ubicación exacta *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
             <Entry x:Name="EntryUbicacion" Placeholder="Dirección de tu negocio" 
                    PlaceholderColor="#9CA3AF" TextColor="#111827" FontSize="16" BackgroundColor="#F9FAFB" 
                    HeightRequest="50" Margin="0,0,0,5"/>
             <Label Text="Ej: Dos cuadras al este del MaxiPali" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,10"/>
 
-           
             <Label Text="Número Ruc *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
             <Entry x:Name="EntryRuc" Placeholder="J0000000000" Keyboard="Text" 
                    PlaceholderColor="#9CA3AF" TextColor="#111827" FontSize="16" BackgroundColor="#F9FAFB" 
                    HeightRequest="50" Margin="0,0,0,5"/>
             <Label Text="Número de cédula jurídica del negocio" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,10"/>
 
-           
+        
             <Label Text="Documentos de Verificación *" TextColor="#111827" FontSize="14" FontAttributes="Bold" Margin="0,10,0,0"/>
             <Label Text="Diploma o Título Profesional" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,5"/>
-
             <Frame BorderColor="#2563EB" BackgroundColor="#EFF6FF" CornerRadius="12" Padding="20" HasShadow="False">
                 <Button Text="Subir PDF" BackgroundColor="Transparent" TextColor="#2563EB" 
                         FontAttributes="Bold" FontSize="16" Clicked="OnSubirPdfClicked"/>
             </Frame>
 
-        
+       
             <Grid ColumnDefinitions="*,*" ColumnSpacing="16" Margin="0,20,0,0">
                 <Button Text="Cancelar" BackgroundColor="White" TextColor="#111827" 
                         BorderColor="#D1D5DB" BorderWidth="1" CornerRadius="12" HeightRequest="50"
                         Clicked="OnCancelarClicked"/>
-
                 <Button Grid.Column="1" Text="Crear cuenta" BackgroundColor="#2563EB" TextColor="White" 
                         FontAttributes="Bold" CornerRadius="12" HeightRequest="50"
                         Clicked="OnCrearCuentaClicked"/>

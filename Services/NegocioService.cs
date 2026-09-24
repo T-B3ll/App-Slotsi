@@ -20,5 +20,11 @@ namespace slotsi_citas.Services
         {
             await _negocios.InsertOneAsync(negocio);
         }
+
+        public async Task<List<Negocio>> ObtenerTodosAsync()
+        {
+            
+            return await _negocios.Find(_ => true).ToListAsync();
+        }
     }
 }

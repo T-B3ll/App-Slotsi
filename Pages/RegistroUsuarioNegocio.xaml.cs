@@ -136,6 +136,7 @@ public partial class RegistroUsuarioNegocio : ContentPage
         _viewModel.CedulaJuridica = EntryCedula.Text?.Replace("-", "");
         _viewModel.Direccion = EntryUbicacion.Text;
         _viewModel.NumeroRuc = EntryRuc.Text;
+         _viewModel.NombreNegocio = EntryNombreNegocio.Text; 
 
         _viewModel.RegistrarCommand.Execute(null);
     }
