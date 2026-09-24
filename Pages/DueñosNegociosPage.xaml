@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="slotsi_citas.Pages.DueñosNegociosPage"
+             BackgroundColor="#F3F4F6"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto, *">
+
+     
+        <ScrollView Grid.Row="0" Grid.RowSpan="2" VerticalScrollBarVisibility="Never">
+            <VerticalStackLayout Spacing="0">
+
+           
+                <Frame BackgroundColor="White" 
+                       BorderColor="Transparent" 
+                       CornerRadius="0" 
+                       Padding="24,32,24,20" 
+                       HasShadow="False">
+
+                    <VerticalStackLayout Spacing="20">
+                 
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Dueños de Negocio" 
+                                   FontSize="28" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#111827"/>
+                            <Label Text="Usuarios con verificación de identidad" 
+                                   FontSize="15" 
+                                   TextColor="#6B7280"/>
+                        </VerticalStackLayout>
+
+                      
+                        <Frame BackgroundColor="#F9FAFB" 
+                               BorderColor="#E5E7EB" 
+                               CornerRadius="12" 
+                               Padding="16,0" 
+                               HeightRequest="52" 
+                               HasShadow="False">
+                            <Grid ColumnDefinitions="Auto, *">
+                                <Label Grid.Column="0" 
+                                       Text="🔍" 
+                                       FontSize="18" 
+                                       VerticalOptions="Center" 
+                                       Margin="0,0,12,0"/>
+                                <Entry Grid.Column="1" 
+                                       Placeholder="Buscar por nombre o negocio..." 
+                                       PlaceholderColor="#9CA3AF" 
+                                       TextColor="#111827" 
+                                       FontSize="15" 
+                                       BackgroundColor="Transparent" 
+                                       VerticalOptions="Center"/>
+                            </Grid>
+                        </Frame>
+
+                       
+                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                            <HorizontalStackLayout Spacing="12">
+                          
+                                <Button Text="Todos" 
+                                        BackgroundColor="#2563EB" 
+                                        TextColor="White" 
+                                        CornerRadius="24" 
+                                        HeightRequest="40" 
+                                        Padding="24,0" 
+                                        FontSize="14" 
+                                        FontAttributes="Bold"/>
+                             
+                                <Button Text="Salones" 
+                                        BackgroundColor="White" 
+                                        TextColor="#4B5563" 
+                                        CornerRadius="24" 
+                                        HeightRequest="40" 
+                                        Padding="24,0" 
+                                        FontSize="14" 
+                                        BorderColor="#E5E7EB" 
+                                        BorderWidth="1"/>
+                                <Button Text="Barbería" 
+                                        BackgroundColor="White" 
+                                        TextColor="#4B5563" 
+                                        CornerRadius="24" 
+                                        HeightRequest="40" 
+                                        Padding="24,0" 
+                                        FontSize="14" 
+                                        BorderColor="#E5E7EB" 
+                                        BorderWidth="1"/>
+                            </HorizontalStackLayout>
+                        </ScrollView>
+
+                     
+                        <Label Text="12 usuarios encontrados" 
+                               FontSize="13" 
+                               TextColor="#6B7280" 
+                               FontAttributes="Bold" 
+                               Margin="0,4,0,0"/>
+                    </VerticalStackLayout>
+                </Frame>
+
+                
+                <CollectionView ItemsSource="{Binding ListaDueños}" 
+                                Margin="24,16,24,100"
+                                VerticalScrollBarVisibility="Never">
+
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="16"/>
+                    </CollectionView.ItemsLayout>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                         
+                            <Frame BackgroundColor="White" 
+                                   BorderColor="Transparent" 
+                                   CornerRadius="16" 
+                                   Padding="20" 
+                                   HasShadow="True">
+
+                                <Frame.Shadow>
+                                    <Shadow Brush="#000000" Offset="0,4" Radius="12" Opacity="0.05"/>
+                                </Frame.Shadow>
+
+                                <Grid ColumnDefinitions="56, *, Auto" ColumnSpacing="16">
+
+                                  
+                                    <Border Grid.Column="0" 
+                                            StrokeShape="RoundRectangle 28" 
+                                            BackgroundColor="#EFF6FF" 
+                                            HeightRequest="56" 
+                                            WidthRequest="56" 
+                                            StrokeThickness="0">
+                                        <Label Text="{Binding Iniciales}" 
+                                               TextColor="#2563EB" 
+                                               FontSize="20" 
+                                               FontAttributes="Bold" 
+                                               HorizontalOptions="Center" 
+                                               VerticalOptions="Center"/>
+                                    </Border>
+
+                                
+                                    <VerticalStackLayout Grid.Column="1" 
+                                                         VerticalOptions="Center" 
+                                                         Spacing="6">
+                                        <Label Text="{Binding Nombre}" 
+                                               FontSize="17" 
+                                               FontAttributes="Bold" 
+                                               TextColor="#111827"/>
+                                        <Label Text="{Binding NombreNegocio}" 
+                                               FontSize="14" 
+                                               TextColor="#6B7280"/>
+
+                                        
+                                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                            <Label Text="{Binding Categoria}" 
+                                                   FontSize="13" 
+                                                   TextColor="#6B7280" 
+                                                   VerticalOptions="Center"/>
+
+                                            <Label Text="✔ Verificado" 
+                                                   FontSize="12" 
+                                                   FontAttributes="Bold" 
+                                                   TextColor="#10B981" 
+                                                   VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+
+                                    <Label Grid.Column="2" 
+                                           Text="›" 
+                                           FontSize="32" 
+                                           TextColor="#D1D5DB" 
+                                           VerticalOptions="Center" 
+                                           FontAttributes="Bold"/>
+                                </Grid>
+                            </Frame>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+     
+        <Grid Grid.Row="1" 
+              ColumnDefinitions="*,*,*,*" 
+              BackgroundColor="White" 
+              HeightRequest="70" 
+              Padding="0,10,0,0"
+              VerticalOptions="End">
+
+            <BoxView Grid.ColumnSpan="4" HeightRequest="1" Color="#F3F4F6" VerticalOptions="Start"/>
+
+            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="6">
+                <Image Source="home.png" HeightRequest="26" WidthRequest="26"/>
+                <Label Text="Inicio" FontSize="11" TextColor="#2563EB" FontAttributes="Bold"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="6">
+                <Image Source="calendar.png" HeightRequest="26" WidthRequest="26"/>
+                <Label Text="Citas" FontSize="11" TextColor="#9CA3AF"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center" Spacing="6">
+                <Image Source="location.png" HeightRequest="26" WidthRequest="26"/>
+                <Label Text="Sucursal" FontSize="11" TextColor="#9CA3AF"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" VerticalOptions="Center" Spacing="6">
+                <Image Source="profile.png" HeightRequest="26" WidthRequest="26"/>
+                <Label Text="Perfil" FontSize="11" TextColor="#9CA3AF"/>
+            </VerticalStackLayout>
+        </Grid>
+
+    </Grid>
+</ContentPage>
