@@ -9,10 +9,12 @@ namespace slotsi_citas.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
+
         public string? Id { get; set; }
 
-       
 
+        [BsonElement("Nombre")]
+        public string Nombre { get; set; } = string.Empty;
 
         [BsonElement("NombreNegocio")]
         public string NombreNegocio { get; set; } = string.Empty;
