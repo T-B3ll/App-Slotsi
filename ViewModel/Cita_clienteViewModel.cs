@@ -1,13 +1,21 @@
-﻿using slotsi_citas.Models;
-using App.Models;
+﻿using App.Models;
+using Microsoft.Extensions.DependencyInjection;
+using slotsi_citas.Models;
+using slotsi_citas.Pages;
+using slotsi_citas.ViewModel;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
-
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Storage;
 
 namespace slotsi_citas.ViewModels;
 
 public class Cita_clienteViewModel : BindableObject
 {
+    private readonly IServiceProvider? _serviceProvider;
     private string _rangoSemanal = "Ago 18 - 24, 2026";
 
     public string RangoSemanal
@@ -22,12 +30,17 @@ public class Cita_clienteViewModel : BindableObject
     public ICommand SemanaSiguienteCommand { get; }
     public ICommand AgendarCitaClienteCommand { get; }
 
-    public Cita_clienteViewModel()
+    public Cita_clienteViewModel() : this(null)
     {
+    }
+
+    public Cita_clienteViewModel(IServiceProvider? serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
         RangosHorarios = new ObservableCollection<RangoHorario>();
 
-        SemanaAnteriorCommand = new Command(() => { /* Lógica semana anterior */ });
-        SemanaSiguienteCommand = new Command(() => { /* Lógica semana siguiente */ });
+        SemanaAnteriorCommand = new Command(() => { });
+        SemanaSiguienteCommand = new Command(() => { });
         AgendarCitaClienteCommand = new Command<RangoHorario>(AgendarCita);
 
         CargarHorarios();
@@ -61,13 +74,56 @@ public class Cita_clienteViewModel : BindableObject
         RangosHorarios.Add(new RangoHorario { HoraDisplay = "4:00 PM", Cita = null });
     }
 
-    private async void AgendarCita(RangoHorario rango)
+    private async void AgendarCita(RangoHorario? rango)
     {
-        if (rango != null && Application.Current?.Windows[0].Page is Page mainPage)
+        if (rango == null || !rango.EsDisponible)
+            return;
+
+        string direccionGuardada = Preferences.Default.Get("direccion_guardada", "Matagalpa, Nicaragua");
+
+        var parametros = new Dictionary<string, object>
         {
-            await mainPage.DisplayAlert("Agendar Cita", $"Seleccionaste el horario: {rango.HoraDisplay}", "OK");
+            { "HorarioSeleccionado", rango },
+            { "DireccionCliente", direccionGuardada }
+        };
+
+        try
+        {
+            if (Shell.Current != null)
+            {
+                await Shell.Current.GoToAsync(nameof(SeleccionarCitaPage), parametros);
+            }
+            else
+            {
+                NavegarFallback(rango, direccionGuardada);
+            }
+        }
+        catch
+        {
+            NavegarFallback(rango, direccionGuardada);
         }
     }
 
-    public void RefrescarCitasCliente() => CargarHorarios();
+    private async void NavegarFallback(RangoHorario rango, string direccionGuardada)
+    {
+        var paginaDestino = _serviceProvider?.GetService<SeleccionarCitaPage>() ?? new SeleccionarCitaPage();
+
+        if (paginaDestino.BindingContext is SeleccionarCitaViewModel vm)
+        {
+            vm.HorarioSeleccionado = rango;
+            vm.DireccionCliente = direccionGuardada;
+        }
+
+        var window = Application.Current?.Windows.FirstOrDefault();
+        if (window?.Page?.Navigation != null)
+        {
+            await window.Page.Navigation.PushAsync(paginaDestino);
+        }
+    }
+
+    // MÉTODO PÚBLICO
+    public void RefrescarCitasCliente()
+    {
+        CargarHorarios();
+    }
 }

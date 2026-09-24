@@ -5,7 +5,7 @@
              xmlns:models="clr-namespace:slotsi_citas.Models"
              x:Class="slotsi_citas.Pages.Cita_UsuarioPage"
              x:DataType="vm:Cita_UsuarioViewModel"
-             BackgroundColor="#F8FAFC"
+             BackgroundColor="#FFFFFF"
              NavigationPage.HasNavigationBar="False"
              Title="Calendario">
 
@@ -13,48 +13,51 @@
         <vm:Cita_UsuarioViewModel />
     </ContentPage.BindingContext>
 
-    <!-- Usamos un Grid principal para encimar el botón flotante sobre el contenido -->
+    <!-- Grid principal para encimar el botón flotante sobre el contenido -->
     <Grid>
         <Grid RowDefinitions="Auto,Auto,*,Auto">
 
             <!-- Encabezado Calendario -->
             <VerticalStackLayout Grid.Row="0" 
-                                 BackgroundColor="White" 
-                                 Padding="16,12,16,8" 
+                                 BackgroundColor="#FFFFFF" 
+                                 Padding="16,16,16,8" 
                                  Spacing="12">
                 <Label Text="Mis Citas" 
-                       FontSize="22" 
+                       FontSize="24" 
                        FontAttributes="Bold" 
-                       TextColor="#2563EB" 
+                       TextColor="#111827" 
                        HorizontalOptions="Center"/>
 
                 <Grid ColumnDefinitions="Auto,*,Auto,Auto" 
-                      VerticalOptions="Center">
+                      VerticalOptions="Center"
+                      Margin="0,4,0,0">
                     <ImageButton Grid.Column="0" 
                                  Source="arrow_left.png" 
                                  Command="{Binding SemanaAnteriorCommand}" 
-                                 HeightRequest="18" 
-                                 WidthRequest="18"/>
+                                 HeightRequest="20" 
+                                 WidthRequest="20"
+                                 VerticalOptions="Center"/>
                     <Label Grid.Column="1" 
                            Text="{Binding RangoSemanal, FallbackValue='Ago 18 - 24, 2026'}" 
                            FontSize="15" 
                            FontAttributes="Bold" 
-                           TextColor="#1E293B" 
+                           TextColor="#111827" 
                            HorizontalOptions="Center" 
                            VerticalOptions="Center"/>
                     <ImageButton Grid.Column="2" 
                                  Source="arrow_right.png" 
                                  Command="{Binding SemanaSiguienteCommand}" 
-                                 HeightRequest="18" 
-                                 WidthRequest="18" 
-                                 Margin="0,0,10,0"/>
+                                 HeightRequest="20" 
+                                 WidthRequest="20" 
+                                 Margin="0,0,10,0"
+                                 VerticalOptions="Center"/>
                     <Button Grid.Column="3" 
                             Text="Hoy" 
-                            BackgroundColor="#F97316" 
+                            BackgroundColor="#2563EB" 
                             TextColor="White" 
                             CornerRadius="8" 
                             HeightRequest="32" 
-                            Padding="14,0" 
+                            Padding="12,0" 
                             FontSize="12" 
                             FontAttributes="Bold"/>
                 </Grid>
@@ -64,23 +67,23 @@
             <Grid Grid.Row="1" 
                   ColumnDefinitions="*,*,*,*,*,*,*" 
                   Padding="10,8,10,12" 
-                  BackgroundColor="White">
+                  BackgroundColor="#FFFFFF">
 
                 <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="4">
-                    <Label Text="L" TextColor="#94A3B8" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Label Text="17" TextColor="#1E293B" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="L" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="17" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="4">
-                    <Label Text="M" TextColor="#94A3B8" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Label Text="18" TextColor="#1E293B" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="M" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="18" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="4">
-                    <Label Text="Mi" TextColor="#94A3B8" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Label Text="19" TextColor="#1E293B" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="Mi" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="19" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" Spacing="4">
-                    <Label Text="J" TextColor="#94A3B8" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Label Text="20" TextColor="#1E293B" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="J" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="20" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="4" HorizontalOptions="Center" Spacing="2">
                     <Label Text="V" TextColor="#2563EB" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
@@ -93,16 +96,16 @@
                     </Border>
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="5" HorizontalOptions="Center" Spacing="4">
-                    <Label Text="S" TextColor="#94A3B8" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Label Text="22" TextColor="#1E293B" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="S" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="22" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="6" HorizontalOptions="Center" Spacing="4">
-                    <Label Text="D" TextColor="#94A3B8" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Label Text="23" TextColor="#1E293B" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="D" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="23" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Grid>
 
-            <!-- Lista de Citas (Formato Cards Figma) -->
+            <!-- Lista de Citas (Formato Cards) -->
             <CollectionView Grid.Row="2" 
                             ItemsSource="{Binding RangosHorarios}" 
                             Margin="16,10">
@@ -114,18 +117,18 @@
 
                         <!-- Tarjeta completa estilo Figma -->
                         <Border StrokeShape="RoundRectangle 12"
-                                BackgroundColor="White"
-                                StrokeThickness="0"
+                                BackgroundColor="#F9FAFB"
+                                Stroke="#E5E7EB"
+                                StrokeThickness="1"
                                 Padding="0">
 
-                            <!-- Sombras nativas para la tarjeta -->
                             <Border.Shadow>
-                                <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.06"/>
+                                <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.04"/>
                             </Border.Shadow>
 
                             <Grid ColumnDefinitions="6, *">
 
-                                <!-- Indicador Lateral de Estado (Verde = Confirmado / Naranja = Pendiente) -->
+                                <!-- Indicador Lateral de Estado (Verde = Confirmado / Azul/Naranja = Pendiente) -->
                                 <BoxView Grid.Column="0"
                                          CornerRadius="12,0,0,12">
                                     <BoxView.Triggers>
@@ -133,10 +136,10 @@
                                             <Setter Property="Color" Value="#10B981" />
                                         </DataTrigger>
                                         <DataTrigger TargetType="BoxView" Binding="{Binding Cita.Estado}" Value="Pendiente">
-                                            <Setter Property="Color" Value="#F97316" />
+                                            <Setter Property="Color" Value="#2563EB" />
                                         </DataTrigger>
                                         <DataTrigger TargetType="BoxView" Binding="{Binding Cita.Estado}" Value="NoDisponible">
-                                            <Setter Property="Color" Value="#94A3B8" />
+                                            <Setter Property="Color" Value="#9CA3AF" />
                                         </DataTrigger>
                                     </BoxView.Triggers>
                                 </BoxView>
@@ -150,7 +153,7 @@
                                                Text="{Binding Cita.HoraInicio, StringFormat='{0:hh\\:mm tt}', FallbackValue='09:00 AM'}" 
                                                FontAttributes="Bold" 
                                                FontSize="15" 
-                                               TextColor="#0F172A"/>
+                                               TextColor="#111827"/>
 
                                         <!-- Badge de Estado Superior Derecho -->
                                         <Border Grid.Column="1" 
@@ -162,7 +165,7 @@
                                                     <Setter Property="BackgroundColor" Value="#E6F4EA"/>
                                                 </DataTrigger>
                                                 <DataTrigger TargetType="Border" Binding="{Binding Cita.Estado}" Value="Pendiente">
-                                                    <Setter Property="BackgroundColor" Value="#FFF7ED"/>
+                                                    <Setter Property="BackgroundColor" Value="#EFF6FF"/>
                                                 </DataTrigger>
                                             </Border.Triggers>
 
@@ -174,7 +177,7 @@
                                                         <Setter Property="TextColor" Value="#137333"/>
                                                     </DataTrigger>
                                                     <DataTrigger TargetType="Label" Binding="{Binding Cita.Estado}" Value="Pendiente">
-                                                        <Setter Property="TextColor" Value="#C2410C"/>
+                                                        <Setter Property="TextColor" Value="#2563EB"/>
                                                     </DataTrigger>
                                                 </Label.Triggers>
                                             </Label>
@@ -185,11 +188,11 @@
                                     <Label Text="{Binding Cita.NombreCliente, FallbackValue='Nombre Cliente'}" 
                                            FontAttributes="Bold" 
                                            FontSize="15" 
-                                           TextColor="#1E293B"/>
+                                           TextColor="#111827"/>
 
                                     <!-- Nombre del Servicio / Detalle -->
                                     <Label Text="{Binding Cita.Notas, FallbackValue='Descripción del Servicio'}" 
-                                           TextColor="#64748B" 
+                                           TextColor="#6B7280" 
                                            FontSize="13"/>
                                 </VerticalStackLayout>
                             </Grid>
@@ -201,12 +204,12 @@
             <!-- Barra Inferior de Navegación -->
             <Grid Grid.Row="3" 
                   ColumnDefinitions="*,*,*,*" 
-                  BackgroundColor="White" 
+                  BackgroundColor="#FFFFFF" 
                   HeightRequest="60" 
                   Padding="0,6">
                 <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
                     <Image Source="home.png" HeightRequest="22" WidthRequest="22"/>
-                    <Label Text="Inicio" FontSize="11" TextColor="#94A3B8"/>
+                    <Label Text="Inicio" FontSize="11" TextColor="#6B7280"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
                     <Image Source="calendar.png" HeightRequest="22" WidthRequest="22"/>
@@ -214,16 +217,16 @@
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
                     <Image Source="location.png" HeightRequest="22" WidthRequest="22"/>
-                    <Label Text="Sucursal" FontSize="11" TextColor="#94A3B8"/>
+                    <Label Text="Sucursal" FontSize="11" TextColor="#6B7280"/>
                 </VerticalStackLayout>
                 <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
                     <Image Source="profile.png" HeightRequest="22" WidthRequest="22"/>
-                    <Label Text="Perfil" FontSize="11" TextColor="#94A3B8"/>
+                    <Label Text="Perfil" FontSize="11" TextColor="#6B7280"/>
                 </VerticalStackLayout>
             </Grid>
         </Grid>
 
-        <!-- Botón Flotante Agregar (+) del prototipo Figma -->
+        <!-- Botón Flotante Agregar (+) -->
         <Button Text="+"
                 BackgroundColor="#2563EB"
                 TextColor="White"

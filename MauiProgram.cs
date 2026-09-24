@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using slotsi_citas.Pages;
-using slotsi_citas.ViewModel;
-using Syncfusion.Maui.Toolkit.Hosting;
-using Supabase;
-using slotsi_citas.Services;
 using slotsi_citas.Pages;
+using slotsi_citas.Services;
+using slotsi_citas.ViewModel;
+using slotsi_citas.ViewModels;
+using Supabase;
+using Syncfusion.Maui.Toolkit.Hosting;
 
 namespace slotsi_citas;
 
@@ -75,6 +76,12 @@ public static class MauiProgram
        
         builder.Services.AddTransient<CalendarioPage>();
         builder.Services.AddTransient<catalogoservicios>();
+
+        builder.Services.AddTransient<Cita_ClientePage>();
+        builder.Services.AddTransient<Cita_clienteViewModel>();
+
+        builder.Services.AddTransient<SeleccionarCitaPage>();
+        builder.Services.AddTransient<SeleccionarCitaViewModel>();
 
         builder.Services.AddSingleton<EmailJSService>();
         builder.Services.AddSingleton<RecuperacionService>(); 
