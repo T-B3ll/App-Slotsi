@@ -120,22 +120,31 @@
 
                                 <Grid ColumnDefinitions="56, *, Auto" ColumnSpacing="16">
 
-                                  
+
+
+
                                     <Border Grid.Column="0" 
                                             StrokeShape="RoundRectangle 28" 
                                             BackgroundColor="#EFF6FF" 
                                             HeightRequest="56" 
                                             WidthRequest="56" 
                                             StrokeThickness="0">
-                                        <Label Text="{Binding Iniciales}" 
-                                               TextColor="#2563EB" 
-                                               FontSize="20" 
-                                               FontAttributes="Bold" 
-                                               HorizontalOptions="Center" 
-                                               VerticalOptions="Center"/>
+                                                                           
+                                        <Grid>
+                                           
+                                            <Image Source="{Binding UrlFotoPerfil}" 
+                                                    Aspect="AspectFill" />
+
+                                            <Label Text="{Binding Nombre, StringFormat='{0:C}'}" 
+                                                   TextColor="#2563EB" 
+                                                   FontSize="20" 
+                                                   FontAttributes="Bold" 
+                                                   HorizontalOptions="Center" 
+                                                   VerticalOptions="Center"/>                   
+                                        </Grid>
                                     </Border>
 
-                                
+
                                     <VerticalStackLayout Grid.Column="1" 
                                                          VerticalOptions="Center" 
                                                          Spacing="6">
