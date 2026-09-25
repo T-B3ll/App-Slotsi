@@ -13,233 +13,257 @@
         <vm:Cita_UsuarioViewModel />
     </ContentPage.BindingContext>
 
-    <!-- Grid principal para encimar el botón flotante sobre el contenido -->
-    <Grid>
-        <Grid RowDefinitions="Auto,Auto,*,Auto">
+    <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
 
-            <!-- Encabezado Calendario -->
-            <VerticalStackLayout Grid.Row="0" 
-                                 BackgroundColor="#FFFFFF" 
-                                 Padding="16,16,16,8" 
-                                 Spacing="12">
-                <Label Text="Mis Citas" 
-                       FontSize="24" 
-                       FontAttributes="Bold" 
-                       TextColor="#111827" 
-                       HorizontalOptions="Center"/>
-
-                <Grid ColumnDefinitions="Auto,*,Auto,Auto" 
-                      VerticalOptions="Center"
-                      Margin="0,4,0,0">
-                    <ImageButton Grid.Column="0" 
-                                 Source="arrow_left.png" 
-                                 Command="{Binding SemanaAnteriorCommand}" 
-                                 HeightRequest="20" 
-                                 WidthRequest="20"
-                                 VerticalOptions="Center"/>
-                    <Label Grid.Column="1" 
-                           Text="{Binding RangoSemanal, FallbackValue='Ago 18 - 24, 2026'}" 
-                           FontSize="15" 
-                           FontAttributes="Bold" 
-                           TextColor="#111827" 
-                           HorizontalOptions="Center" 
-                           VerticalOptions="Center"/>
-                    <ImageButton Grid.Column="2" 
-                                 Source="arrow_right.png" 
-                                 Command="{Binding SemanaSiguienteCommand}" 
-                                 HeightRequest="20" 
-                                 WidthRequest="20" 
-                                 Margin="0,0,10,0"
-                                 VerticalOptions="Center"/>
-                    <Button Grid.Column="3" 
-                            Text="Hoy" 
-                            BackgroundColor="#2563EB" 
-                            TextColor="White" 
-                            CornerRadius="8" 
-                            HeightRequest="32" 
-                            Padding="12,0" 
-                            FontSize="12" 
-                            FontAttributes="Bold"/>
-                </Grid>
-            </VerticalStackLayout>
-
-            <!-- Días de la Semana -->
-            <Grid Grid.Row="1" 
-                  ColumnDefinitions="*,*,*,*,*,*,*" 
-                  Padding="10,8,10,12" 
-                  BackgroundColor="#FFFFFF">
-
-                <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" Spacing="4">
-                    <Label Text="L" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Label Text="17" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="4">
-                    <Label Text="M" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Label Text="18" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="4">
-                    <Label Text="Mi" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Label Text="19" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" Spacing="4">
-                    <Label Text="J" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Label Text="20" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="4" HorizontalOptions="Center" Spacing="2">
-                    <Label Text="V" TextColor="#2563EB" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Border StrokeShape="RoundRectangle 16" 
-                            BackgroundColor="#2563EB" 
-                            HeightRequest="32" 
-                            WidthRequest="32" 
-                            StrokeThickness="0">
-                        <Label Text="21" TextColor="White" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
-                    </Border>
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="5" HorizontalOptions="Center" Spacing="4">
-                    <Label Text="S" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Label Text="22" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="6" HorizontalOptions="Center" Spacing="4">
-                    <Label Text="D" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Label Text="23" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-            </Grid>
-
-            <!-- Lista de Citas (Formato Cards) -->
-            <CollectionView Grid.Row="2" 
-                            ItemsSource="{Binding RangosHorarios}" 
-                            Margin="16,10">
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
-                </CollectionView.ItemsLayout>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:RangoHorario">
-
-                        <!-- Tarjeta completa estilo Figma -->
-                        <Border StrokeShape="RoundRectangle 12"
-                                BackgroundColor="#F9FAFB"
-                                Stroke="#E5E7EB"
-                                StrokeThickness="1"
-                                Padding="0">
-
-                            <Border.Shadow>
-                                <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.04"/>
-                            </Border.Shadow>
-
-                            <Grid ColumnDefinitions="6, *">
-
-                                <!-- Indicador Lateral de Estado (Verde = Confirmado / Azul/Naranja = Pendiente) -->
-                                <BoxView Grid.Column="0"
-                                         CornerRadius="12,0,0,12">
-                                    <BoxView.Triggers>
-                                        <DataTrigger TargetType="BoxView" Binding="{Binding Cita.Estado}" Value="Confirmado">
-                                            <Setter Property="Color" Value="#10B981" />
-                                        </DataTrigger>
-                                        <DataTrigger TargetType="BoxView" Binding="{Binding Cita.Estado}" Value="Pendiente">
-                                            <Setter Property="Color" Value="#2563EB" />
-                                        </DataTrigger>
-                                        <DataTrigger TargetType="BoxView" Binding="{Binding Cita.Estado}" Value="NoDisponible">
-                                            <Setter Property="Color" Value="#9CA3AF" />
-                                        </DataTrigger>
-                                    </BoxView.Triggers>
-                                </BoxView>
-
-                                <!-- Información de la Cita -->
-                                <VerticalStackLayout Grid.Column="1" Padding="14,12" Spacing="4">
-
-                                    <Grid ColumnDefinitions="*, Auto">
-                                        <!-- Hora -->
-                                        <Label Grid.Column="0" 
-                                               Text="{Binding Cita.HoraInicio, StringFormat='{0:hh\\:mm tt}', FallbackValue='09:00 AM'}" 
-                                               FontAttributes="Bold" 
-                                               FontSize="15" 
-                                               TextColor="#111827"/>
-
-                                        <!-- Badge de Estado Superior Derecho -->
-                                        <Border Grid.Column="1" 
-                                                StrokeShape="RoundRectangle 6" 
-                                                StrokeThickness="0" 
-                                                Padding="8,3">
-                                            <Border.Triggers>
-                                                <DataTrigger TargetType="Border" Binding="{Binding Cita.Estado}" Value="Confirmado">
-                                                    <Setter Property="BackgroundColor" Value="#E6F4EA"/>
-                                                </DataTrigger>
-                                                <DataTrigger TargetType="Border" Binding="{Binding Cita.Estado}" Value="Pendiente">
-                                                    <Setter Property="BackgroundColor" Value="#EFF6FF"/>
-                                                </DataTrigger>
-                                            </Border.Triggers>
-
-                                            <Label Text="{Binding Cita.Estado, FallbackValue='CONFIRMADA'}" 
-                                                   FontSize="10" 
-                                                   FontAttributes="Bold">
-                                                <Label.Triggers>
-                                                    <DataTrigger TargetType="Label" Binding="{Binding Cita.Estado}" Value="Confirmado">
-                                                        <Setter Property="TextColor" Value="#137333"/>
-                                                    </DataTrigger>
-                                                    <DataTrigger TargetType="Label" Binding="{Binding Cita.Estado}" Value="Pendiente">
-                                                        <Setter Property="TextColor" Value="#2563EB"/>
-                                                    </DataTrigger>
-                                                </Label.Triggers>
-                                            </Label>
-                                        </Border>
-                                    </Grid>
-
-                                    <!-- Nombre del Cliente -->
-                                    <Label Text="{Binding Cita.NombreCliente, FallbackValue='Nombre Cliente'}" 
-                                           FontAttributes="Bold" 
-                                           FontSize="15" 
-                                           TextColor="#111827"/>
-
-                                    <!-- Nombre del Servicio / Detalle -->
-                                    <Label Text="{Binding Cita.Notas, FallbackValue='Descripción del Servicio'}" 
-                                           TextColor="#6B7280" 
-                                           FontSize="13"/>
-                                </VerticalStackLayout>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-            <!-- Barra Inferior de Navegación -->
-            <Grid Grid.Row="3" 
-                  ColumnDefinitions="*,*,*,*" 
-                  BackgroundColor="#FFFFFF" 
-                  HeightRequest="60" 
-                  Padding="0,6">
-                <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
-                    <Image Source="home.png" HeightRequest="22" WidthRequest="22"/>
-                    <Label Text="Inicio" FontSize="11" TextColor="#6B7280"/>
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
-                    <Image Source="calendar.png" HeightRequest="22" WidthRequest="22"/>
-                    <Label Text="Citas" FontSize="11" TextColor="#2563EB" FontAttributes="Bold"/>
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
-                    <Image Source="location.png" HeightRequest="22" WidthRequest="22"/>
-                    <Label Text="Sucursal" FontSize="11" TextColor="#6B7280"/>
-                </VerticalStackLayout>
-                <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
-                    <Image Source="profile.png" HeightRequest="22" WidthRequest="22"/>
-                    <Label Text="Perfil" FontSize="11" TextColor="#6B7280"/>
-                </VerticalStackLayout>
-            </Grid>
+        <!-- 1. Encabezado Azul Superior -->
+        <Grid Grid.Row="0" 
+              BackgroundColor="#2563EB" 
+              HeightRequest="56" 
+              Padding="16,0">
+            <Label Text="Calendario" 
+                   FontSize="20" 
+                   FontAttributes="Bold" 
+                   TextColor="#FFFFFF" 
+                   HorizontalOptions="Center" 
+                   VerticalOptions="Center"/>
         </Grid>
 
-        <!-- Botón Flotante Agregar (+) -->
-        <Button Text="+"
-                BackgroundColor="#2563EB"
-                TextColor="White"
-                FontSize="28"
-                CornerRadius="28"
-                HeightRequest="56"
-                WidthRequest="56"
-                HorizontalOptions="End"
-                VerticalOptions="End"
-                Margin="0,0,20,76">
-            <Button.Shadow>
-                <Shadow Brush="#000000" Offset="0,4" Radius="8" Opacity="0.25"/>
-            </Button.Shadow>
-        </Button>
+        <!-- 2. Flechas de Semana, Botón de Fecha Exacta y Botón Hoy -->
+        <Grid Grid.Row="1" 
+              ColumnDefinitions="*, Auto" 
+              Padding="16,16,16,8" 
+              VerticalOptions="Center">
+
+            <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center" HorizontalOptions="Start">
+
+                <!-- Flecha Semanal Izquierda < -->
+                <Button Text="&lt;" 
+                        Clicked="OnSemanaAnteriorClicked"
+                        TextColor="#2563EB" 
+                        BackgroundColor="Transparent"
+                        FontAttributes="Bold"
+                        FontSize="22"
+                        WidthRequest="36"
+                        HeightRequest="40"
+                        Padding="0"/>
+
+                <!-- Botón Azul de Fecha Exacta con DatePicker transparente encima -->
+                <Grid VerticalOptions="Center">
+                    <Border StrokeShape="RoundRectangle 10"
+                            BackgroundColor="#2563EB"
+                            StrokeThickness="0"
+                            Padding="12,8">
+                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                            <Label Text="{Binding TextoFechaBoton, FallbackValue='28 Sep, 2026'}" 
+                                   FontSize="13" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#FFFFFF" 
+                                   VerticalOptions="Center"/>
+                            <Image Source="calendar.png" HeightRequest="15" WidthRequest="15" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <!-- DatePicker transparente situado SOLO encima del botón azul -->
+                    <DatePicker x:Name="MiDatePicker"
+                                Date="{Binding FechaSeleccionada, Mode=TwoWay}"
+                                Opacity="0.01"
+                                HorizontalOptions="Fill"
+                                VerticalOptions="Fill"/>
+                </Grid>
+
+                <!-- Flecha Semanal Derecha > -->
+                <Button Text="&gt;" 
+                        Clicked="OnSemanaSiguienteClicked"
+                        TextColor="#2563EB" 
+                        BackgroundColor="Transparent"
+                        FontAttributes="Bold"
+                        FontSize="22"
+                        WidthRequest="36"
+                        HeightRequest="40"
+                        Padding="0"/>
+            </HorizontalStackLayout>
+
+            <!-- Botón Hoy Naranja -->
+            <Button Grid.Column="1" 
+                    Text="Hoy" 
+                    Command="{Binding IrAHoyCommand}"
+                    BackgroundColor="#FF9800" 
+                    TextColor="White" 
+                    CornerRadius="16" 
+                    HeightRequest="38" 
+                    Padding="16,0" 
+                    FontSize="13" 
+                    FontAttributes="Bold"
+                    VerticalOptions="Center"/>
+        </Grid>
+
+        <!-- 3. Filtrado Rápido de Días de la Semana -->
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding FechasSemana}"
+                        Margin="12,4,12,8"
+                        HeightRequest="65">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="6"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:DiaSemanaModel">
+                    <Grid WidthRequest="46" RowDefinitions="Auto, Auto">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnDiaSemanaTapped"/>
+                        </Grid.GestureRecognizers>
+
+                        <Label Grid.Row="0" 
+                               Text="{Binding NombreDia}" 
+                               FontSize="12" 
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center"
+                               Margin="0,0,0,4">
+                            <Label.Triggers>
+                                <DataTrigger TargetType="Label" Binding="{Binding EsSeleccionado}" Value="True">
+                                    <Setter Property="TextColor" Value="#2563EB" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Label" Binding="{Binding EsSeleccionado}" Value="False">
+                                    <Setter Property="TextColor" Value="#6B7280" />
+                                </DataTrigger>
+                            </Label.Triggers>
+                        </Label>
+
+                        <Border Grid.Row="1" 
+                                WidthRequest="36" 
+                                HeightRequest="36" 
+                                StrokeShape="RoundRectangle 18"
+                                StrokeThickness="0"
+                                HorizontalOptions="Center">
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding EsSeleccionado}" Value="True">
+                                    <Setter Property="BackgroundColor" Value="#2563EB" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding EsSeleccionado}" Value="False">
+                                    <Setter Property="BackgroundColor" Value="#F3F4F6" />
+                                </DataTrigger>
+                            </Border.Triggers>
+
+                            <Label Text="{Binding NumeroDia}" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold" 
+                                   HorizontalOptions="Center" 
+                                   VerticalOptions="Center">
+                                <Label.Triggers>
+                                    <DataTrigger TargetType="Label" Binding="{Binding EsSeleccionado}" Value="True">
+                                        <Setter Property="TextColor" Value="#FFFFFF" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Label" Binding="{Binding EsSeleccionado}" Value="False">
+                                        <Setter Property="TextColor" Value="#111827" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+                        </Border>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- 4. Lista de Citas Horarias -->
+        <CollectionView Grid.Row="3" 
+                        ItemsSource="{Binding RangosHorarios}" 
+                        Margin="16,4">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:RangoHorario">
+                    <Border StrokeShape="RoundRectangle 12"
+                            BackgroundColor="#FAFAFA"
+                            Stroke="#E5E7EB"
+                            StrokeThickness="1"
+                            Padding="0">
+                        <Grid ColumnDefinitions="6, *">
+                            <BoxView Grid.Column="0" CornerRadius="12,0,0,12" Color="#10B981">
+                                <BoxView.Triggers>
+                                    <DataTrigger TargetType="BoxView" Binding="{Binding Cita.Estado}" Value="Ocupado">
+                                        <Setter Property="Color" Value="#F97316" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="BoxView" Binding="{Binding Cita.Estado}" Value="NoDisponible">
+                                        <Setter Property="Color" Value="#A855F7" />
+                                    </DataTrigger>
+                                </BoxView.Triggers>
+                            </BoxView>
+
+                            <VerticalStackLayout Grid.Column="1" Padding="14,10" Spacing="4">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label Grid.Column="0" 
+                                           Text="{Binding Hora, StringFormat='{0:hh\\:mm\\:ss}'}" 
+                                           FontAttributes="Bold" 
+                                           FontSize="13" 
+                                           TextColor="#6B7280"/>
+
+                                    <Border Grid.Column="1" 
+                                            StrokeShape="RoundRectangle 6" 
+                                            StrokeThickness="0" 
+                                            Padding="8,3"
+                                            BackgroundColor="#DCFCE7">
+                                        <Border.Triggers>
+                                            <DataTrigger TargetType="Border" Binding="{Binding Cita.Estado}" Value="Ocupado">
+                                                <Setter Property="BackgroundColor" Value="#FFEDD5" />
+                                            </DataTrigger>
+                                            <DataTrigger TargetType="Border" Binding="{Binding Cita.Estado}" Value="NoDisponible">
+                                                <Setter Property="BackgroundColor" Value="#F3E8FF" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+
+                                        <Label Text="{Binding Cita.Estado, TargetNullValue='DISPONIBLE', FallbackValue='DISPONIBLE'}" 
+                                               FontSize="10" 
+                                               FontAttributes="Bold"
+                                               TextColor="#15803D">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Cita.Estado}" Value="Ocupado">
+                                                    <Setter Property="TextColor" Value="#C2410C" />
+                                                </DataTrigger>
+                                                <DataTrigger TargetType="Label" Binding="{Binding Cita.Estado}" Value="NoDisponible">
+                                                    <Setter Property="TextColor" Value="#7E22CE" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </Border>
+                                </Grid>
+
+                                <Label Text="{Binding Cita.NombreCliente, FallbackValue='Horario libre'}" 
+                                       FontAttributes="Bold" 
+                                       FontSize="15" 
+                                       TextColor="#111827"/>
+
+                                <Label Text="{Binding Cita.Notas, FallbackValue='Sin asignación'}" 
+                                       TextColor="#6B7280" 
+                                       FontSize="12"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- 5. Barra Inferior de Navegación -->
+        <Grid Grid.Row="4" 
+              ColumnDefinitions="*,*,*,*" 
+              BackgroundColor="#FFFFFF" 
+              HeightRequest="56" 
+              Padding="0,4">
+            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <Image Source="home.png" HeightRequest="20" WidthRequest="20"/>
+                <Label Text="Inicio" FontSize="11" TextColor="#9CA3AF"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <Image Source="calendar.png" HeightRequest="20" WidthRequest="20"/>
+                <Label Text="Citas" FontSize="11" TextColor="#FF9800" FontAttributes="Bold"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <Image Source="location.png" HeightRequest="20" WidthRequest="20"/>
+                <Label Text="Sucursal" FontSize="11" TextColor="#9CA3AF"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <Image Source="profile.png" HeightRequest="20" WidthRequest="20"/>
+                <Label Text="Perfil" FontSize="11" TextColor="#9CA3AF"/>
+            </VerticalStackLayout>
+        </Grid>
     </Grid>
 </ContentPage>

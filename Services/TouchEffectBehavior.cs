@@ -1,32 +1,57 @@
-﻿using Microsoft.Maui.Controls;
+﻿using System.Windows.Input;
+using Microsoft.Maui.Controls;
 
-namespace slotsi_citas.Services;
-
-public class TouchEffectBehavior : Behavior<View>
+namespace slotsi_citas.Services
 {
-    protected override void OnAttachedTo(View bindable)
+    public class TouchEffectBehavior : Behavior<View>
     {
-        base.OnAttachedTo(bindable);
+        public static readonly BindableProperty CommandProperty =
+            BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(TouchEffectBehavior), null);
 
-        // Usamos TapGestureRecognizer para compatibilidad completa en Android
-        var tapGesture = new TapGestureRecognizer();
+        public static readonly BindableProperty CommandParameterProperty =
+            BindableProperty.Create(nameof(CommandParameter), typeof(object), typeof(TouchEffectBehavior), null);
 
-        tapGesture.Tapped += async (s, e) =>
+        public ICommand? Command
         {
-            if (bindable != null)
+            get => (ICommand?)GetValue(CommandProperty);
+            set => SetValue(CommandProperty, value);
+        }
+
+        public object? CommandParameter
+        {
+            get => GetValue(CommandParameterProperty);
+            set => SetValue(CommandParameterProperty, value);
+        }
+
+        protected override void OnAttachedTo(View bindable)
+        {
+            base.OnAttachedTo(bindable);
+
+            var tapGesture = new TapGestureRecognizer();
+
+            tapGesture.Tapped += async (s, e) =>
             {
-                // Animación rápida de opacidad al pulsar
-                await bindable.FadeTo(0.4, 80, Easing.CubicOut);
-                await bindable.FadeTo(1.0, 100, Easing.CubicIn);
-            }
-        };
+                if (bindable != null)
+                {
+                    // Animación visual de toque
+                    await bindable.FadeTo(0.5, 70, Easing.CubicOut);
+                    await bindable.FadeTo(1.0, 90, Easing.CubicIn);
 
-        bindable.GestureRecognizers.Add(tapGesture);
-    }
+                    // Ejecutar el comando del ViewModel si está asignado
+                    if (Command != null && Command.CanExecute(CommandParameter))
+                    {
+                        Command.Execute(CommandParameter);
+                    }
+                }
+            };
 
-    protected override void OnDetachingFrom(View bindable)
-    {
-        base.OnDetachingFrom(bindable);
-        bindable.GestureRecognizers.Clear();
+            bindable.GestureRecognizers.Add(tapGesture);
+        }
+
+        protected override void OnDetachingFrom(View bindable)
+        {
+            base.OnDetachingFrom(bindable);
+            bindable.GestureRecognizers.Clear();
+        }
     }
 }

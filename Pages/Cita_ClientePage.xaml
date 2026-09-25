@@ -129,21 +129,21 @@
 
                         <!-- Slot Disponible -->
                         <Border Grid.Column="1" 
-        StrokeShape="RoundRectangle 10" 
-        BackgroundColor="#F9FAFB" 
-        Stroke="#E5E7EB" 
-        StrokeThickness="1" 
-        Padding="15,12"
-        IsVisible="{Binding EsDisponible}">
+                                StrokeShape="RoundRectangle 10" 
+                                BackgroundColor="#F9FAFB" 
+                                Stroke="#E5E7EB" 
+                                StrokeThickness="1" 
+                                Padding="15,12"
+                                IsVisible="{Binding EsDisponible}">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:Cita_clienteViewModel}}, Path=AgendarCitaClienteCommand}" 
                               CommandParameter="{Binding .}"/>
                             </Border.GestureRecognizers>
                             <Label Text="Agendar cita" 
-           TextColor="#2563EB" 
-           FontAttributes="Bold" 
-           FontSize="14" 
-           VerticalOptions="Center"/>
+                                TextColor="#2563EB" 
+                                FontAttributes="Bold" 
+                                FontSize="14" 
+                                VerticalOptions="Center"/>
                         </Border>
 
                         <!-- Slot Ocupado -->

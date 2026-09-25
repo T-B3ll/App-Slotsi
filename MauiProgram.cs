@@ -61,19 +61,17 @@ public static class MauiProgram
         builder.Services.AddTransient<RegistroUsuarioBasico>();
 
 
-        // Registrar ViewModels
 
         builder.Services.AddTransient<Cita_UsuarioViewModel>();
-
         builder.Services.AddTransient<Cita_ClientePage>();
 
+        builder.Services.AddTransient<Cita_UsuarioViewModel>();
+        builder.Services.AddTransient<Cita_UsuarioPage>();
 
         builder.Services.AddSingleton<RecuperacionService>();
         builder.Services.AddTransient<RecuperarContra>();
         builder.Services.AddTransient<NuevaContra>();
 
-
-       
         builder.Services.AddTransient<CalendarioPage>();
         builder.Services.AddTransient<catalogoservicios>();
 

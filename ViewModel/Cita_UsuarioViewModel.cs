@@ -11,9 +11,10 @@ namespace slotsi_citas.ViewModel
     {
         private DateTime _fechaInicioSemana;
         private DateTime _fechaSeleccionada;
+        private string _textoFechaBoton = string.Empty;
 
         public ObservableCollection<RangoHorario> RangosHorarios { get; set; }
-        public ObservableCollection<DateTime> FechasSemana { get; set; }
+        public ObservableCollection<DiaSemanaModel> FechasSemana { get; set; }
 
         public DateTime FechaInicioSemana
         {
@@ -22,7 +23,6 @@ namespace slotsi_citas.ViewModel
             {
                 _fechaInicioSemana = value;
                 OnPropertyChanged();
-                ActualizarFechasSemana();
             }
         }
 
@@ -31,33 +31,64 @@ namespace slotsi_citas.ViewModel
             get => _fechaSeleccionada;
             set
             {
-                _fechaSeleccionada = value;
+                _fechaSeleccionada = value.Date;
+                OnPropertyChanged();
+
+                FechaInicioSemana = ObtenerInicioSemana(_fechaSeleccionada);
+                ActualizarFechasSemana();
+                CargarCitasUsuario();
+                ActualizarTextoBoton();
+            }
+        }
+        
+
+        public string TextoFechaBoton
+        {
+            get => _textoFechaBoton;
+            set
+            {
+                _textoFechaBoton = value;
                 OnPropertyChanged();
             }
         }
 
-        public string RangoSemanal => $"{FechaInicioSemana:MMM dd} - {FechaInicioSemana.AddDays(6):dd, yyyy}";
-
         public ICommand SemanaAnteriorCommand { get; }
         public ICommand SemanaSiguienteCommand { get; }
-        public ICommand AgendarCitaUsuarioCommand { get; }
-        public ICommand VerDetallesCitaCommand { get; }
+        public ICommand IrAHoyCommand { get; }
+        public ICommand SeleccionarDiaCommand { get; }
 
         public Cita_UsuarioViewModel()
         {
             RangosHorarios = new ObservableCollection<RangoHorario>();
-            FechasSemana = new ObservableCollection<DateTime>();
-            FechaInicioSemana = ObtenerInicioSemana(DateTime.Now);
-            FechaSeleccionada = DateTime.Now;
+            FechasSemana = new ObservableCollection<DiaSemanaModel>();
 
-            SemanaAnteriorCommand = new Command(() => FechaInicioSemana = FechaInicioSemana.AddDays(-7));
-            SemanaSiguienteCommand = new Command(() => FechaInicioSemana = FechaInicioSemana.AddDays(7));
-            AgendarCitaUsuarioCommand = new Command<RangoHorario>(AgendarCitaUsuario);
-            VerDetallesCitaCommand = new Command<Cita_Usuario>(VerDetallesCita);
+            _fechaSeleccionada = DateTime.Today;
+            _fechaInicioSemana = ObtenerInicioSemana(_fechaSeleccionada);
+
+            SemanaAnteriorCommand = new Command(() =>
+            {
+                FechaSeleccionada = FechaSeleccionada.AddDays(-7);
+            });
+
+            SemanaSiguienteCommand = new Command(() =>
+            {
+                FechaSeleccionada = FechaSeleccionada.AddDays(7);
+            });
+
+            IrAHoyCommand = new Command(() => FechaSeleccionada = DateTime.Today);
+
+            SeleccionarDiaCommand = new Command<DiaSemanaModel>((dia) =>
+            {
+                if (dia != null)
+                {
+                    FechaSeleccionada = dia.Fecha;
+                }
+            });
 
             InicializarRangosHorarios();
             ActualizarFechasSemana();
             CargarCitasUsuario();
+            ActualizarTextoBoton();
         }
 
         private DateTime ObtenerInicioSemana(DateTime fecha)
@@ -67,20 +98,30 @@ namespace slotsi_citas.ViewModel
             return fecha.AddDays(-diferencia).Date;
         }
 
+        private void ActualizarTextoBoton()
+        {
+            // Muestra el día exacto seleccionado en el botón azul (Ej: "01 Oct, 2026")
+            TextoFechaBoton = $"{FechaSeleccionada:dd MMM, yyyy}";
+        }
+
         private void ActualizarFechasSemana()
         {
             FechasSemana.Clear();
             for (int i = 0; i < 7; i++)
             {
-                FechasSemana.Add(FechaInicioSemana.AddDays(i));
+                var f = FechaInicioSemana.AddDays(i);
+                FechasSemana.Add(new DiaSemanaModel
+                {
+                    Fecha = f,
+                    EsSeleccionado = (f.Date == FechaSeleccionada.Date)
+                });
             }
-            OnPropertyChanged(nameof(RangoSemanal));
+            OnPropertyChanged(nameof(FechasSemana));
         }
 
         private void InicializarRangosHorarios()
         {
             RangosHorarios.Clear();
-            // De 8:00 AM a 4:00 PM
             for (int hora = 8; hora <= 16; hora++)
             {
                 RangosHorarios.Add(new RangoHorario { Hora = new TimeSpan(hora, 0, 0) });
@@ -89,75 +130,52 @@ namespace slotsi_citas.ViewModel
 
         public void CargarCitasUsuario()
         {
-            // Simular cita ocupada
-            var citaOcupada = RangosHorarios.FirstOrDefault(r => r.Hora.Hours == 12);
-            if (citaOcupada != null)
+            var listaNueva = new ObservableCollection<RangoHorario>();
+            int diaSemana = (int)FechaSeleccionada.DayOfWeek;
+
+            for (int hora = 8; hora <= 16; hora++)
             {
-                citaOcupada.Cita = new Cita_Usuario
+                var rango = new RangoHorario { Hora = new TimeSpan(hora, 0, 0) };
+
+                if (diaSemana == (int)DayOfWeek.Sunday)
                 {
-                    Id = 1,
-                    Fecha = FechaSeleccionada,
-                    HoraInicio = new TimeSpan(12, 0, 0),
-                    HoraFin = new TimeSpan(13, 0, 0),
-                    Estado = "Ocupado",
-                    NombreCliente = "Juan Pérez",
-                    TelefonoCliente = "555-1234",
-                    Notas = "Primera consulta"
-                };
-            }
-
-            // Simular cita no disponible
-            var citaNoDisponible = RangosHorarios.FirstOrDefault(r => r.Hora.Hours == 13);
-            if (citaNoDisponible != null)
-            {
-                citaNoDisponible.Cita = new Cita_Usuario
+                    rango.Cita = new Cita_Usuario { Estado = "NoDisponible" };
+                }
+                else
                 {
-                    Id = 2,
-                    Fecha = FechaSeleccionada,
-                    HoraInicio = new TimeSpan(13, 0, 0),
-                    HoraFin = new TimeSpan(14, 0, 0),
-                    Estado = "NoDisponible"
-                };
+                    // Simulación reactiva según el día exacto elegido
+                    int horaOcupada = 8 + (FechaSeleccionada.Day % 5);
+                    int horaBloqueada = 13 + (FechaSeleccionada.Day % 3);
+
+                    if (hora == horaOcupada)
+                    {
+                        rango.Cita = new Cita_Usuario
+                        {
+                            Fecha = FechaSeleccionada,
+                            HoraInicio = rango.Hora,
+                            HoraFin = rango.Hora.Add(new TimeSpan(1, 0, 0)),
+                            Estado = "Ocupado",
+                            NombreCliente = $"Cliente ({FechaSeleccionada:dd/MM})",
+                            Notas = "Consulta agendada"
+                        };
+                    }
+                    else if (hora == horaBloqueada)
+                    {
+                        rango.Cita = new Cita_Usuario
+                        {
+                            Fecha = FechaSeleccionada,
+                            HoraInicio = rango.Hora,
+                            HoraFin = rango.Hora.Add(new TimeSpan(1, 0, 0)),
+                            Estado = "NoDisponible"
+                        };
+                    }
+                }
+
+                listaNueva.Add(rango);
             }
-        }
 
-        private async void AgendarCitaUsuario(RangoHorario rango)
-        {
-            if (rango == null) return;
-
-            var nuevaCita = new Cita_Usuario
-            {
-                Fecha = FechaSeleccionada,
-                HoraInicio = rango.Hora,
-                HoraFin = rango.Hora.Add(new TimeSpan(1, 0, 0)),
-                Estado = "Disponible"
-            };
-
-            if (Shell.Current != null)
-            {
-                await Shell.Current.DisplayAlert(
-                    "Agendar Cita de Usuario",
-                    $"Nueva cita para las {rango.HoraDisplay}",
-                    "OK");
-            }
-        }
-
-        private async void VerDetallesCita( Cita_Usuario cita)
-        {
-            if (cita != null && Shell.Current != null)
-            {
-                await Shell.Current.DisplayAlert(
-                    "Detalles de Cita de Usuario",
-                    $"Cliente: {cita.NombreCliente}\n" +
-                    $"Hora: {cita.HoraInicio} - {cita.HoraFin}\n" +
-                    $"Notas: {cita.Notas}",
-                    "Cerrar");
-            }
-        }
-
-        public void RefrescarCitasUsuario()
-        {
-            CargarCitasUsuario();
+            RangosHorarios = listaNueva;
+            OnPropertyChanged(nameof(RangosHorarios));
         }
     }
 }
