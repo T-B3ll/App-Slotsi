@@ -8,13 +8,14 @@
     <ScrollView VerticalScrollBarVisibility="Never">
         <VerticalStackLayout Padding="24" Spacing="20" MaximumWidthRequest="480" HorizontalOptions="Center">
 
+   
             <VerticalStackLayout Spacing="4">
                 <Label Text="Pago de Suscripción" FontSize="24" FontAttributes="Bold" TextColor="#111827"/>
                 <Label Text="Activa tu plan mensual para acceder a todas las funciones." 
                        FontSize="14" TextColor="#6B7280" LineBreakMode="WordWrap"/>
             </VerticalStackLayout>
 
-
+ 
             <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#FFFFFF" Padding="20">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="16"/>
@@ -28,21 +29,58 @@
                 </Grid>
             </Border>
 
+       
+            <Label Text="Método de Pago" FontSize="13" TextColor="#6B7280"/>
+            <HorizontalStackLayout Spacing="12">
 
+         
+                <Button x:Name="BtnDebito" 
+                        Text="Débito" 
+                        BackgroundColor="#2563EB" TextColor="White" 
+                        CornerRadius="12" HeightRequest="45" Padding="16,0" FontSize="14"
+                        Clicked="OnMetodoPagoClicked">
+                    <Button.ImageSource>
+                     
+                        <FileImageSource File="card.png"/>
+                    </Button.ImageSource>
+                </Button>
+
+            
+                <Button x:Name="BtnCredito" 
+                        Text="Crédito" 
+                        BackgroundColor="#FFFFFF" TextColor="#4B5563" 
+                        BorderColor="#E5E7EB" BorderWidth="1"
+                        CornerRadius="12" HeightRequest="45" Padding="16,0" FontSize="14"
+                        Clicked="OnMetodoPagoClicked">
+                    <Button.ImageSource>
+                        <FileImageSource File="card.png"/>
+                    </Button.ImageSource>
+                </Button>
+
+            </HorizontalStackLayout>
+
+            
             <VerticalStackLayout Spacing="16">
 
-        
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Número de tarjeta" FontSize="13" TextColor="#6B7280"/>
                     <Border x:Name="BorderCard" Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#FFFFFF" Padding="16,0">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12"/>
                         </Border.StrokeShape>
-                        <Entry x:Name="EntryCard" Placeholder="0000 0000 0000 0000" FontSize="16" HeightRequest="50" BackgroundColor="Transparent" Keyboard="Numeric"/>
+                 
+                        <Entry x:Name="EntryCard" 
+                               Placeholder="0000 0000 0000 0000" 
+                               FontSize="16" 
+                               HeightRequest="50" 
+                               BackgroundColor="Transparent" 
+                               Keyboard="Numeric"
+                               TextColor="#111827" 
+                               PlaceholderColor="#9CA3AF"/>
                     </Border>
                 </VerticalStackLayout>
 
-          
+              
                 <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
                     <VerticalStackLayout Grid.Column="0" Spacing="6">
                         <Label Text="Vencimiento" FontSize="13" TextColor="#6B7280"/>
@@ -50,7 +88,14 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="12"/>
                             </Border.StrokeShape>
-                            <Entry x:Name="EntryExpiry" Placeholder="MM/AA" FontSize="16" HeightRequest="50" BackgroundColor="Transparent" Keyboard="Text"/>
+                            <Entry x:Name="EntryExpiry" 
+                                   Placeholder="MM/AA" 
+                                   FontSize="16" 
+                                   HeightRequest="50" 
+                                   BackgroundColor="Transparent" 
+                                   Keyboard="Text"
+                                   TextColor="#111827"
+                                   PlaceholderColor="#9CA3AF"/>
                         </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1" Spacing="6">
@@ -59,29 +104,43 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="12"/>
                             </Border.StrokeShape>
-                            <Entry x:Name="EntryCvv" IsPassword="True" Placeholder="123" FontSize="16" HeightRequest="50" BackgroundColor="Transparent" Keyboard="Numeric"/>
+                            <Entry x:Name="EntryCvv" 
+                                   IsPassword="True" 
+                                   Placeholder="123" 
+                                   FontSize="16" 
+                                   HeightRequest="50" 
+                                   BackgroundColor="Transparent" 
+                                   Keyboard="Numeric"
+                                   TextColor="#111827"
+                                   PlaceholderColor="#9CA3AF"/>
                         </Border>
                     </VerticalStackLayout>
                 </Grid>
 
-         
+       
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Nombre del titular" FontSize="13" TextColor="#6B7280"/>
                     <Border x:Name="BorderName" Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#FFFFFF" Padding="16,0">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12"/>
                         </Border.StrokeShape>
-                        <Entry x:Name="EntryName" Placeholder="Como aparece en la tarjeta" FontSize="16" HeightRequest="50" BackgroundColor="Transparent"/>
+                        <Entry x:Name="EntryName" 
+                               Placeholder="Como aparece en la tarjeta" 
+                               FontSize="16" 
+                               HeightRequest="50" 
+                               BackgroundColor="Transparent"
+                               TextColor="#111827"
+                               PlaceholderColor="#9CA3AF"/>
                     </Border>
                 </VerticalStackLayout>
 
             </VerticalStackLayout>
 
-  
+         
             <Label Text="🔒 Pago simulado seguro - No se procesan datos reales" 
                    FontSize="12" TextColor="#6B7280" HorizontalTextAlignment="Center" Margin="0,8,0,0"/>
 
-     
+       
             <Button x:Name="BtnPagar" 
                     Text="Pagar $5 USD" BackgroundColor="#2563EB" TextColor="White" 
                     FontSize="16" FontAttributes="Bold" CornerRadius="14" HeightRequest="55" 
