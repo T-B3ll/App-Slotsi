@@ -15,8 +15,8 @@ namespace slotsi_citas
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            var DueñosNegociosPage = _serviceProvider.GetRequiredService<DueñosNegociosPage>();
-            return new Window(new NavigationPage(DueñosNegociosPage));
+            var PagoSuscripcionPage = _serviceProvider.GetRequiredService<PagoSuscripcionPage>();
+            return new Window(new NavigationPage(PagoSuscripcionPage));
         }
     }
 }

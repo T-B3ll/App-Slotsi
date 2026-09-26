@@ -97,6 +97,9 @@
 	  <MauiXaml Update="Pages\OpcionRegistrosU.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Pages\PagoSuscripcionPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\RecuperarContra.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

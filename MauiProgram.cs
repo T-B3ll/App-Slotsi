@@ -76,7 +76,7 @@ public static class MauiProgram
         builder.Services.AddTransient<CalendarioPage>();
         builder.Services.AddTransient<catalogoservicios>();
         builder.Services.AddTransient<DueñosNegociosPage>();
-
+        builder.Services.AddTransient<PagoSuscripcionPage>();
 
         builder.Services.AddSingleton<EmailJSService>();
         builder.Services.AddSingleton<RecuperacionService>(); 
