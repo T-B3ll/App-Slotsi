@@ -52,7 +52,21 @@ namespace slotsi_citas.Services
         }
 
 
-      
+
+        public async Task<Usuario?> ObtenerPorIdentificadorAsync(string identificador)
+        {
+
+            var textoLimpio = identificador.Trim();
+            var patron = $".*{textoLimpio}.*";
+
+            var filtro = Builders<Usuario>.Filter.Or(
+                        Builders<Usuario>.Filter.Regex(u => u.Correo, new MongoDB.Bson.BsonRegularExpression(patron, "i")),
+                        Builders<Usuario>.Filter.Regex(u => u.NombreCompleto, new MongoDB.Bson.BsonRegularExpression(patron, "i"))
+                                  );
+
+            return await _usuarios.Find(filtro).FirstOrDefaultAsync();
+        }
+
         public async Task CrearAsync(Usuario usuario) =>
             await _usuarios.InsertOneAsync(usuario);
 

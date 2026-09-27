@@ -24,7 +24,7 @@
                        HorizontalOptions="Start"
                        Margin="0,0,0,30"/>
 
-                <Label Text="Usuario o gmail " 
+                <Label Text="Usuario o correo electrónico" 
                        FontSize="14" 
                        TextColor="#4B5563" 
                        Margin="0,0,0,8"/>
@@ -36,9 +36,9 @@
                        HeightRequest="56"
                        HasShadow="False"
                        Margin="0,0,0,20">
-                    <Entry Placeholder="ejemplo@correo.com" 
+                    <Entry Placeholder="Ej: Jose Jose  o Pepe@correo.com" 
                            Text="{Binding Email}" 
-                           Keyboard="Email"
+                           Keyboard="Default"
                            FontSize="16"
                            TextColor="#111827" 
                            PlaceholderColor="#9CA3AF"

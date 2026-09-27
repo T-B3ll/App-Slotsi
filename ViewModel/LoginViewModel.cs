@@ -68,19 +68,18 @@ namespace slotsi_citas.ViewModel
             }
         }
 
-        private async Task ValidarYEntrarAsync(string correo, string password)
+        private async Task ValidarYEntrarAsync(string identificador, string password)
         {
-   
-            var usuario = await _usuarioService.ObtenerPorCorreoAsync(correo);
 
-         
+            var usuario = await _usuarioService.ObtenerPorIdentificadorAsync(identificador);
+
             if (usuario == null || usuario.Contrasena != password)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Credenciales incorrectas", "OK");
+                await Application.Current.MainPage.DisplayAlert("Error", "Usuario/Correo o contraseña incorrectos", "OK");
                 return;
             }
 
-         
+
             Preferences.Set("UsuarioId", usuario.Id.ToString());
             Preferences.Set("EsDuenoNegocio", usuario.TipoUsuario);
 

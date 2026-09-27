@@ -137,8 +137,7 @@
             </VerticalStackLayout>
 
          
-            <Label Text="🔒 Pago simulado seguro - No se procesan datos reales" 
-                   FontSize="12" TextColor="#6B7280" HorizontalTextAlignment="Center" Margin="0,8,0,0"/>
+        
 
        
             <Button x:Name="BtnPagar" 
