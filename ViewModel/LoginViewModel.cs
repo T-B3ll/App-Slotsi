@@ -1,6 +1,7 @@
 ﻿using Microsoft.Maui.Controls;
 using slotsi_citas.Models;
 using slotsi_citas.Pages;
+using Microsoft.Extensions.DependencyInjection;
 using slotsi_citas.Services;
 using System;
 using System.ComponentModel;
@@ -13,6 +14,7 @@ namespace slotsi_citas.ViewModel
     {
         private readonly UsuarioService _usuarioService;
         private string _email;
+        private readonly IServiceProvider _serviceProvider;
         private string _password;
         private bool _isBusy;
 
@@ -38,10 +40,11 @@ namespace slotsi_citas.ViewModel
 
         public ICommand LoginCommand { get; }
 
-    
-        public LoginViewModel(UsuarioService usuarioService)
+
+        public LoginViewModel(UsuarioService usuarioService, IServiceProvider serviceProvider)
         {
             _usuarioService = usuarioService;
+            _serviceProvider = serviceProvider;
             LoginCommand = new Command(async () => await ExecuteLogin());
         }
 
@@ -90,15 +93,15 @@ namespace slotsi_citas.ViewModel
             if (!usuario.TipoUsuario)
             {
                 //  RUTA PARA CLIENTE BÁSICO
-                paginaDestino = new CatalogoCliente();
+                paginaDestino = _serviceProvider.GetRequiredService<CatalogoCliente>();
             }
             else
             {
                 // RUTA PARA DUEÑO DE NEGOCIO
-                paginaDestino = new PagoSuscripcionPage();
+                paginaDestino = _serviceProvider.GetRequiredService<PagoSuscripcionPage>();
             }
 
-            
+
             Application.Current.MainPage = new NavigationPage(paginaDestino);
         }
 

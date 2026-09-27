@@ -78,6 +78,14 @@ public static class MauiProgram
         builder.Services.AddTransient<DueñosNegociosPage>();
         builder.Services.AddTransient<PagoSuscripcionPage>();
 
+
+        builder.Services.AddTransient<CatalogoCliente>();
+        builder.Services.AddTransient<LoginViewModel>();
+
+
+        builder.Services.AddTransient<PagoSuscripcionViewModel>();
+        builder.Services.AddSingleton<SuscripcionService>();
+
         builder.Services.AddSingleton<EmailJSService>();
         builder.Services.AddSingleton<RecuperacionService>(); 
         builder.Services.AddTransient<RecuperarContrasenaViewModel>();

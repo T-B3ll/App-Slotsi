@@ -68,13 +68,15 @@
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="12"/>
                         </Border.StrokeShape>
-                 
+
                         <Entry x:Name="EntryCard" 
                                Placeholder="0000 0000 0000 0000" 
                                FontSize="16" 
                                HeightRequest="50" 
                                BackgroundColor="Transparent" 
                                Keyboard="Numeric"
+                               TextChanged="EntryCard_TextChanged" 
+                               MaxLength="19" 
                                TextColor="#111827" 
                                PlaceholderColor="#9CA3AF"/>
                     </Border>
@@ -88,14 +90,19 @@
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="12"/>
                             </Border.StrokeShape>
+
                             <Entry x:Name="EntryExpiry" 
                                    Placeholder="MM/AA" 
                                    FontSize="16" 
                                    HeightRequest="50" 
                                    BackgroundColor="Transparent" 
-                                   Keyboard="Text"
+                                   MaxLength="5" 
+                                   Keyboard="Numeric" 
+                                   TextChanged="EntryExpiry_TextChanged" 
                                    TextColor="#111827"
                                    PlaceholderColor="#9CA3AF"/>
+
+
                         </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1" Spacing="6">
@@ -109,10 +116,14 @@
                                    Placeholder="123" 
                                    FontSize="16" 
                                    HeightRequest="50" 
+                                    Text="{Binding Cvv, Mode=TwoWay}"
                                    BackgroundColor="Transparent" 
+                                   MaxLength="4"
                                    Keyboard="Numeric"
                                    TextColor="#111827"
                                    PlaceholderColor="#9CA3AF"/>
+                            
+                            
                         </Border>
                     </VerticalStackLayout>
                 </Grid>
@@ -127,6 +138,7 @@
                         <Entry x:Name="EntryName" 
                                Placeholder="Como aparece en la tarjeta" 
                                FontSize="16" 
+                               Text="{Binding NombreTitular, Mode=TwoWay}"
                                HeightRequest="50" 
                                BackgroundColor="Transparent"
                                TextColor="#111827"
