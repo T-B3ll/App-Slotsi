@@ -60,8 +60,6 @@ public static class MauiProgram
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<RegistroUsuarioBasico>();
 
-
-
         builder.Services.AddTransient<Cita_UsuarioViewModel>();
         builder.Services.AddTransient<Cita_ClientePage>();
 
@@ -74,6 +72,9 @@ public static class MauiProgram
 
         builder.Services.AddTransient<CalendarioPage>();
         builder.Services.AddTransient<catalogoservicios>();
+
+        builder.Services.AddTransient<RegistroUsuariosViewModel>();
+        builder.Services.AddTransient<RegistroUsuariosPage>();
 
         builder.Services.AddTransient<Cita_ClientePage>();
         builder.Services.AddTransient<Cita_clienteViewModel>();

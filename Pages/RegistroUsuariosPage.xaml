@@ -2,7 +2,9 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
+             xmlns:models="clr-namespace:slotsi_citas.Models"
              x:Class="slotsi_citas.Pages.RegistroUsuariosPage"
+             x:DataType="vm:RegistroUsuariosViewModel"
              Title="Registro de usuarios"
              BackgroundColor="#FFFFFF"
              NavigationPage.HasNavigationBar="False">
@@ -10,23 +12,6 @@
     <ContentPage.BindingContext>
         <vm:RegistroUsuariosViewModel />
     </ContentPage.BindingContext>
-
-    <ContentPage.Resources>
-        <ResourceDictionary>
-            <Style x:Key="InicialButtonStyle" TargetType="Button">
-                <Setter Property="BackgroundColor" Value="#FFFFFF" />
-                <Setter Property="TextColor" Value="#111827" />
-                <Setter Property="BorderColor" Value="#E5E7EB" />
-                <Setter Property="BorderWidth" Value="1" />
-                <Setter Property="CornerRadius" Value="20" />
-                <Setter Property="WidthRequest" Value="40" />
-                <Setter Property="HeightRequest" Value="40" />
-                <Setter Property="FontAttributes" Value="Bold" />
-                <Setter Property="FontSize" Value="14" />
-                <Setter Property="Padding" Value="0" />
-            </Style>
-        </ResourceDictionary>
-    </ContentPage.Resources>
 
     <Grid RowDefinitions="Auto, *">
 
@@ -69,11 +54,45 @@
                     <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never" Margin="0,4">
                         <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding Iniciales}">
                             <BindableLayout.ItemTemplate>
-                                <DataTemplate>
-                                    <Button Text="{Binding .}" 
-                                            Style="{StaticResource InicialButtonStyle}"
-                                            Command="{Binding BindingContext.FiltrarPorInicialCommand, Source={RelativeSource AncestorType={x:Type ContentPage}}}"
-                                            CommandParameter="{Binding .}"/>
+                                <DataTemplate x:DataType="models:InicialLetraModel">
+                                    <Border WidthRequest="40"
+                        HeightRequest="40"
+                        StrokeShape="RoundRectangle 20"
+                        StrokeThickness="1">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnLetraTapped"/>
+                                        </Border.GestureRecognizers>
+
+                                        <Border.Triggers>
+                                            <!-- Si está seleccionada: Fondo y Borde Azul (#2563EB) -->
+                                            <DataTrigger TargetType="Border" Binding="{Binding EsSeleccionada}" Value="True">
+                                                <Setter Property="BackgroundColor" Value="#2563EB" />
+                                                <Setter Property="Stroke" Value="#2563EB" />
+                                            </DataTrigger>
+                                            <!-- Si no está seleccionada: Fondo Blanco y Borde Gris (#E5E7EB) -->
+                                            <DataTrigger TargetType="Border" Binding="{Binding EsSeleccionada}" Value="False">
+                                                <Setter Property="BackgroundColor" Value="#FFFFFF" />
+                                                <Setter Property="Stroke" Value="#E5E7EB" />
+                                            </DataTrigger>
+                                        </Border.Triggers>
+
+                                        <Label Text="{Binding Letra}" 
+                           FontAttributes="Bold"
+                           FontSize="14"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center">
+                                            <Label.Triggers>
+                                                <!-- Texto blanco si está seleccionada -->
+                                                <DataTrigger TargetType="Label" Binding="{Binding EsSeleccionada}" Value="True">
+                                                    <Setter Property="TextColor" Value="#FFFFFF" />
+                                                </DataTrigger>
+                                                <!-- Texto oscuro si no está seleccionada -->
+                                                <DataTrigger TargetType="Label" Binding="{Binding EsSeleccionada}" Value="False">
+                                                    <Setter Property="TextColor" Value="#111827" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
+                                    </Border>
                                 </DataTemplate>
                             </BindableLayout.ItemTemplate>
                         </HorizontalStackLayout>
@@ -88,7 +107,7 @@
                                 BackgroundColor="#FFFFFF">
                             <Grid ColumnDefinitions="*, Auto">
                                 <Entry Grid.Column="0"
-                                       Text="{Binding TextoBusqueda}"
+                                       Text="{Binding TextoBusqueda, Mode=TwoWay}"
                                        Placeholder="Buscar usuarios"
                                        PlaceholderColor="#9CA3AF"
                                        TextColor="#111827"
@@ -101,14 +120,14 @@
                                        VerticalOptions="Center" />
                             </Grid>
                         </Border>
-                        <Label Text="Nombre, correo o ID"
+                        <Label Text="Nombre, correo o cédula"
                                FontSize="11"
                                TextColor="#6B7280"
                                Margin="4,0,0,0" />
                     </VerticalStackLayout>
                 </VerticalStackLayout>
 
-                <!-- Lista de Usuarios Existentes -->
+                <!-- Lista de Usuarios Existentes usando BindableLayout dentro del ScrollView -->
                 <VerticalStackLayout Spacing="12">
                     <VerticalStackLayout Spacing="2">
                         <Label Text="Usuarios existentes"
@@ -120,14 +139,10 @@
                                TextColor="#6B7280" />
                     </VerticalStackLayout>
 
-                    <CollectionView ItemsSource="{Binding Usuarios}" 
-                                    SelectionMode="Single"
-                                    SelectedItem="{Binding UsuarioSeleccionado}"
-                                    SelectionChangedCommand="{Binding SeleccionarUsuarioCommand}">
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate>
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Usuarios}" Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:Usuario">
                                 <Grid Padding="0,12" ColumnDefinitions="Auto, *, Auto">
-                                    <!-- Separador Inferior -->
                                     <BoxView Grid.ColumnSpan="3"
                                              HeightRequest="1"
                                              BackgroundColor="#F3F4F6"
@@ -142,32 +157,32 @@
                                             StrokeThickness="0"
                                             Margin="0,0,12,0"
                                             VerticalOptions="Center">
-                                        <Image Source="{Binding AvatarUrl, TargetNullValue='profile_placeholder.png'}" Aspect="AspectFill"/>
+                                        <Image Source="profile_placeholder.png" Aspect="AspectFill"/>
                                     </Border>
 
-                                    <!-- Información del Usuario -->
+                                    <!-- Datos de MongoDB: NombreCompleto y Correo -->
                                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                                        <Label Text="{Binding Nombre}"
+                                        <Label Text="{Binding NombreCompleto}"
                                                FontSize="14"
                                                FontAttributes="Bold"
                                                TextColor="#111827" />
-                                        <Label Text="{Binding Email}"
+                                        <Label Text="{Binding Correo}"
                                                FontSize="12"
                                                TextColor="#6B7280" />
                                     </VerticalStackLayout>
 
-                                    <!-- Identificador / Rol -->
+                                    <!-- Cédula desde MongoDB -->
                                     <Label Grid.Column="2"
-                                           Text="{Binding IdTexto}"
-                                           FontSize="13"
+                                           Text="{Binding Cedula}"
+                                           FontSize="12"
                                            FontAttributes="Bold"
                                            TextColor="#4B5563"
                                            VerticalOptions="Center"
                                            HorizontalOptions="End" />
                                 </Grid>
                             </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
 
                 <!-- Botones de Acción -->
