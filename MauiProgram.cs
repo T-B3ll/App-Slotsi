@@ -83,6 +83,9 @@ public static class MauiProgram
         builder.Services.AddTransient<LoginViewModel>();
 
 
+
+
+
         builder.Services.AddTransient<PagoSuscripcionViewModel>();
         builder.Services.AddSingleton<SuscripcionService>();
 

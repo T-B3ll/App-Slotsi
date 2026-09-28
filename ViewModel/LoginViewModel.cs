@@ -85,6 +85,7 @@ namespace slotsi_citas.ViewModel
 
             Preferences.Set("UsuarioId", usuario.Id.ToString());
             Preferences.Set("EsDuenoNegocio", usuario.TipoUsuario);
+            Preferences.Set("UsuarioCorreo", usuario.Correo);
 
             Page paginaDestino;
 

@@ -19,7 +19,7 @@ namespace slotsi_citas.ViewModel
         private string _metodoSeleccionado = "Débito";
 
         private bool _estaProcesando = false;
-        private string _textoBoton = "Pagar $5 USD";
+        private string _textoBoton = "Pagar $12 USD";
 
         public event PropertyChangedEventHandler PropertyChanged;
         private readonly SuscripcionService _servicioLocal = new SuscripcionService();
@@ -94,7 +94,7 @@ namespace slotsi_citas.ViewModel
                 return;
             }
 
-            // Validación de formato tarjeta (16 dígitos limpios)
+       
             if (NumeroTarjeta.Length != 16)
             {
                 await Application.Current.MainPage.DisplayAlert("Error", "El número de tarjeta debe tener 16 dígitos.", "OK");
@@ -122,25 +122,46 @@ namespace slotsi_citas.ViewModel
                 await Application.Current.MainPage.DisplayAlert("Error", "CVV debe tener 3 o 4 dígitos.", "OK");
                 return;
             }
-
             EstaProcesando = true;
             TextoBoton = "Procesando...";
             ((Command)PagarCommand).ChangeCanExecute();
 
             try
             {
-                await Task.Delay(1500); // Simulación
+                await Task.Delay(1500);
 
                 var usuarioId = Preferences.Get("UsuarioId", string.Empty);
                 if (string.IsNullOrEmpty(usuarioId))
                     throw new Exception("Sesión no activa.");
 
-                // Procesar pago en MongoDB
+                // 1. Procesar pago en MongoDB
                 await _suscripcionService.ProcesarPagoExitosoAsync(
                     usuarioId,
-                    monto: 5.00m,
+                    monto: 12.00m,
                     metodoPago: MetodoSeleccionado);
 
+                // ✅ 2. AQUÍ ES DONDE PEGAS EL CÓDIGO DE DEBUG (Justo después del pago)
+
+                // Obtener datos guardados al iniciar sesión
+                string correoUsuario = Preferences.Get("UsuarioCorreo", string.Empty);
+                string nombreUsuario = Preferences.Get("UsuarioNombre", "Cliente");
+
+                System.Diagnostics.Debug.WriteLine($"🔍 DEBUG INICIO: Correo={correoUsuario} | Nombre={nombreUsuario}");
+
+                if (string.IsNullOrEmpty(correoUsuario))
+                {
+                    System.Diagnostics.Debug.WriteLine("⚠️ DEBUG: EL CORREO ESTÁ VACÍO. NO SE ENVIARÁ NADA.");
+                    // Alerta temporal para confirmar si entra aquí
+                    await Application.Current.MainPage.DisplayAlert("Debug", $"Correo detectado: '{correoUsuario}'", "OK");
+                }
+                else
+                {
+                    var emailService = new EmailJSService();
+                    bool enviado = await emailService.EnviarConfirmacionPago(correoUsuario, nombreUsuario, 12.00m, MetodoSeleccionado);
+                    System.Diagnostics.Debug.WriteLine($"📧 DEBUG RESULTADO: {enviado}");
+                }
+
+                // 3. Mostrar alerta de éxito (Solo si todo salió bien)
                 await Application.Current.MainPage.DisplayAlert(
                     "¡Pago Exitoso!",
                     $"Suscripción activa hasta {DateTime.UtcNow.AddMonths(1):dd MMM, yyyy}.",
@@ -155,7 +176,7 @@ namespace slotsi_citas.ViewModel
             finally
             {
                 EstaProcesando = false;
-                TextoBoton = "Pagar $5 USD";
+                TextoBoton = "Pagar $12 USD";
                 ((Command)PagarCommand).ChangeCanExecute();
             }
         }
