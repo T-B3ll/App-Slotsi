@@ -9,12 +9,16 @@ public partial class PagoSuscripcionPage : ContentPage
 {
     private bool _isUpdating = false;
     private PagoSuscripcionViewModel _viewModel;
+    private readonly SuscripcionService _servicioLocal = new SuscripcionService();
+
 
     public PagoSuscripcionPage()
     {
         InitializeComponent();
         _viewModel = new PagoSuscripcionViewModel(new SuscripcionService());
         BindingContext = _viewModel;
+
+        CargarFechaProximoCobroAsync().ConfigureAwait(false);
     }
 
 
@@ -72,7 +76,32 @@ public partial class PagoSuscripcionPage : ContentPage
         });
     }
 
- 
+
+    private async Task CargarFechaProximoCobroAsync()
+    {
+        var usuarioId = Preferences.Get("UsuarioId", string.Empty);
+        if (string.IsNullOrEmpty(usuarioId)) return;
+
+        try
+        {
+            var sub = await _servicioLocal.ObtenerSuscripcionActivaAsync(usuarioId);
+
+            if (sub != null && sub.ProximoVencimiento > DateTime.UtcNow)
+            {
+                LblProximoCobro.Text = $"Próximo cobro: {sub.ProximoVencimiento:dd MMM, yyyy}";
+            }
+            else
+            {
+                LblProximoCobro.Text = "Próximo cobro: Al realizar el pago";
+            }
+        }
+        catch
+        {
+            LblProximoCobro.Text = "Próximo cobro: Pendiente";
+        }
+    }
+
+
     private void OnMetodoPagoClicked(object sender, EventArgs e)
     {
         var btn = (Button)sender;
@@ -91,7 +120,26 @@ public partial class PagoSuscripcionPage : ContentPage
    
     private async void OnPagarClicked(object sender, EventArgs e)
     {
+        var usuarioId = Preferences.Get("UsuarioId", string.Empty);
+
+        // Validamos directamente con nuestro servicio local
+        bool yaPago = await _servicioLocal.YaPagoEsteMesAsync(usuarioId);
+
+        if (yaPago)
+        {
+            await DisplayAlert(
+                "Ya realizaste este pago",
+                "Tu suscripción está activa este mes. No es necesario pagar nuevamente.",
+                "Entendido");
+            return;
+        }
+
         if (_viewModel.PagarCommand.CanExecute(null))
+        {
             _viewModel.PagarCommand.Execute(null);
+        }
+
+
+
     }
 }

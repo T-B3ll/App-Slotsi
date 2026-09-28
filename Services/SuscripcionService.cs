@@ -71,5 +71,21 @@ namespace slotsi_citas.Services
                  .ToListAsync();
         }
 
+
+        public async Task<SuscripcionActual?> ObtenerSuscripcionActivaAsync(string usuarioId)
+        {
+            return await _suscripcionesActivas
+                .Find(s => s.UsuarioId == usuarioId && s.Estado == "Activa")
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<bool> YaPagoEsteMesAsync(string usuarioId)
+        {
+                    var sub = await _suscripcionesActivas
+               .Find(s => s.UsuarioId == usuarioId && s.Estado == "Activa")
+               .FirstOrDefaultAsync();
+
+            return sub != null && sub.ProximoVencimiento > DateTime.UtcNow;
+        }
     }
 }

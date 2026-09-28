@@ -23,7 +23,10 @@
                 <Grid ColumnDefinitions="*, Auto">
                     <VerticalStackLayout Spacing="4">
                         <Label Text="Plan Mensual Premium" FontSize="16" FontAttributes="Bold" TextColor="#111827"/>
-                        <Label Text="Próximo cobro: 27 Oct, 2026" FontSize="13" TextColor="#F59E0B"/>
+                        <Label x:Name="LblProximoCobro" 
+                               Text="Próximo cobro: Pendiente" 
+                               FontSize="13" 
+                               TextColor="#F59E0B"/>        
                     </VerticalStackLayout>
                     <Label Grid.Column="1" Text="$5 USD" FontSize="24" FontAttributes="Bold" TextColor="#2563EB" VerticalOptions="Center"/>
                 </Grid>

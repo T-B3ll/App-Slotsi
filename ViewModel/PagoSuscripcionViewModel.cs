@@ -22,6 +22,8 @@ namespace slotsi_citas.ViewModel
         private string _textoBoton = "Pagar $5 USD";
 
         public event PropertyChangedEventHandler PropertyChanged;
+        private readonly SuscripcionService _servicioLocal = new SuscripcionService();
+
 
 
         public string NumeroTarjeta
@@ -64,6 +66,12 @@ namespace slotsi_citas.ViewModel
         {
             get => _textoBoton;
             set { _textoBoton = value; OnPropertyChanged(); }
+        }
+        private string _fechaProximoCobro = "Próximo cobro: Pendiente";
+        public string FechaProximoCobro
+        {
+            get => _fechaProximoCobro;
+            set { _fechaProximoCobro = value; OnPropertyChanged(); }
         }
 
         public ICommand PagarCommand { get; }
@@ -160,7 +168,16 @@ namespace slotsi_citas.ViewModel
             NombreTitular = string.Empty;
         }
 
+
+
         protected void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+
+     
     }
+
+
+
+
 }
