@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.Maui.ApplicationModel; // <--- NECESARIO PARA MainThread
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using slotsi_citas.Models;
 using slotsi_citas.Services;
@@ -36,9 +36,9 @@ namespace slotsi_citas.ViewModel
         }
 
         public ICommand RegresarCommand { get; }
-        public ICommand VerDetallesCommand { get; }
-        public ICommand ImportarListaCommand { get; }
         public ICommand RegistrarNuevoCommand { get; }
+        public ICommand CambiarEstadoCommand { get; }
+        public ICommand VerDetallesUsuarioCommand { get; }
 
         public RegistroUsuariosViewModel()
         {
@@ -54,23 +54,14 @@ namespace slotsi_citas.ViewModel
                     await Application.Current.MainPage.Navigation.PopAsync();
             });
 
-            VerDetallesCommand = new Command(async () =>
-            {
-                if (Application.Current?.MainPage != null)
-                    await Application.Current.MainPage.DisplayAlert("Slotsi", "Ver detalles seleccionado", "OK");
-            });
-
-            ImportarListaCommand = new Command(async () =>
-            {
-                if (Application.Current?.MainPage != null)
-                    await Application.Current.MainPage.DisplayAlert("Slotsi", "Importar lista seleccionado", "OK");
-            });
-
             RegistrarNuevoCommand = new Command(async () =>
             {
                 if (Application.Current?.MainPage != null)
                     await Application.Current.MainPage.DisplayAlert("Slotsi", "Registrar nuevo usuario seleccionado", "OK");
             });
+
+            CambiarEstadoCommand = new Command<Usuario>(async (usuario) => await OnCambiarEstado(usuario));
+            VerDetallesUsuarioCommand = new Command<Usuario>(async (usuario) => await OnVerDetallesUsuario(usuario));
         }
 
         public async Task CargarUsuariosBDAsync()
@@ -95,6 +86,42 @@ namespace slotsi_citas.ViewModel
             }
         }
 
+        private async Task OnCambiarEstado(Usuario? usuario)
+        {
+            if (usuario == null || string.IsNullOrEmpty(usuario.Id)) return;
+
+            bool nuevoEstado = !usuario.EstaActivo;
+            bool actualizado = await _mongoService.ActualizarEstadoUsuarioAsync(usuario.Id, nuevoEstado);
+
+            if (actualizado)
+            {
+                usuario.EstaActivo = nuevoEstado;
+                AplicarFiltros();
+            }
+            else if (Application.Current?.MainPage != null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "No se pudo actualizar el estado en MongoDB", "OK");
+            }
+        }
+
+        private async Task OnVerDetallesUsuario(Usuario? usuario)
+        {
+            if (usuario == null || Application.Current?.MainPage == null) return;
+
+            string tipoStr = usuario.TipoUsuario ? "Administrador / Personal" : "Cliente / Usuario";
+            string estadoStr = usuario.EstaActivo ? "Activo" : "Inactivo";
+
+            string mensaje = $"ID: {usuario.Id}\n\n" +
+                             $"Nombre: {usuario.NombreCompleto}\n" +
+                             $"Correo: {usuario.Correo}\n" +
+                             $"Teléfono: {usuario.Telefono}\n" +
+                             $"Cédula: {usuario.Cedula}\n" +
+                             $"Tipo de Usuario: {tipoStr}\n" +
+                             $"Estado: {estadoStr}";
+
+            await Application.Current.MainPage.DisplayAlert("Detalles del Usuario", mensaje, "Cerrar");
+        }
+
         private void GenerarAlfabeto()
         {
             Iniciales.Clear();
@@ -111,7 +138,6 @@ namespace slotsi_citas.ViewModel
         public void OnFiltrarPorInicial(InicialLetraModel? item)
         {
             if (item == null) return;
-
 
             if (_letraSeleccionada == item.Letra)
             {

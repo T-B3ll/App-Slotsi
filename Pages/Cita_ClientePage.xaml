@@ -129,7 +129,7 @@
 
                         <!-- Slot Disponible -->
                         <Border Grid.Column="1" 
-                                StrokeShape="RoundRectangle 10" 
+                                    StrokeShape="RoundRectangle 10" 
                                 BackgroundColor="#F9FAFB" 
                                 Stroke="#E5E7EB" 
                                 StrokeThickness="1" 

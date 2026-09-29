@@ -1,18 +1,28 @@
-namespace slotsi_citas.Pages;
+using Microsoft.Maui.Controls;
+using slotsi_citas.ViewModel;
+using slotsi_citas.ViewModels;
+using System;
 
-public partial class SeleccionarCitaPage : ContentPage
+namespace slotsi_citas.Pages
 {
-    public SeleccionarCitaPage()
+    public partial class SeleccionarCitaPage : ContentPage
     {
-        InitializeComponent();
-    }
+        private SeleccionarCitaViewModel? ViewModel => BindingContext as SeleccionarCitaViewModel;
 
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
+        public SeleccionarCitaPage()
+        {
+            InitializeComponent();
+        }
 
-        // Restablece la opacidad y posición al volver a entrar
-        this.Opacity = 1;
-        this.TranslationY = 0;
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+
+            if (BindingContext is SeleccionarCitaViewModel vm)
+            {
+                await vm.CargarServiciosBDAsync();
+            }
+        }
     }
 }
