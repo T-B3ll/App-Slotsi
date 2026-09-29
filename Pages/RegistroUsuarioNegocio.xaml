@@ -81,7 +81,7 @@
             <Label Text="Ej: +505 234 5678" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,10"/>
 
             <Label Text="Cédula *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
-            <Entry x:Name="EntryCedula" Placeholder="4411206101009b" Keyboard="Text" 
+            <Entry x:Name="EntryCedula" Placeholder="0000-0000-0000" Keyboard="Text" 
                    PlaceholderColor="#9CA3AF" TextColor="#111827" FontSize="16" BackgroundColor="#F9FAFB" 
                    HeightRequest="50" Margin="0,0,0,5" TextChanged="OnCedulaChanged"/>
             <Label Text="Sin puntos, espacios ni guiones" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,10"/>
