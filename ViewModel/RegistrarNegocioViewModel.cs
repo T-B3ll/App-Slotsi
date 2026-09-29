@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -18,10 +19,13 @@ namespace slotsi_citas.ViewModel
         private readonly UsuarioService _usuarioService;
 
 
+
         private Usuario _usuarioData = new Usuario();
         private Negocio _negocioData = new Negocio();
 
-      
+        public ObservableCollection<DiaHorarioUI> ListaDiasHorario { get; set; } = new();
+
+
         public Command SeleccionarFotoCommand { get; }
         public Command SeleccionarDocumentoCommand { get; }
         public Command RegistrarCommand { get; }
@@ -35,6 +39,12 @@ namespace slotsi_citas.ViewModel
             SeleccionarFotoCommand = new Command(async () => await SeleccionarFotoAsync());
             SeleccionarDocumentoCommand = new Command(async () => await SeleccionarDocumentoAsync());
             RegistrarCommand = new Command(async () => await RegistrarNegocioAsync());
+
+            var dias = new[] { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" };
+            foreach (var dia in dias)
+            {
+                ListaDiasHorario.Add(new DiaHorarioUI { NombreDia = dia });
+            }
         }
 
     
@@ -120,7 +130,7 @@ namespace slotsi_citas.ViewModel
 
             try
             {
-             
+                // 1. Guardar Usuario
                 _usuarioData.TipoUsuario = true;
                 _usuarioData.EstaActivo = true;
                 await _usuarioService.CrearAsync(_usuarioData);
@@ -128,29 +138,62 @@ namespace slotsi_citas.ViewModel
                 if (string.IsNullOrEmpty(_usuarioData.Id))
                     throw new Exception("Error al generar ID de usuario.");
 
-       
+            
                 _negocioData.UsuarioId = _usuarioData.Id;
                 _negocioData.FechaRegistro = DateTime.UtcNow;
+
+                _negocioData.Horarios = new Dictionary<string, slotsi_citas.Models.Negocio.HorarioDia>();
+                _negocioData.DiasCerrados = new List<string>();
+
+                var mapDias = new Dictionary<string, string>
+        {
+            {"Lunes","Lun"}, {"Martes","Mar"}, {"Miércoles","Mie"},
+            {"Jueves","Jue"}, {"Viernes","Vie"}, {"Sábado","Sab"}, {"Domingo","Dom"}
+        };
+
+                foreach (var diaUI in ListaDiasHorario)
+                {
+                    if (!mapDias.ContainsKey(diaUI.NombreDia)) continue;
+
+                    string claveCorta = mapDias[diaUI.NombreDia];
+
+                    if (diaUI.EstaActivo)
+                    {
+                        var pausas = diaUI.TienePausa
+                            ? new List<string> {
+                        diaUI.PausaInicio.ToString("hh\\:mm"),
+                        diaUI.PausaFin.ToString("hh\\:mm")
+                              }
+                            : new List<string>();
+
+                        
+                        _negocioData.Horarios[claveCorta] = new slotsi_citas.Models.Negocio.HorarioDia
+                        {
+                            Apertura = diaUI.HoraApertura.ToString("hh\\:mm"),
+                            Cierre = diaUI.HoraCierre.ToString("hh\\:mm"),
+                            Pausas = pausas
+                        };
+                    }
+                    else
+                    {
+                        _negocioData.DiasCerrados.Add(claveCorta);
+                    }
+                }
+
                 await _negocioService.CrearAsync(_negocioData);
 
-               
                 await Application.Current.MainPage.DisplayAlert("Éxito", "Cuenta creada correctamente", "OK");
-
-                
                 await Application.Current.MainPage.Navigation.PopToRootAsync();
-
-           
             }
             catch (Exception ex)
             {
                 await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
             }
-
         }
-
 
         private async Task SeleccionarFotoAsync()
         {
+
             try
             {
                 var file = await FilePicker.PickAsync(new PickOptions { PickerTitle = "Selecciona foto", FileTypes = FilePickerFileType.Images });
@@ -164,13 +207,18 @@ namespace slotsi_citas.ViewModel
                 }
             }
             catch (Exception ex) { await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK"); }
+
         }
 
         private async Task SeleccionarDocumentoAsync()
         {
             try
             {
-                var customFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>> { { DevicePlatform.Android, new[] { "application/pdf" } }, { DevicePlatform.iOS, new[] { "com.adobe.pdf" } } });
+                var customFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+                {
+                    { DevicePlatform.Android, new[] { "application/pdf" } },
+                    { DevicePlatform.iOS, new[] { "com.adobe.pdf" } }
+                });
                 var file = await FilePicker.PickAsync(new PickOptions { PickerTitle = "Selecciona PDF", FileTypes = customFileType });
                 if (file != null)
                 {
@@ -185,6 +233,62 @@ namespace slotsi_citas.ViewModel
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        protected void OnPropertyChanged([CallerMemberName] string? name = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+
+
+
+        public class DiaHorarioUI : INotifyPropertyChanged
+        {
+            public string NombreDia { get; set; } = "";
+
+            private bool _estaActivo;
+            public bool EstaActivo
+            {
+                get => _estaActivo;
+                set { _estaActivo = value; OnPropertyChanged(); }
+            }
+
+            private TimeSpan _horaApertura = new TimeSpan(8, 0, 0);
+            public TimeSpan HoraApertura
+            {
+                get => _horaApertura;
+                set { _horaApertura = value; OnPropertyChanged(); }
+            }
+
+            private TimeSpan _horaCierre = new TimeSpan(18, 0, 0);
+            public TimeSpan HoraCierre
+            {
+                get => _horaCierre;
+                set { _horaCierre = value; OnPropertyChanged(); }
+            }
+
+            private bool _tienePausa;
+            public bool TienePausa
+            {
+                get => _tienePausa;
+                set { _tienePausa = value; OnPropertyChanged(); }
+            }
+
+            private TimeSpan _pausaInicio = new TimeSpan(12, 0, 0);
+            public TimeSpan PausaInicio
+            {
+                get => _pausaInicio;
+                set { _pausaInicio = value; OnPropertyChanged(); }
+            }
+
+            private TimeSpan _pausaFin = new TimeSpan(13, 0, 0);
+            public TimeSpan PausaFin
+            {
+                get => _pausaFin;
+                set { _pausaFin = value; OnPropertyChanged(); }
+            }
+
+            public event PropertyChangedEventHandler? PropertyChanged;
+            protected void OnPropertyChanged([CallerMemberName] string? name = null) =>
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
+
     }
 }

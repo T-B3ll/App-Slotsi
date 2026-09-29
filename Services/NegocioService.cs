@@ -8,6 +8,8 @@ namespace slotsi_citas.Services
 
         private readonly IMongoCollection<Negocio> _negocios;
 
+
+
         public NegocioService()
         {
             var client = new MongoClient(MongoDbSettings.ConnectionString);

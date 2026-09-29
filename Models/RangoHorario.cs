@@ -13,7 +13,7 @@
             set => _horaDisplay = value;
         }
 
-        // Permite asignarle tanto Cita_cliente como CitaUsuario sin error de conversión
+       
         public dynamic? Cita { get; set; }
     }
 }

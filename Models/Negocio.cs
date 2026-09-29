@@ -10,6 +10,8 @@ namespace slotsi_citas.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
 
+
+
         public string? Id { get; set; }
 
 
@@ -37,6 +39,37 @@ namespace slotsi_citas.Models
         
 
         public DateTime FechaRegistro { get; set; } = DateTime.UtcNow;
+
+
+        public class HorarioDia
+        {
+            [BsonElement("a")] public string Apertura { get; set; } = "";
+            [BsonElement("c")] public string Cierre { get; set; } = "";
+            [BsonElement("p")] public List<string> Pausas { get; set; } = new();
+        }
+
+
+        [BsonElement("Horarios")]
+        public Dictionary<string, HorarioDia> Horarios { get; set; } = new();
+
+        [BsonElement("DiasCerrados")]
+        public List<string> DiasCerrados { get; set; } = new();
+
+
+    }
+
+
+    [BsonIgnoreExtraElements]
+    public class HorarioDia
+    {
+        [BsonElement("a")]
+        public string Apertura { get; set; } = "";
+
+        [BsonElement("c")]
+        public string Cierre { get; set; } = "";
+
+        [BsonElement("p")]
+        public List<string> Pausas { get; set; } = new();
     }
 
 
