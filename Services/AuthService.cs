@@ -10,10 +10,9 @@ namespace slotsi_citas.Services
 {
     public class AuthService
     {
-        private readonly Client _supabaseClient;
+        private readonly Supabase.Client _supabaseClient;
 
-       
-        public AuthService(Client supabaseClient)
+        public AuthService(Supabase.Client supabaseClient)
         {
             _supabaseClient = supabaseClient;
         }

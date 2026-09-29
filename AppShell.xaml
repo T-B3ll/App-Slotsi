@@ -4,62 +4,82 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:pages="clr-namespace:slotsi_citas.Pages"
-    Title="Slotsi">
+    Title="Slotsi"
+    FlyoutBehavior="Flyout"
+    BackgroundColor="#2563EB">
+    
 
-    <TabBar>
-        <!-- Pestaña 1: Vista del Cliente -->
-        <Tab Title="Vista Cliente" Icon="calendar.png">
-            <ShellContent
-                Title="Citas Cliente"
-                ContentTemplate="{DataTemplate pages:Cita_ClientePage}"
-                Route="Cita_ClientePage" />
-        </Tab>
+    <Shell.FlyoutHeader>
+        <Grid HeightRequest="140" BackgroundColor="#2563EB" Padding="20">
+            <VerticalStackLayout VerticalOptions="End" Spacing="4">
+                <Label Text="Slotsi Citas" FontSize="20" FontAttributes="Bold" TextColor="White" />
+                <Label Text="Gestión de Barbershop" FontSize="12" TextColor="#E0E7FF" />
+            </VerticalStackLayout>
+        </Grid>
+    </Shell.FlyoutHeader>
 
-        <!-- Pestaña 2: Vista del Usuario / Barbero -->
-        <Tab Title="Vista Barbero" Icon="profile.png">
-            <ShellContent
-                Title="Citas Barbero"
-                ContentTemplate="{DataTemplate pages:Cita_UsuarioPage}"
-                Route="Cita_UsuarioPage" />
-        </Tab>
 
-        <Tab Title="Catalogo de servicios" Icon="profile.png">
-            <ShellContent
-            Title="Servicios disponibles"
-            ContentTemplate="{DataTemplate pages:catalogoservicios}"
-            Route="cataloservicios" />
-        </Tab>
+    <FlyoutItem Title="Trabajos a Domicilio" Route="Servicios_a_domicilio">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#334155" Size="24" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:Servicios_a_domicilio}" />
+    </FlyoutItem>
 
-        <Tab Title="Catalogo de cliente" Icon="profile.png">
-            <ShellContent
-                Title="Clientes"
-                ContentTemplate="{DataTemplate pages:CatalogoCliente}"
-                Route="catalogocliente" />
-        </Tab>
-        
-       <!-- Pestaña 3: Resgistro de Usuario -->
-        <Tab Title="Registro" Icon="Profile.png">
-            <ShellContent
-                    Title="Registro"
-                    ContentTemplate="{DataTemplate pages:RegistroUsuariosPage}"
-                    Route="RegistroUsuariosPage" />
-        </Tab>
-        
-        <!-- Pestaña 4: Calendario Citas -->
-        <Tab Title="Calendario" Icon="calendar.png">
-            <ShellContent
-                    Title="Calendario"
-                    ContentTemplate="{DataTemplate pages:CalendarioPage}"
-                    Route="CalendarioPage" />
-        </Tab>
-        
-        <!-- Pestaña 5: Seleccionar Cita -->
-        <Tab Title="Seleccionar Cita" Icon="calendar.png">
-            <ShellContent
-        Title="Seleccionar Cita"
-        ContentTemplate="{DataTemplate pages:SeleccionarCitaPage}"
-        Route="SeleccionarCitaPage" />
-        </Tab>
-    </TabBar>
+    <FlyoutItem Title="Citas Cliente" Route="Cita_ClientePage">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xEBCC;" Color="#334155" Size="24" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:Cita_ClientePage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Citas Barbero" Route="Cita_UsuarioPage">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FD;" Color="#334155" Size="24" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:Cita_UsuarioPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Catálogo de Servicios" Route="cataloservicios">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8EF;" Color="#334155" Size="24" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:catalogoservicios}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Catálogo de Clientes" Route="catalogocliente">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7EF;" Color="#334155" Size="24" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:CatalogoCliente}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Registro de Usuarios" Route="RegistroUsuariosPage">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FE;" Color="#334155" Size="24" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:RegistroUsuariosPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Calendario" Route="CalendarioPage">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE916;" Color="#334155" Size="24" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:CalendarioPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Seleccionar Cita" Route="SeleccionarCitaPage">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8B5;" Color="#334155" Size="24" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:SeleccionarCitaPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Trabajadores" Route="ListaTrabajadores">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FB;" Color="#334155" Size="24" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:ListaTrabajadores}" />
+    </FlyoutItem>
 
 </Shell>

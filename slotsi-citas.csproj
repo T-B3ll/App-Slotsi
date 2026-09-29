@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿	<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">android-arm64;android-arm</RuntimeIdentifiers>
@@ -51,6 +51,7 @@
 
 		<!-- Images -->
 		<MauiImage Include="Resources\Images\*" />
+		<MauiImage Update="Resources\Images\dotnet_bot.png" Resize="True" BaseSize="300,185" />
 		
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />
@@ -60,22 +61,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MailKit" Version="4.18.0" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
-		<PackageReference Include="MongoDB.Bson" Version="3.12.0" />
-		<PackageReference Include="MongoDB.Driver" Version="3.12.0" />
-		<PackageReference Include="Supabase" Version="8.1.1" />
+		<PackageReference Include="MongoDB.Bson" Version="3.11.1" />
+		<PackageReference Include="MongoDB.Driver" Version="3.11.0" />
+		<PackageReference Include="supabase-csharp" Version="0.16.2" />
 		<PackageReference Include="Syncfusion.Maui.Toolkit" Version="1.0.10" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Pages\catalogocliente.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Pages\catalogoservicios.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	  <MauiXaml Update="Pages\CalendarioPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -85,22 +79,19 @@
 	  <MauiXaml Update="Pages\Cita_UsuarioPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\LoginPage.xaml">
+	  <MauiXaml Update="Pages\ListaTrabajadores.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\NuevaContra.xaml">
+	  <MauiXaml Update="Pages\NuevoTrabajador.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\OpcionRegistrosU.xaml">
+	  <MauiXaml Update="Pages\RegistroUsuariosPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\RecuperarContra.xaml">
+	  <MauiXaml Update="Pages\SeleccionarCitaPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\RegistroUsuarioBasico.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Pages\RegistroUsuarioNegocio.xaml">
+	  <MauiXaml Update="Pages\Servicios a domicilio.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

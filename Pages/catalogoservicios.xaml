@@ -4,7 +4,7 @@
              x:Class="slotsi_citas.Pages.catalogoservicios"
              Title="Gestión de Servicios"
              BackgroundColor="#F3F4F6"
-             Shell.NavBarIsVisible="False">
+             Shell.NavBarIsVisible="True">
 
     <Grid RowDefinitions="Auto, *">
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="20,20,20,15" BackgroundColor="#FFFFFF">
@@ -42,19 +42,13 @@
                             <HorizontalStackLayout Spacing="15" HorizontalOptions="End">
                                 <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24">
                                     <ImageButton.Source>
-                                        <FontImageSource FontFamily="MaterialIcons" 
-                                                         Glyph="&#xe3c9;" 
-                                                         Color="#2563EB" 
-                                                         Size="24"/>
+                                        <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe3c9;" Color="#2563EB" Size="24"/>
                                     </ImageButton.Source>
                                 </ImageButton>
 
                                 <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24">
                                     <ImageButton.Source>
-                                        <FontImageSource FontFamily="MaterialIcons" 
-                                                         Glyph="&#xe872;" 
-                                                         Color="#EF4444" 
-                                                         Size="24"/>
+                                        <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe872;" Color="#EF4444" Size="24"/>
                                     </ImageButton.Source>
                                 </ImageButton>
                             </HorizontalStackLayout>

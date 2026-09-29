@@ -4,7 +4,7 @@
              x:Class="slotsi_citas.Pages.CatalogoCliente"
              Title="Clientes"
              BackgroundColor="#F9FAFB"
-             Shell.NavBarIsVisible="False">
+             Shell.NavBarIsVisible="True">
 
     <Grid RowDefinitions="Auto, *">
 
