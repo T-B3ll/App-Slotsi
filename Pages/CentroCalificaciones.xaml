@@ -4,7 +4,7 @@
              xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
              x:Class="slotsi_citas.Pages.CentroCalificaciones"
              Title="Centro de calificaciones"
-             Shell.NavBarIsVisible="False"
+             Shell.NavBarIsVisible="True"
              BackgroundColor="#FAFAFA">
 
     <ContentPage.BindingContext>

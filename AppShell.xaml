@@ -19,11 +19,11 @@
     </Shell.FlyoutHeader>
 
 
-    <FlyoutItem Title="Trabajos a Domicilio" Route="Servicios_a_domicilio">
+    <FlyoutItem Title="Trabajos a Domicilio" Route="CatalogoServicios">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#334155" Size="24" />
         </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:Servicios_a_domicilio}" />
+        <ShellContent ContentTemplate="{DataTemplate pages:catalogoservicios}" />
     </FlyoutItem>
 
     <FlyoutItem Title="Citas Cliente" Route="Cita_ClientePage">
@@ -80,6 +80,13 @@
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FB;" Color="#334155" Size="24" />
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:ListaTrabajadores}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Calificaciones" Route="Calificaciones">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FB;" Color="#334155" Size="24" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:CentroCalificaciones}" />
     </FlyoutItem>
 
 </Shell>

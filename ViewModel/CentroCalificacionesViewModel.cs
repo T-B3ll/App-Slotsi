@@ -14,6 +14,7 @@ namespace slotsi_citas.ViewModel
     class CentroCalificacionesViewModel
     {
         public ObservableCollection<CalificacionModel> HistorialCalificaciones { get; set; }
+            = new ObservableCollection<CalificacionModel>();
 
         public CentroCalificacionesViewModel()
         {
@@ -25,12 +26,10 @@ namespace slotsi_citas.ViewModel
         {
             try
             {
-                // Conexión directa a MongoDB usando MongoDbSettings
                 var client = new MongoClient(MongoDbSettings.ConnectionString);
                 var database = client.GetDatabase(MongoDbSettings.DatabaseName);
-                var collection = database.GetCollection<CalificacionModel>("calificaciones");
+                var collection = database.GetCollection<CalificacionModel>("Calificaciones");
 
-                // Trae TODOS los documentos de la colección 'calificaciones' (sin filtrar por usuario)
                 var lista = await collection.Find(_ => true).ToListAsync();
 
                 HistorialCalificaciones.Clear();

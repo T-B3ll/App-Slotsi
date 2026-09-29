@@ -1,9 +1,22 @@
-namespace slotsi_citas.Pages;
+using slotsi_citas.ViewModel;
 
-public partial class catalogoservicios : ContentPage
+namespace slotsi_citas.Pages
 {
-	public catalogoservicios()
+
+	public partial class catalogoservicios : ContentPage
 	{
-		InitializeComponent();
+		private readonly CatalogoServiciosViewModel _vm;
+		public catalogoservicios()
+		{
+			InitializeComponent();
+			_vm = new CatalogoServiciosViewModel();
+			BindingContext = _vm;
+		}
+
+		protected override async void OnAppearing()
+		{
+			base.OnAppearing();
+			await _vm.CargarServiciosAsync();
+		}
 	}
 }

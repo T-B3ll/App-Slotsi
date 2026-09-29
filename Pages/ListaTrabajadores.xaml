@@ -13,9 +13,8 @@
                FontAttributes="Bold" 
                TextColor="#2563EB" 
                Margin="20,16,20,8" />
-
-        <Button Grid.Row="1" 
-                Text="+" 
+        
+        <Button Text="+"
                 FontSize="30" 
                 FontAttributes="Bold"
                 TextColor="White" 
@@ -26,7 +25,7 @@
                 HorizontalOptions="End" 
                 VerticalOptions="End" 
                 Margin="0,0,20,30"
-                Command="{Binding IrANuevoTrabajadorCommand}" />
+                Command="{Binding IrANuevoTrabajadorCommand}"/>
 
         <CollectionView Grid.Row="1" 
                         ItemsSource="{Binding Trabajadores}" 
@@ -68,24 +67,22 @@
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
 
-                            <HorizontalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="6">
-                                <ImageButton Source="editar.png" 
-                                             WidthRequest="36" 
-                                             HeightRequest="36" 
-                                             BackgroundColor="#F1F5F9" 
-                                             CornerRadius="18"
-                                             Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditarCommand}"
-                                             CommandParameter="{Binding .}" />
+                            <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="10" HorizontalOptions="End">
+                                <Switch IsToggled="{Binding Activo}" OnColor="#2563EB" HorizontalOptions="End"/>
+                                <HorizontalStackLayout Spacing="15" HorizontalOptions="End">
+                                    <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24">
+                                        <ImageButton.Source>
+                                            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe3c9;" Color="#2563EB" Size="24"/>
+                                        </ImageButton.Source>
+                                    </ImageButton>
 
-                                <ImageButton Source="eliminar.png" 
-                                             WidthRequest="36" 
-                                             HeightRequest="36" 
-                                             BackgroundColor="#F1F5F9" 
-                                             CornerRadius="18"
-                                             Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EliminarCommand}"
-                                             CommandParameter="{Binding .}" />
-                            </HorizontalStackLayout>
-
+                                    <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24">
+                                        <ImageButton.Source>
+                                            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe872;" Color="#EF4444" Size="24"/>
+                                        </ImageButton.Source>
+                                    </ImageButton>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
                         </Grid>
                     </Border>
                 </DataTemplate>

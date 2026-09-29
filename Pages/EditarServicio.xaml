@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="slotsi_citas.Pages.EditarServicio"
+             Title="Editar Servicio"
+             BackgroundColor="#F9FAFB">
+
+    <ScrollView Padding="20">
+        <VerticalStackLayout Spacing="16">
+
+            <Label Text="Editar Servicio" FontSize="22" FontAttributes="Bold" TextColor="#111827" />
+
+            <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                <Border WidthRequest="110" HeightRequest="110" Stroke="#D1D5DB" StrokeThickness="1" StrokeShape="RoundRectangle 16" BackgroundColor="#E5E7EB">
+                    <Image Source="{Binding Foto}" Aspect="AspectFill"/>
+                </Border>
+
+                <Button Text="Cambiar Foto" 
+                        Command="{Binding CambiarFotoCommand}" 
+                        BackgroundColor="#E5E7EB" 
+                        TextColor="#374151" 
+                        CornerRadius="8" 
+                        HeightRequest="36" 
+                        FontSize="12"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Nombre del Servicio" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
+                    <Entry Text="{Binding Nombre}" TextColor="#374151" Placeholder="Ej. Corte Clásico" HeightRequest="45" />
+                </Border>
+            </VerticalStackLayout>
+
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                    <Label Text="Precio ($)" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                    <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
+                        <Entry Text="{Binding Precio}" TextColor="#374151" Keyboard="Numeric" HeightRequest="45" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                    <Label Text="Duración (min)" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                    <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
+                        <Entry Text="{Binding DuracionMinutos}" TextColor="#374151" Keyboard="Numeric" HeightRequest="45" />
+                    </Border>
+                </VerticalStackLayout>
+            </Grid>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Categoría" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
+                    <Entry Text="{Binding Categoria}" TextColor="#374151" Placeholder="Ej. Barbería" HeightRequest="45" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Descripción" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,4" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
+                    <Editor Text="{Binding Descripcion}" TextColor="#374151" HeightRequest="80" AutoSize="Disabled"/>
+                </Border>
+            </VerticalStackLayout>
+
+            <Grid ColumnDefinitions="*, Auto" Margin="0,5">
+                <Label Grid.Column="0" Text="Disponible a domicilio" FontSize="14" TextColor="#374151" VerticalOptions="Center"/>
+                <Switch Grid.Column="1" IsToggled="{Binding DisponibleDomicilio}" OnColor="#2563EB"/>
+            </Grid>
+
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="12" Margin="0,15,0,20">
+                <Button Grid.Column="0" Text="Cancelar" Command="{Binding CancelarCommand}" BackgroundColor="#E5E7EB" TextColor="#374151" CornerRadius="8" HeightRequest="45"/>
+                <Button Grid.Column="1" Text="Guardar" Command="{Binding GuardarCommand}" BackgroundColor="#2563EB" TextColor="White" CornerRadius="8" HeightRequest="45" FontAttributes="Bold"/>
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -70,6 +70,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Pages\catalogocliente.xaml.cs">
+	    <DependentUpon>CatalogoCliente.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Pages\catalogoservicios.xaml.cs">
+	    <DependentUpon>catalogoservicios.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
 	  <MauiXaml Update="Pages\CalendarioPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
@@ -77,6 +86,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\Cita_UsuarioPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Pages\EditarServicio.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\ListaTrabajadores.xaml">
