@@ -33,7 +33,6 @@
         <ScrollView Grid.Row="1" Padding="16,10,16,20">
             <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="12" RowSpacing="15">
 
-                <!-- Tarjeta de Servicio 1 -->
                 <Border Grid.Row="0" Grid.Column="0" Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#FFFFFF">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="12" />

@@ -30,7 +30,6 @@ namespace slotsi_citas.ViewModel
                 var client = new MongoClient(MongoDbSettings.ConnectionString);
                 var database = client.GetDatabase(MongoDbSettings.DatabaseName);
 
-                // Asegurar el nombre exacto de la colección
                 _trabajadoresCollection = database.GetCollection<Trabajador>("Trabajadores");
             }
             catch (Exception ex)
@@ -52,12 +51,10 @@ namespace slotsi_citas.ViewModel
             {
                 Debug.WriteLine("[MONGODB] Consultando colección Trabajadores...");
 
-                // Obtener todos los registros sin filtro para probar
                 var lista = await _trabajadoresCollection.Find(_ => true).ToListAsync();
 
                 Debug.WriteLine($"[MONGODB] Documentos encontrados: {lista.Count}");
 
-                // Actualizar la lista en el hilo principal de la UI
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     Trabajadores.Clear();

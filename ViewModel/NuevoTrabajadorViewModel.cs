@@ -85,7 +85,7 @@ namespace slotsi_citas.ViewModels
 
             try
             {
-                // Crear el horario estándar de 6 días (Array (6))
+ 
                 var horariosPorDefecto = new List<HorarioTrabajo>
                 {
                     new HorarioTrabajo { Dia = "Lunes", Inicio = "08:00", Fin = "17:00" },
@@ -104,7 +104,7 @@ namespace slotsi_citas.ViewModels
                     Especialidad = string.IsNullOrWhiteSpace(Especialidad) ? "Barbero Principal" : Especialidad,
                     Correo = Correo,
                     HorarioTrabajo = horariosPorDefecto,
-                    Foto = _fotoBase64, // Cadena Base64 de la imagen seleccionada desde la computadora
+                    Foto = _fotoBase64, 
                     Activo = true
                 };
 

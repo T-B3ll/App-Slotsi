@@ -44,7 +44,6 @@ public static class MauiProgram
 
         client.InitializeAsync().Wait();
 
-        // 2. Registrar Servicios Nuevos
         builder.Services.AddSingleton(client);        
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<UsuarioService>();
@@ -59,13 +58,9 @@ public static class MauiProgram
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<RegistroUsuarioBasico>();
 
-
-        // Registrar ViewModels
-
         builder.Services.AddTransient<Cita_UsuarioViewModel>();
 
         builder.Services.AddTransient<Cita_ClientePage>();
-
 
         builder.Services.AddSingleton<RecuperacionService>();
         builder.Services.AddTransient<RecuperarContra>();

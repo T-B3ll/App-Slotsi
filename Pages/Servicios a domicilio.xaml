@@ -36,7 +36,6 @@
                         </VerticalStackLayout>
                     </Border>
 
-                    <!-- Tarjeta Horario -->
                     <Border Grid.Column="1" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12" BackgroundColor="#FFFFFF">
                         <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                             <Ellipse WidthRequest="48" HeightRequest="48" Fill="#F1F5F9" HorizontalOptions="Center" />
@@ -44,7 +43,6 @@
                         </VerticalStackLayout>
                     </Border>
 
-                    <!-- Tarjeta Servicios -->
                     <Border Grid.Column="2" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12" BackgroundColor="#FFFFFF">
                         <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                             <Ellipse WidthRequest="48" HeightRequest="48" Fill="#F1F5F9" HorizontalOptions="Center" />
@@ -53,7 +51,6 @@
                     </Border>
                 </Grid>
 
-                <!-- 2. ENCABEZADO DE BARBERÍA MÓVIL -->
                 <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
                     <Ellipse WidthRequest="44" HeightRequest="44" Fill="#E2E8F0" />
                     <VerticalStackLayout VerticalOptions="Center" Spacing="2">
@@ -62,7 +59,6 @@
                     </VerticalStackLayout>
                 </HorizontalStackLayout>
 
-                <!-- 3. SECCIÓN ¿QUÉ NECESITAS HOY? -->
                 <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="*, Auto">
                         <VerticalStackLayout Grid.Column="0">
@@ -82,7 +78,6 @@
                         </Border>
                     </Grid>
 
-                    <!-- Servicio 1: Corte de pelo -->
                     <Grid ColumnDefinitions="70, *" ColumnSpacing="12">
                         <Border Grid.Column="0" HeightRequest="70" StrokeThickness="0" StrokeShape="RoundRectangle 8" BackgroundColor="#F1F5F9" />
                         <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
@@ -95,7 +90,6 @@
                         </VerticalStackLayout>
                     </Grid>
 
-                    <!-- Servicio 2: Barba & perfilado -->
                     <Grid ColumnDefinitions="70, *" ColumnSpacing="12">
                         <Border Grid.Column="0" HeightRequest="70" StrokeThickness="0" StrokeShape="RoundRectangle 8" BackgroundColor="#F1F5F9" />
                         <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
@@ -108,7 +102,6 @@
                         </VerticalStackLayout>
                     </Grid>
 
-                    <!-- Servicio 3: Corte + Barba -->
                     <Grid ColumnDefinitions="70, *" ColumnSpacing="12">
                         <Border Grid.Column="0" HeightRequest="70" StrokeThickness="0" StrokeShape="RoundRectangle 8" BackgroundColor="#F1F5F9" />
                         <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
@@ -122,7 +115,6 @@
                     </Grid>
                 </VerticalStackLayout>
 
-                <!-- 4. SERVICIO A REALIZAR (CHIPS) -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Servicio a realizar" FontSize="14" FontAttributes="Bold" TextColor="#0F172A" />
                     <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
@@ -141,7 +133,6 @@
                     <Label Text="Puedes cambiarlo cuando quieras antes de confirmar." FontSize="11" TextColor="#64748B" Margin="0,2,0,0" />
                 </VerticalStackLayout>
 
-                <!-- 5. TRABAJADOR ASIGNADO (CHIPS) -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Trabajador asignado" FontSize="14" FontAttributes="Bold" TextColor="#0F172A" />
                     <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
@@ -160,7 +151,6 @@
                     <Label Text="La asignación depende de la disponibilidad del horario." FontSize="11" TextColor="#64748B" Margin="0,2,0,0" />
                 </VerticalStackLayout>
 
-                <!-- 6. DIRECCIÓN PARA EL SERVICIO -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Dirección para el servicio" FontSize="14" FontAttributes="Bold" TextColor="#0F172A" />
                     <Border Stroke="#E2E8F0" StrokeShape="RoundRectangle 8" Padding="12,0" BackgroundColor="#FFFFFF">
@@ -169,7 +159,6 @@
                     <Label Text="Incluye ciudad y zona para estimar la ruta." FontSize="11" TextColor="#64748B" />
                 </VerticalStackLayout>
 
-                <!-- 7. RANGO DE HORARIO (2x2 GRID) -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Rango de horario" FontSize="14" FontAttributes="Bold" TextColor="#0F172A" />
                     <Label Text="Selecciona un turno (puedes combinar con el día)" FontSize="11" TextColor="#64748B" Margin="0,-4,0,4" />
@@ -205,7 +194,6 @@
                     </Grid>
                 </VerticalStackLayout>
 
-                <!-- 8. DÍA Y HORA PREFERIDOS -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Día y hora preferidos" FontSize="14" FontAttributes="Bold" TextColor="#0F172A" />
                     <Border Stroke="#E2E8F0" StrokeShape="RoundRectangle 8" Padding="12,0" BackgroundColor="#FFFFFF">
@@ -214,7 +202,6 @@
                     <Label Text="Si no hay disponibilidad exacta, te proponemos la más cercana." FontSize="11" TextColor="#64748B" />
                 </VerticalStackLayout>
 
-                <!-- 9. DISPONIBILIDAD ESTIMADA -->
                 <VerticalStackLayout Spacing="12">
                     <Grid ColumnDefinitions="*, Auto">
                         <VerticalStackLayout Grid.Column="0">
@@ -234,9 +221,7 @@
                         </Border>
                     </Grid>
 
-                    <!-- Lista de opciones de disponibilidad -->
                     <VerticalStackLayout Spacing="12">
-                        <!-- Opción 1 -->
                         <Grid ColumnDefinitions="Auto, *, Auto">
                             <Ellipse Grid.Column="0" WidthRequest="32" HeightRequest="32" Fill="#E2E8F0" VerticalOptions="Center" Margin="0,0,10,0" />
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
@@ -249,7 +234,6 @@
                             </VerticalStackLayout>
                         </Grid>
 
-                        <!-- Opción 2 -->
                         <Grid ColumnDefinitions="Auto, *, Auto">
                             <Ellipse Grid.Column="0" WidthRequest="32" HeightRequest="32" Fill="#E2E8F0" VerticalOptions="Center" Margin="0,0,10,0" />
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
@@ -262,7 +246,6 @@
                             </VerticalStackLayout>
                         </Grid>
 
-                        <!-- Opción 3 -->
                         <Grid ColumnDefinitions="Auto, *, Auto">
                             <Ellipse Grid.Column="0" WidthRequest="32" HeightRequest="32" Fill="#E2E8F0" VerticalOptions="Center" Margin="0,0,10,0" />
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
@@ -277,7 +260,6 @@
                     </VerticalStackLayout>
                 </VerticalStackLayout>
 
-                <!-- 10. BOTONES DE ACCIÓN -->
                 <VerticalStackLayout Spacing="10" Margin="0,10,0,0">
                     <Button Text="Añadir otro servicio" 
                             BackgroundColor="Transparent" 
@@ -305,10 +287,8 @@
                             FontAttributes="Bold" />
                 </VerticalStackLayout>
 
-                <!-- 11. VISTA PREVIA DEL MAPA DE COBERUTRA -->
                 <Border StrokeThickness="0" StrokeShape="RoundRectangle 12" BackgroundColor="#E2E8F0" HeightRequest="180" Margin="0,10,0,10">
                     <Grid>
-                        <!-- Icono y Leyenda central del mapa -->
                         <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8">
                             <Image WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
                                 <Image.Source>
@@ -328,11 +308,9 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- NAVEGACIÓN INFERIOR (BOTTOM TAB BAR) -->
         <Border Grid.Row="2" Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="White" Padding="0,8">
             <Grid ColumnDefinitions="*, *, *, *">
 
-                <!-- Tab Inicio -->
                 <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
                     <Image WidthRequest="22" HeightRequest="22" HorizontalOptions="Center">
                         <Image.Source>
@@ -342,7 +320,6 @@
                     <Label Text="Inicio" FontSize="10" TextColor="#2563EB" FontAttributes="Bold" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
-                <!-- Tab Citas -->
                 <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
                     <Image WidthRequest="22" HeightRequest="22" HorizontalOptions="Center">
                         <Image.Source>
@@ -352,7 +329,6 @@
                     <Label Text="Citas" FontSize="10" TextColor="#94A3B8" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
-                <!-- Tab Sucursal -->
                 <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
                     <Image WidthRequest="22" HeightRequest="22" HorizontalOptions="Center">
                         <Image.Source>
@@ -362,7 +338,6 @@
                     <Label Text="Sucursal" FontSize="10" TextColor="#94A3B8" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
-                <!-- Tab Perfil -->
                 <VerticalStackLayout Grid.Column="3" Spacing="2" HorizontalOptions="Center">
                     <Image WidthRequest="22" HeightRequest="22" HorizontalOptions="Center">
                         <Image.Source>
