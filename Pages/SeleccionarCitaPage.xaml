@@ -172,6 +172,15 @@
                             <Label Grid.Column="2" Text="Guardado" FontSize="11" TextColor="#6B7280" VerticalOptions="Center"/>
                         </Grid>
 
+
+                        <HorizontalStackLayout Spacing="10" Margin="0,5">
+                            <Image Source="ic_clock.png" WidthRequest="20" HeightRequest="20" />
+                            <VerticalStackLayout>
+                                <Label Text="Horario" FontSize="12" TextColor="Gray" />
+                                <Label Text="{Binding HorarioTextoResumen}" FontAttributes="Bold" TextColor="Black" />
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+
                         <!-- Servicio(s) y Total -->
                         <Grid ColumnDefinitions="Auto, *, Auto">
                             <Label Grid.Column="0" Text="✂️" FontSize="16" VerticalOptions="Center" Margin="0,0,10,0"/>

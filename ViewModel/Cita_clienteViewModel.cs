@@ -1,12 +1,14 @@
-﻿using App.Models;
+﻿using Microsoft.Maui.Controls;
+using Microsoft.Maui.Storage;
 using slotsi_citas.Models;
 using slotsi_citas.Pages;
-using slotsi_citas.ViewModel;
 using slotsi_citas.Services;
+using slotsi_citas.ViewModel;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Storage;
 
 namespace slotsi_citas.ViewModels
 {
@@ -53,16 +55,31 @@ namespace slotsi_citas.ViewModels
 
             foreach (var hora in horas)
             {
-                // 1. Si existe en memoria/BD como Ocupado
+                string claveLocalOcupada = $"Cita_Ocupada_{hora}";
+                bool estaGuardadaLocalmente = Preferences.Default.Get(claveLocalOcupada, false);
+
+                if (estaGuardadaLocalmente && !CitaRepository.CitasRegistradas.ContainsKey(hora))
+                {
+                    string clienteLocal = Preferences.Default.Get($"Cliente_{hora}", "Cliente");
+                    CitaRepository.CitasRegistradas[hora] = new Cita_cliente
+                    {
+                        Hora = hora,
+                        Estado = "Ocupado",
+                        NombreCliente = clienteLocal
+                    };
+                }
+
                 if (CitaRepository.CitasRegistradas.TryGetValue(hora, out var citaGuardada))
                 {
+                    Preferences.Default.Set(claveLocalOcupada, true);
+                    Preferences.Default.Set($"Cliente_{hora}", citaGuardada.NombreCliente ?? "Cliente");
+
                     RangosHorarios.Add(new RangoHorario
                     {
                         HoraDisplay = hora,
                         Cita = citaGuardada
                     });
                 }
-                // 2. Horario de descanso
                 else if (hora == "1:00 PM")
                 {
                     RangosHorarios.Add(new RangoHorario
@@ -71,13 +88,15 @@ namespace slotsi_citas.ViewModels
                         Cita = new Cita_cliente { Estado = "NoDisponible" }
                     });
                 }
-                // 3. Horario disponible para agendar
                 else
                 {
+                    Preferences.Default.Remove(claveLocalOcupada);
+                    Preferences.Default.Remove($"Cliente_{hora}");
+
                     RangosHorarios.Add(new RangoHorario
                     {
                         HoraDisplay = hora,
-                        Cita = null // Cita nula indica que el slot está libre
+                        Cita = null
                     });
                 }
             }
@@ -88,7 +107,6 @@ namespace slotsi_citas.ViewModels
             if (rango == null)
                 return;
 
-            // Solo bloqueamos SI la cita existe Y su estado es "Ocupado" o "NoDisponible"
             bool estaOcupado = rango.Cita != null &&
                               (rango.Cita.Estado == "Ocupado" || rango.Cita.Estado == "NoDisponible");
 
@@ -104,7 +122,6 @@ namespace slotsi_citas.ViewModels
                 return;
             }
 
-            // Si está libre, navegamos a SeleccionarCitaPage
             string direccionGuardada = Preferences.Default.Get("direccion_guardada", "Matagalpa, Nicaragua");
 
             var parametros = new Dictionary<string, object>

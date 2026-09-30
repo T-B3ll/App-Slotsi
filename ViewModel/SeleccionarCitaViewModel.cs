@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using slotsi_citas.Models;
-using App.Models;
 using slotsi_citas.Services;
 
 namespace slotsi_citas.ViewModel
 {
     [QueryProperty(nameof(HorarioSeleccionado), "HorarioSeleccionado")]
     [QueryProperty(nameof(DireccionCliente), "DireccionCliente")]
-    public class SeleccionarCitaViewModel : BindableObject
+    public class SeleccionarCitaViewModel : BindableObject, IQueryAttributable
     {
         private readonly MongoService _mongoService;
 
@@ -24,8 +24,12 @@ namespace slotsi_citas.ViewModel
             get => _horarioSeleccionado;
             set
             {
-                _horarioSeleccionado = value;
-                OnPropertyChanged();
+                if (_horarioSeleccionado != value)
+                {
+                    _horarioSeleccionado = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(HorarioTextoResumen));
+                }
             }
         }
 
@@ -57,6 +61,10 @@ namespace slotsi_citas.ViewModel
             ? $"C$ {_serviciosSeleccionados.Sum(s => s.Precio):N2}"
             : "C$ 0.00";
 
+        public string HorarioTextoResumen => HorarioSeleccionado != null
+            ? HorarioSeleccionado.HoraDisplay
+            : "Sin horario seleccionado";
+
         public ICommand ToggleServicioCommand { get; }
         public ICommand ConfirmarCitaCommand { get; }
         public ICommand VolverCommand { get; }
@@ -70,14 +78,26 @@ namespace slotsi_citas.ViewModel
             VolverCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
         }
 
+        // Intercepta los parámetros pasados vía Shell Navigation al abrir la vista
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            if (query.TryGetValue("HorarioSeleccionado", out var horario) && horario is RangoHorario rango)
+            {
+                HorarioSeleccionado = rango;
+            }
+
+            if (query.TryGetValue("DireccionCliente", out var dir) && dir is string direccion)
+            {
+                DireccionCliente = direccion;
+            }
+        }
+
         public async Task CargarServiciosBDAsync()
         {
             try
             {
-                // 1. Consultar MongoDB en segundo plano
                 var serviciosBD = await Task.Run(async () => await _mongoService.ObtenerServiciosAsync());
 
-                // 2. Modificar la colección visual de la UI dentro del Hilo Principal
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     ServiciosTarjetas.Clear();
@@ -91,58 +111,39 @@ namespace slotsi_citas.ViewModel
                     }
                     else
                     {
-                        // Datos de respaldo si la base de datos no devuelve registros o está vacía
-                        ServiciosTarjetas.Add(new Servicio
-                        {
-                            Id = "1",
-                            Nombre = "Afeitado Clásico",
-                            Descripcion = "Contamos con el mejor equipo de la zona.",
-                            Precio = 1699,
-                            DuracionMinutos = 90,
-                            DisponibleDomicilio = true
-                        });
-
-                        ServiciosTarjetas.Add(new Servicio
-                        {
-                            Id = "2",
-                            Nombre = "Corte Degradado",
-                            Descripcion = "Corte moderno con acabado a navaja.",
-                            Precio = 350,
-                            DuracionMinutos = 45,
-                            DisponibleDomicilio = false
-                        });
+                        CargarServiciosRespaldo();
                     }
                 });
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[ERROR CARGAR SERVICIOS]: {ex.Message}");
-
-                // En caso de fallo de red o excepción, cargar los de respaldo
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    ServiciosTarjetas.Clear();
-                    ServiciosTarjetas.Add(new Servicio
-                    {
-                        Id = "1",
-                        Nombre = "Afeitado Clásico",
-                        Descripcion = "Contamos con el mejor equipo de la zona.",
-                        Precio = 1699,
-                        DuracionMinutos = 90,
-                        DisponibleDomicilio = true
-                    });
-
-                    ServiciosTarjetas.Add(new Servicio
-                    {
-                        Id = "2",
-                        Nombre = "Corte Degradado",
-                        Descripcion = "Corte moderno con acabado a navaja.",
-                        Precio = 350,
-                        DuracionMinutos = 45,
-                        DisponibleDomicilio = false
-                    });
-                });
+                MainThread.BeginInvokeOnMainThread(CargarServiciosRespaldo);
             }
+        }
+
+        private void CargarServiciosRespaldo()
+        {
+            ServiciosTarjetas.Clear();
+            ServiciosTarjetas.Add(new Servicio
+            {
+                Id = "1",
+                Nombre = "Afeitado Clásico",
+                Descripcion = "Contamos con el mejor equipo de la zona.",
+                Precio = 1699,
+                DuracionMinutos = 90,
+                DisponibleDomicilio = true
+            });
+
+            ServiciosTarjetas.Add(new Servicio
+            {
+                Id = "2",
+                Nombre = "Corte Degradado",
+                Descripcion = "Corte moderno con acabado a navaja.",
+                Precio = 350,
+                DuracionMinutos = 45,
+                DisponibleDomicilio = false
+            });
         }
 
         public void CargarServicios()
@@ -150,7 +151,6 @@ namespace slotsi_citas.ViewModel
             _ = CargarServiciosBDAsync();
         }
 
-        // Evalúa tanto el límite por hora de cierre como si la siguiente hora está Ocupada/Reservada
         private int ObtenerLimiteServiciosPorHora()
         {
             if (HorarioSeleccionado == null || string.IsNullOrEmpty(HorarioSeleccionado.HoraDisplay))
@@ -169,12 +169,10 @@ namespace slotsi_citas.ViewModel
 
             int bloquesDisponiblesConsecutivos = 1;
 
-            // Verificar cuántos bloques hacia adelante están realmente libres
             for (int i = indiceActual + 1; i < ordenHoras.Count; i++)
             {
                 string siguienteHora = ordenHoras[i];
 
-                // Si la siguiente hora es descanso (1:00 PM) o ya está ocupada en el repositorio, cortamos
                 if (siguienteHora == "1:00 PM" || CitaRepository.CitasRegistradas.ContainsKey(siguienteHora))
                 {
                     break;
@@ -230,59 +228,61 @@ namespace slotsi_citas.ViewModel
             if (!_serviciosSeleccionados.Any())
             {
                 if (Application.Current?.MainPage != null)
-                    await Application.Current.MainPage.DisplayAlert("Atención", "Por favor selecciona al menos un servicio para continuar.", "OK");
+                    await Application.Current.MainPage.DisplayAlert("Atención", "Por favor selecciona al menos un servicio.", "OK");
                 return;
             }
 
-            if (HorarioSeleccionado != null)
+            if (HorarioSeleccionado == null || string.IsNullOrEmpty(HorarioSeleccionado.HoraDisplay))
             {
-                try
+                if (Application.Current?.MainPage != null)
+                    await Application.Current.MainPage.DisplayAlert("Atención", "Selecciona un horario válido.", "OK");
+                return;
+            }
+
+            try
+            {
+                // 1. Crear el objeto mapeado correctamente para MongoDB
+                var nuevaCita = new Cita_cliente
                 {
-                    var nuevaCita = new Cita_cliente
-                    {
-                        NombreCliente = ClienteNombre,
-                        Servicio = ServicioNombreResumen,
-                        Precio = _serviciosSeleccionados.Sum(s => s.Precio),
-                        Estado = "Ocupado",
-                        Fecha = DateTime.Today
-                    };
+                    NombreCliente = string.IsNullOrEmpty(ClienteNombre) ? "Juan Pérez" : ClienteNombre,
+                    Servicio = ServicioNombreResumen,
+                    Precio = _serviciosSeleccionados.Sum(s => s.Precio),
+                    Estado = "Ocupado",
+                    Fecha = DateTime.UtcNow.Date,
+                    Hora = HorarioSeleccionado.HoraDisplay // Se asigna directamente como string "4:00 PM"
+                };
 
-                    // 1. Guardar en MongoDB de forma asíncrona sin bloquear el hilo de la UI
-                    await Task.Run(async () =>
-                    {
-                        await _mongoService.GuardarCitaAsync(nuevaCita);
-                    });
+                // 2. Guardar en MongoDB Atlas
+                await _mongoService.GuardarCitaAsync(nuevaCita);
 
-                    // 2. Bloquear el horario seleccionado (y los consecutivos si aplica) en el repositorio local
-                    AsegurarReservaDeBloques(HorarioSeleccionado.HoraDisplay, _serviciosSeleccionados.Count, nuevaCita);
+                // 3. Bloquear en la memoria local para esta sesión
+                AsegurarReservaDeBloques(HorarioSeleccionado.HoraDisplay, _serviciosSeleccionados.Count, nuevaCita);
 
-                    // 3. Mostrar mensaje de confirmación
-                    if (Application.Current?.MainPage != null)
-                    {
-                        await Application.Current.MainPage.DisplayAlert("¡Éxito!", "Cita confirmada correctamente.", "Aceptar");
-                    }
+                if (Application.Current?.MainPage != null)
+                {
+                    await Application.Current.MainPage.DisplayAlert("¡Éxito!", "Cita guardada en la base de datos.", "Aceptar");
+                }
 
-                    // 4. Redirección garantizada a la pantalla anterior (Calendario de Citas)
+                // 4. Regreso garantizado a la pantalla del Calendario
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
                     if (Shell.Current != null)
                     {
                         await Shell.Current.GoToAsync("..");
                     }
-                    else
+                    else if (Application.Current?.MainPage?.Navigation != null)
                     {
-                        var window = Application.Current?.Windows.FirstOrDefault();
-                        if (window?.Page?.Navigation != null && window.Page.Navigation.NavigationStack.Count > 1)
-                        {
-                            await window.Page.Navigation.PopAsync();
-                        }
+                        await Application.Current.MainPage.Navigation.PopAsync();
                     }
-                }
-                catch (Exception ex)
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ERROR FATAL MONGO]: {ex}");
+
+                if (Application.Current?.MainPage != null)
                 {
-                    System.Diagnostics.Debug.WriteLine($"[ERROR CONFIRMAR CITA]: {ex.Message}");
-                    if (Application.Current?.MainPage != null)
-                    {
-                        await Application.Current.MainPage.DisplayAlert("Error", "Ocurrió un inconveniente al procesar la cita.", "OK");
-                    }
+                    await Application.Current.MainPage.DisplayAlert("Error en MongoDB", $"{ex.Message}", "OK");
                 }
             }
         }

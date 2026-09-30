@@ -20,7 +20,7 @@
                              BackgroundColor="#FFFFFF" 
                              Padding="16,16,16,8" 
                              Spacing="12">
-            
+
             <Label Text="Calendario de citas..." 
                    FontSize="24" 
                    FontAttributes="Bold" 
@@ -72,22 +72,22 @@
                 <Label Text="L" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
                 <Label Text="17" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
             </VerticalStackLayout>
-            
+
             <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="4">
                 <Label Text="M" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
                 <Label Text="18" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
             </VerticalStackLayout>
-            
+
             <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" Spacing="4">
                 <Label Text="Mi" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
                 <Label Text="19" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
             </VerticalStackLayout>
-            
+
             <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" Spacing="4">
                 <Label Text="J" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
                 <Label Text="20" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
             </VerticalStackLayout>
-            
+
             <VerticalStackLayout Grid.Column="4" HorizontalOptions="Center" Spacing="2">
                 <Label Text="V" TextColor="#2563EB" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
                 <Border StrokeShape="RoundRectangle 16" 
@@ -98,12 +98,12 @@
                     <Label Text="21" TextColor="White" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
                 </Border>
             </VerticalStackLayout>
-            
+
             <VerticalStackLayout Grid.Column="5" HorizontalOptions="Center" Spacing="4">
                 <Label Text="S" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
                 <Label Text="22" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
             </VerticalStackLayout>
-            
+
             <VerticalStackLayout Grid.Column="6" HorizontalOptions="Center" Spacing="4">
                 <Label Text="D" TextColor="#6B7280" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center"/>
                 <Label Text="23" TextColor="#111827" FontSize="14" FontAttributes="Bold" HorizontalOptions="Center"/>
@@ -129,7 +129,7 @@
 
                         <!-- Slot Disponible -->
                         <Border Grid.Column="1" 
-                                    StrokeShape="RoundRectangle 10" 
+                                StrokeShape="RoundRectangle 10" 
                                 BackgroundColor="#F9FAFB" 
                                 Stroke="#E5E7EB" 
                                 StrokeThickness="1" 
@@ -137,13 +137,13 @@
                                 IsVisible="{Binding EsDisponible}">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:Cita_clienteViewModel}}, Path=AgendarCitaClienteCommand}" 
-                              CommandParameter="{Binding .}"/>
+                                                      CommandParameter="{Binding .}"/>
                             </Border.GestureRecognizers>
                             <Label Text="Agendar cita" 
-                                TextColor="#2563EB" 
-                                FontAttributes="Bold" 
-                                FontSize="14" 
-                                VerticalOptions="Center"/>
+                                   TextColor="#2563EB" 
+                                   FontAttributes="Bold" 
+                                   FontSize="14" 
+                                   VerticalOptions="Center"/>
                         </Border>
 
                         <!-- Slot Ocupado -->

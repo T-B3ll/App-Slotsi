@@ -1,18 +1,23 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows.Input;
+using Microsoft.Maui.Controls;
 using slotsi_citas.Models;
 
 namespace slotsi_citas.ViewModel;
 
-public class CalendarioViewModel
+public class CalendarioViewModel : BindableObject
 {
     public string RangoFecha { get; set; } = "Ago 18 - 24, 2026";
     public ObservableCollection<DiaSemanaItem> DiasSemana { get; set; }
-    public ObservableCollection<CitaCalendarioItem> Citas { get; set; }
+
+    // Colección de bloques de hora para el calendario
+    public ObservableCollection<RangoHorario> RangosHorarios { get; set; }
 
     public ICommand HoyCommand { get; }
     public ICommand AnterioresCommand { get; }
     public ICommand SiguientesCommand { get; }
+    public ICommand SeleccionarHorarioCommand { get; }
 
     public CalendarioViewModel()
     {
@@ -28,26 +33,32 @@ public class CalendarioViewModel
             new DiaSemanaItem { LetraDia = "D", NumeroDia = "23", EsSeleccionado = false }
         };
 
-        // Citas programadas
-        Citas = new ObservableCollection<CitaCalendarioItem>
+        // Inicializar los bloques de horarios
+        RangosHorarios = new ObservableCollection<RangoHorario>
         {
-            new CitaCalendarioItem
-            {
-                ClienteNombre = "María González",
-                ServicioYHora = "Corte Clásico (9:00 - 10:00)",
-                HoraInicio = "9:00 AM",
-                ColorBarra = "#00C781",
-                ColorFondo = "#EDFAF4"
-            },
-            new CitaCalendarioItem
-            {
-                ClienteNombre = "Carlos Mendoza",
-                ServicioYHora = "Afeitado de Barba (11:00 - 11:30)",
-                HoraInicio = "11:00 AM",
-                ColorBarra = "#FF9500",
-                ColorFondo = "#FFF8ED"
-            }
+            new RangoHorario { HoraDisplay = "8:00 AM" },
+            new RangoHorario { HoraDisplay = "9:00 AM" },
+            new RangoHorario { HoraDisplay = "10:00 AM" },
+            new RangoHorario { HoraDisplay = "11:00 AM" },
+            new RangoHorario { HoraDisplay = "12:00 PM" },
+            new RangoHorario { HoraDisplay = "1:00 PM", EsOcupadoManual = true }, // Bloque de almuerzo/descanso
+            new RangoHorario { HoraDisplay = "2:00 PM" },
+            new RangoHorario { HoraDisplay = "3:00 PM" },
+            new RangoHorario { HoraDisplay = "4:00 PM" }
         };
+
+        // Comando para seleccionar horario y navegar hacia SeleccionarCitaPage
+        SeleccionarHorarioCommand = new Command<RangoHorario>(async (horario) =>
+        {
+            if (horario == null || horario.EsOcupado) return;
+
+            var navigationParameters = new Dictionary<string, object>
+            {
+                { "HorarioSeleccionado", horario }
+            };
+
+            await Shell.Current.GoToAsync("SeleccionarCitaPage", navigationParameters);
+        });
 
         HoyCommand = new Command(async () =>
             await Application.Current.MainPage.DisplayAlert("Calendario", "Día actual seleccionado", "OK"));
