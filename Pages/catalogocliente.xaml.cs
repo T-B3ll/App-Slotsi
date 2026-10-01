@@ -8,13 +8,12 @@ public partial class CatalogoCliente : ContentPage
     public CatalogoCliente()
 	{
 		InitializeComponent();
-        InitializeComponent();
         _vm = new CatalogoServiciosViewModel();
         BindingContext = _vm;
     }
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        await _vm.CargarServiciosAsync();
+        await _vm.CargarservicioClienteAsync();
     }
 }

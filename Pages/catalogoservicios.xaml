@@ -17,22 +17,28 @@
         <CollectionView Grid.Row="1" ItemsSource="{Binding Servicios}" Margin="16,10,16,80">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#FFFFFF" Padding="10" Margin="0,0,0,12">
+                    <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#FFFFFF" Padding="10" Margin="0,0,0,12" Opacity="1">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="10" />
                         </Border.StrokeShape>
+
+                        <!-- DataTrigger para cambiar la opacidad visual cuando Activo sea False -->
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding Activo}" Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </DataTrigger>
+                        </Border.Triggers>
+
                         <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
 
-                            <!-- Imagen táctil para cambiar la foto del servicio -->
-                            <Border Grid.Column="0" WidthRequest="60" HeightRequest="60" BackgroundColor="#F3F4F6" StrokeShape="RoundRectangle 8">
-                                <Image Source="{Binding Foto}" Aspect="AspectFill">
-                                    <Image.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.CambiarFotoServicioCommand}"
-                                                             CommandParameter="{Binding .}" />
-                                    </Image.GestureRecognizers>
-                                </Image>
-                            </Border>
+                            <!-- Imagen del servicio -->
+                            <Grid Grid.Column="0">
+                                <Border WidthRequest="60" HeightRequest="60" BackgroundColor="#F3F4F6" StrokeShape="RoundRectangle 8">
+                                    <Image Source="{Binding Foto}" Aspect="AspectFill"/>
+                                </Border>
+                            </Grid>
 
+                            <!-- Información principal -->
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
                                 <Label Text="{Binding Nombre}" FontSize="15" FontAttributes="Bold" TextColor="#1F2937" />
                                 <HorizontalStackLayout Spacing="8">
@@ -43,16 +49,22 @@
                                 <Label Text="{Binding Categoria, StringFormat='Categoría: {0}'}" FontSize="11" TextColor="#9CA3AF" />
                             </VerticalStackLayout>
 
+                            <!-- Switch y Botones de Acción -->
                             <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="10" HorizontalOptions="End">
-                                <Switch IsToggled="{Binding Activo}" OnColor="#2563EB" HorizontalOptions="End"/>
-                                <HorizontalStackLayout Spacing="15" HorizontalOptions="End">
+
+                                <!-- El Switch SIEMPRE permanece interactivo para poder activar/desactivar el servicio -->
+                                <Switch IsToggled="{Binding Activo}" OnColor="#2563EB" HorizontalOptions="End" Toggled="OnEstadoServicioToggled"/>
+
+                                <!-- IsEnabled="{Binding Activo}" bloquea/habilita automáticamente los botones sin recargar la página -->
+                                <HorizontalStackLayout Spacing="15" 
+                                                       HorizontalOptions="End" 
+                                                       IsEnabled="{Binding Activo}">
 
                                     <!-- Botón Editar -->
                                     <ImageButton BackgroundColor="Transparent" 
                                                  WidthRequest="24" 
                                                  HeightRequest="24"
-                                                 InputTransparent="False"
-                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditarservicioCommand}"
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditarServicioCommand}"
                                                  CommandParameter="{Binding .}">
                                         <ImageButton.Source>
                                             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe3c9;" Color="#2563EB" Size="24"/>
@@ -60,7 +72,11 @@
                                     </ImageButton>
 
                                     <!-- Botón Eliminar -->
-                                    <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24">
+                                    <ImageButton BackgroundColor="Transparent" 
+                                                 WidthRequest="24" 
+                                                 HeightRequest="24"
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EliminarServicioCommand}"
+                                                 CommandParameter="{Binding .}">
                                         <ImageButton.Source>
                                             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe872;" Color="#EF4444" Size="24"/>
                                         </ImageButton.Source>
@@ -85,7 +101,8 @@
                 CornerRadius="30"
                 HorizontalOptions="End" 
                 VerticalOptions="End" 
-                Margin="0,0,20,30">
+                Margin="0,0,20,30"
+                Command="{Binding CreaServicioCommand}">
             <Button.Shadow>
                 <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.2" />
             </Button.Shadow>

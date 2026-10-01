@@ -14,6 +14,7 @@ namespace slotsi_citas.ViewModel
 
         public ObservableCollection<Servicios> Servicios { get; set; } = new();
 
+       
         private int _serviciosActivosCount;
         public int ServiciosActivosCount
         {
@@ -21,6 +22,8 @@ namespace slotsi_citas.ViewModel
             set { _serviciosActivosCount = value; OnPropertyChanged(); }
         }
 
+        public ICommand CambiarEstadoActivoCommand { get; }
+        public ICommand CreaServicioCommand { get; }
         public ICommand CargarServiciosCommand { get; }
         public ICommand EditarservicioCommand { get; }
         public ICommand CambiarFotoServicio { get; }
@@ -32,9 +35,73 @@ namespace slotsi_citas.ViewModel
             var bd = cliente.GetDatabase(MongoDbSettings.DatabaseName);
             _coleccionServicios = bd.GetCollection<Servicios>("servicios");
 
+            CambiarEstadoActivoCommand = new Microsoft.Maui.Controls.Command<Servicios>(async (servicio) => await CambiarEstadoActivoAsync(servicio));
+            CreaServicioCommand = new Microsoft.Maui.Controls.Command(async () => await CrearServicioAsync());
             CargarServiciosCommand = new Command(async () => await CargarServiciosAsync());
             EditarservicioCommand = new Microsoft.Maui.Controls.Command<Servicios>(async (servicio) => await EditarServicioAsync(servicio));
             CambiarFotoServicio = new Microsoft.Maui.Controls.Command<Servicios>(async (servicio) => await SeleccionarYGuardarFotoAsync(servicio)); ;
+        }
+
+        public async Task CambiarEstadoActivoAsync(Servicios servicio)
+        {
+            if (servicio == null) return;
+
+            if (!servicio.Activo)
+            {
+                bool confirmar = await Application.Current.MainPage.DisplayAlert(
+                    "Desactivar servicio",
+                    $"¿Estás seguro de que deseas desactivar '{servicio.Nombre}'? Los clientes no podrán agendarlo.",
+                    "Desactivar",
+                    "Cancelar");
+
+                if (!confirmar)
+                {
+                    servicio.Activo = true;
+                    return;
+                }
+            }
+
+            try
+            {
+                var filtro = Builders<Servicios>.Filter.Eq(s => s.Id, servicio.Id);
+                var actualizacion = Builders<Servicios>.Update.Set(s => s.Activo, servicio.Activo);
+
+                await _coleccionServicios.UpdateOneAsync(filtro, actualizacion);
+
+                ServiciosActivosCount = Servicios.Count(s => s.Activo);
+            }
+            catch (Exception ex)
+            {
+                servicio.Activo = !servicio.Activo;
+                await Application.Current.MainPage.DisplayAlert("Error", $"Error al actualizar: {ex.Message}", "OK");
+            }
+        }
+
+        public async Task CargarservicioClienteAsync()
+        {
+            try
+            {
+                var filtroactivo = Builders<Servicios>.Filter.Eq(s => s.Activo, true);
+                var resultados = await _coleccionServicios.Find(filtroactivo).ToListAsync();
+
+                Servicios.Clear();
+                foreach (var serv in resultados)
+                {
+                    Servicios.Add(serv);
+                }
+            }
+            catch ( Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", $"Error al cargar servicios activos: {ex.Message}", "OK");
+            }
+        }
+
+        public async Task CrearServicioAsync()
+        {
+            var paginaCreacion = new Pages.EditarServicio(null, _coleccionServicios);
+            await Application.Current.MainPage.Navigation.PushModalAsync(paginaCreacion);
+
+            await CargarServiciosAsync();
         }
 
         public async Task CargarServiciosAsync()
@@ -63,7 +130,6 @@ namespace slotsi_citas.ViewModel
 
             try
             {
-                // 1. Abrir el selector de archivos multimedia del dispositivo
                 var resultado = await FilePicker.Default.PickAsync(new PickOptions
                 {
                     PickerTitle = "Selecciona una imagen para el servicio",
@@ -72,7 +138,6 @@ namespace slotsi_citas.ViewModel
 
                 if (resultado != null)
                 {
-                    // 2. Leer la imagen y convertira en Base64
                     using var stream = await resultado.OpenReadAsync();
                     using var memoryStream = new MemoryStream();
                     await stream.CopyToAsync(memoryStream);
@@ -83,7 +148,6 @@ namespace slotsi_citas.ViewModel
 
                     string base64Imagen = $"data:image/{extension};base64,{Convert.ToBase64String(bytesImagen)}";
 
-                    // 3. Actualizar la propiedad local y la base de datos en MongoDB
                     servicio.Foto = base64Imagen;
 
                     var filtro = Builders<Servicios>.Filter.Eq(s => s.Id, servicio.Id);
@@ -91,7 +155,6 @@ namespace slotsi_citas.ViewModel
 
                     await _coleccionServicios.UpdateOneAsync(filtro, actualizacion);
 
-                    // Recargar o notificar cambios visuales
                     await CargarServiciosAsync();
                     await Application.Current.MainPage.DisplayAlert("Éxito", "La imagen del servicio fue actualizada correctamente.", "OK");
                 }
@@ -106,7 +169,6 @@ namespace slotsi_citas.ViewModel
         {
             if (servicio == null) return;
 
-            // Abrir la pantalla completa de edición enviando el servicio seleccionado
             var paginaEdicion = new Pages.EditarServicio(servicio, _coleccionServicios);
             await Application.Current.MainPage.Navigation.PushModalAsync(paginaEdicion);
         }

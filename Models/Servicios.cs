@@ -45,5 +45,9 @@ namespace slotsi_citas.Models
 
         [BsonElement("foto")]
         public string Foto { get; set; }
+
+        public bool TieneFoto => !string.IsNullOrEmpty(Foto);
+        public bool NoTieneFoto => string.IsNullOrEmpty(Foto);
     }
+
 }

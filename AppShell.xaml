@@ -19,11 +19,11 @@
     </Shell.FlyoutHeader>
 
 
-    <FlyoutItem Title="Trabajos a Domicilio" Route="CatalogoServicios">
+    <FlyoutItem Title="Trabajos a Domicilio" Route="LoginPage ">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#334155" Size="24" />
         </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:catalogoservicios}" />
+        <ShellContent ContentTemplate="{DataTemplate pages:LoginPage}" />
     </FlyoutItem>
 
     <FlyoutItem Title="Citas Cliente" Route="Cita_ClientePage">

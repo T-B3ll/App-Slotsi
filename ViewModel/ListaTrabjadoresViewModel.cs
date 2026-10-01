@@ -9,22 +9,27 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls;
 
 namespace slotsi_citas.ViewModel
 {
     public class ListaTrabjadoresViewModel : INotifyPropertyChanged
     {
-        public ICommand IrANuevoTrabajadorCommand { get; }
         private readonly IMongoCollection<Trabajador> _trabajadoresCollection;
+
+        public ICommand EditarTrabajadorCommand { get; }
+        public ICommand IrANuevoTrabajadorCommand { get; }
 
         public ObservableCollection<Trabajador> Trabajadores { get; set; } = new ObservableCollection<Trabajador>();
 
         public ListaTrabjadoresViewModel()
         {
             IrANuevoTrabajadorCommand = new Command(async () => await IrANuevoTrabajadorAsync());
+            EditarTrabajadorCommand = new Microsoft.Maui.Controls.Command<Trabajador>(async (trabajador) => await EditarTrabajadorAsync(trabajador));
+
             try
             {
                 var client = new MongoClient(MongoDbSettings.ConnectionString);
@@ -38,15 +43,27 @@ namespace slotsi_citas.ViewModel
             }
         }
 
+        private async Task EditarTrabajadorAsync(Trabajador trabajador)
+        {
+            if (trabajador == null) return;
+
+            var navigationParameters = new Dictionary<string, object>
+            {
+                { "TrabajadorEditar", trabajador }
+            };
+
+            await Shell.Current.GoToAsync(nameof(NuevoTrabajador), navigationParameters);
+        }
+
         private async Task IrANuevoTrabajadorAsync()
         {
-        
             await Shell.Current.GoToAsync(nameof(NuevoTrabajador));
-     
         }
 
         public async Task CargarTrabajadoresAsync()
         {
+            if (_trabajadoresCollection == null) return;
+
             try
             {
                 Debug.WriteLine("[MONGODB] Consultando colección Trabajadores...");
@@ -62,7 +79,6 @@ namespace slotsi_citas.ViewModel
                     {
                         Trabajadores.Add(trabajador);
                     }
-                    OnPropertyChanged(nameof(Trabajadores));
                 });
             }
             catch (Exception ex)

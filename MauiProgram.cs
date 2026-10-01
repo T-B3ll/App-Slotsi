@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
-using slotsi_citas.Pages;
-using slotsi_citas.ViewModel;
-using Syncfusion.Maui.Toolkit.Hosting;
-using Supabase;
 using MongoDB.Driver;
+using slotsi_citas.Pages;
 using slotsi_citas.Services;
+using slotsi_citas.ViewModel;
+using slotsi_citas.ViewModels;
+using Supabase;
+using Syncfusion.Maui.Toolkit.Hosting;
 
 namespace slotsi_citas;
 
@@ -53,6 +54,9 @@ public static class MauiProgram
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<UsuarioBasicoViewModel>();
         builder.Services.AddTransient<ListaTrabjadoresViewModel>();
+
+        builder.Services.AddTransient<NuevoTrabajadorViewModel>();
+        builder.Services.AddTransient<NuevoTrabajador>();
 
         builder.Services.AddTransient<Cita_ClientePage>();
         builder.Services.AddTransient<LoginPage>();

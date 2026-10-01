@@ -4,18 +4,17 @@
              x:Class="slotsi_citas.Pages.EditarServicio"
              Title="Editar Servicio"
              BackgroundColor="#F9FAFB">
-
     <ScrollView Padding="20">
         <VerticalStackLayout Spacing="16">
 
-            <Label Text="Editar Servicio" FontSize="22" FontAttributes="Bold" TextColor="#111827" />
+            <Label Text="{Binding TituloPantalla}" FontSize="22" FontAttributes="Bold" TextColor="#111827" />
 
             <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
                 <Border WidthRequest="110" HeightRequest="110" Stroke="#D1D5DB" StrokeThickness="1" StrokeShape="RoundRectangle 16" BackgroundColor="#E5E7EB">
                     <Image Source="{Binding Foto}" Aspect="AspectFill"/>
                 </Border>
 
-                <Button Text="Cambiar Foto" 
+                <Button Text="Seleccionar Foto" 
                         Command="{Binding CambiarFotoCommand}" 
                         BackgroundColor="#E5E7EB" 
                         TextColor="#374151" 
@@ -68,7 +67,7 @@
 
             <Grid ColumnDefinitions="*, *" ColumnSpacing="12" Margin="0,15,0,20">
                 <Button Grid.Column="0" Text="Cancelar" Command="{Binding CancelarCommand}" BackgroundColor="#E5E7EB" TextColor="#374151" CornerRadius="8" HeightRequest="45"/>
-                <Button Grid.Column="1" Text="Guardar" Command="{Binding GuardarCommand}" BackgroundColor="#2563EB" TextColor="White" CornerRadius="8" HeightRequest="45" FontAttributes="Bold"/>
+                <Button Grid.Column="1" Text="{Binding TextoBotonGuardar}" Command="{Binding GuardarCommand}" BackgroundColor="#2563EB" TextColor="White" CornerRadius="8" HeightRequest="45" FontAttributes="Bold"/>
             </Grid>
 
         </VerticalStackLayout>

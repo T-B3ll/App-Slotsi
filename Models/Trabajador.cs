@@ -29,14 +29,23 @@ namespace slotsi_citas.Models
         [BsonElement("correo")]
         public string Correo { get; set; }
 
+        [BsonElement("telefono")]
+        public string Telefono { get; set; }
+
+        [BsonElement("cedula")]
+        public string Cedula { get; set; }
+
         [BsonElement("foto")]
         public string Foto { get; set; }
+
+        [BsonElement("archivoprofesional")]
+        public string ArchivoProfesional { get; set; }
 
         [BsonElement("activo")]
         public bool Activo { get; set; }
 
         [BsonElement("horario_trabajo")]
-        public List<HorarioTrabajo> HorarioTrabajo { get; set; } = new List<HorarioTrabajo>();
+        public List<HorarioTrabajo> HorarioTrabajo { get; set; }
     }
 
     public class HorarioTrabajo

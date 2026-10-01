@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using slotsi_citas.Models;
 using System;
 using System.Collections.Generic;
@@ -11,42 +12,48 @@ namespace slotsi_citas.ViewModel
 {
     public class EditarServicioViewModel: BindableObject
     {
-            private readonly IMongoCollection<Servicios> _coleccionServicios;
-            private readonly Servicios _servicioOriginal;
+        private readonly IMongoCollection<Servicios> _coleccionServicios;
+        private readonly Servicios _servicioOriginal;
+        private readonly bool _esNuevo;
 
-            public string Id { get; set; }
+        public string TituloPantalla => _esNuevo ? "Nuevo Servicio" : "Editar Servicio";
+        public string TextoBotonGuardar => _esNuevo ? "Crear Servicio" : "Guardar Cambios";
 
-            private string _nombre;
-            public string Nombre { get => _nombre; set { _nombre = value; OnPropertyChanged(); } }
+        public string Id { get; set; }
 
-            private decimal _precio;
-            public decimal Precio { get => _precio; set { _precio = value; OnPropertyChanged(); } }
+        private string _nombre;
+        public string Nombre { get => _nombre; set { _nombre = value; OnPropertyChanged(); } }
 
-            private int _duracionMinutos;
-            public int DuracionMinutos { get => _duracionMinutos; set { _duracionMinutos = value; OnPropertyChanged(); } }
+        private decimal _precio;
+        public decimal Precio { get => _precio; set { _precio = value; OnPropertyChanged(); } }
 
-            private string _categoria;
-            public string Categoria { get => _categoria; set { _categoria = value; OnPropertyChanged(); } }
+        private int _duracionMinutos = 30;
+        public int DuracionMinutos { get => _duracionMinutos; set { _duracionMinutos = value; OnPropertyChanged(); } }
 
-            private string _descripcion;
-            public string Descripcion { get => _descripcion; set { _descripcion = value; OnPropertyChanged(); } }
+        private string _categoria;
+        public string Categoria { get => _categoria; set { _categoria = value; OnPropertyChanged(); } }
 
-            private bool _disponibleDomicilio;
-            public bool DisponibleDomicilio { get => _disponibleDomicilio; set { _disponibleDomicilio = value; OnPropertyChanged(); } }
+        private string _descripcion;
+        public string Descripcion { get => _descripcion; set { _descripcion = value; OnPropertyChanged(); } }
 
-            private string _foto;
-            public string Foto { get => _foto; set { _foto = value; OnPropertyChanged(); } }
+        private bool _disponibleDomicilio;
+        public bool DisponibleDomicilio { get => _disponibleDomicilio; set { _disponibleDomicilio = value; OnPropertyChanged(); } }
 
-            public ICommand CambiarFotoCommand { get; }
-            public ICommand GuardarCommand { get; }
-            public ICommand CancelarCommand { get; }
+        private string _foto;
+        public string Foto { get => _foto; set { _foto = value; OnPropertyChanged(); } }
 
-            public EditarServicioViewModel(Servicios servicio, IMongoCollection<Servicios> coleccion)
+        public ICommand CambiarFotoCommand { get; }
+        public ICommand GuardarCommand { get; }
+        public ICommand CancelarCommand { get; }
+
+        public EditarServicioViewModel(Servicios servicio, IMongoCollection<Servicios> coleccion)
+        {
+            _coleccionServicios = coleccion;
+            _servicioOriginal = servicio;
+            _esNuevo = (servicio == null);
+
+            if (!_esNuevo)
             {
-                _servicioOriginal = servicio;
-                _coleccionServicios = coleccion;
-
-                // Cargar datos actuales
                 Id = servicio.Id;
                 Nombre = servicio.Nombre;
                 Precio = servicio.Precio;
@@ -55,50 +62,70 @@ namespace slotsi_citas.ViewModel
                 Descripcion = servicio.Descripcion;
                 DisponibleDomicilio = servicio.DisponibleDomicilio;
                 Foto = servicio.Foto;
-
-                CambiarFotoCommand = new Microsoft.Maui.Controls.Command(async () => await SeleccionarFotoAsync());
-                GuardarCommand = new Microsoft.Maui.Controls.Command(async () => await GuardarCambiosAsync());
-                CancelarCommand = new Microsoft.Maui.Controls.Command(async () => await Application.Current.MainPage.Navigation.PopModalAsync());
             }
 
-            private async Task SeleccionarFotoAsync()
+            CambiarFotoCommand = new Microsoft.Maui.Controls.Command(async () => await SeleccionarFotoAsync());
+            GuardarCommand = new Microsoft.Maui.Controls.Command(async () => await GuardarCambiosAsync());
+            CancelarCommand = new Microsoft.Maui.Controls.Command(async () => await Application.Current.MainPage.Navigation.PopModalAsync());
+        }
+
+        private async Task SeleccionarFotoAsync()
+        {
+            try
             {
-                try
+                var resultado = await FilePicker.Default.PickAsync(new PickOptions
                 {
-                    var resultado = await FilePicker.Default.PickAsync(new PickOptions
-                    {
-                        PickerTitle = "Selecciona una foto para el servicio",
-                        FileTypes = FilePickerFileType.Images
-                    });
+                    PickerTitle = "Selecciona una foto para el servicio",
+                    FileTypes = FilePickerFileType.Images
+                });
 
-                    if (resultado != null)
-                    {
-                        using var stream = await resultado.OpenReadAsync();
-                        using var memoryStream = new MemoryStream();
-                        await stream.CopyToAsync(memoryStream);
-                        byte[] bytesImagen = memoryStream.ToArray();
-
-                        string extension = Path.GetExtension(resultado.FileName).ToLower().Replace(".", "");
-                        if (string.IsNullOrEmpty(extension)) extension = "jpeg";
-
-                        Foto = $"data:image/{extension};base64,{Convert.ToBase64String(bytesImagen)}";
-                    }
-                }
-                catch (Exception ex)
+                if (resultado != null)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", $"No se pudo seleccionar la foto: {ex.Message}", "OK");
+                    using var stream = await resultado.OpenReadAsync();
+                    using var memoryStream = new MemoryStream();
+                    await stream.CopyToAsync(memoryStream);
+                    byte[] bytesImagen = memoryStream.ToArray();
+
+                    string extension = Path.GetExtension(resultado.FileName).ToLower().Replace(".", "");
+                    if (string.IsNullOrEmpty(extension)) extension = "jpeg";
+
+                    Foto = $"data:image/{extension};base64,{Convert.ToBase64String(bytesImagen)}";
                 }
             }
-
-            private async Task GuardarCambiosAsync()
+            catch (Exception ex)
             {
-                if (string.IsNullOrWhiteSpace(Nombre))
-                {
-                    await Application.Current.MainPage.DisplayAlert("Atención", "El nombre del servicio no puede estar vacío.", "OK");
-                    return;
-                }
+                await Application.Current.MainPage.DisplayAlert("Error", $"No se pudo seleccionar la foto: {ex.Message}", "OK");
+            }
+        }
 
-                try
+        private async Task GuardarCambiosAsync()
+        {
+            if (string.IsNullOrWhiteSpace(Nombre))
+            {
+                await Application.Current.MainPage.DisplayAlert("Atención", "El nombre del servicio es obligatorio.", "OK");
+                return;
+            }
+
+            try
+            {
+                if (_esNuevo)
+                {
+                    var nuevoServicio = new Servicios
+                    {
+                        Nombre = Nombre,
+                        Precio = Precio,
+                        DuracionMinutos = DuracionMinutos,
+                        Categoria = Categoria,
+                        Descripcion = Descripcion,
+                        DisponibleDomicilio = DisponibleDomicilio,
+                        Foto = Foto,
+                        Activo = true,
+                        ColaboradoresHabilitados = new List<ObjectId>()
+                    };
+
+                    await _coleccionServicios.InsertOneAsync(nuevoServicio);
+                }
+                else
                 {
                     var filtro = Builders<Servicios>.Filter.Eq(s => s.Id, Id);
                     var actualizacion = Builders<Servicios>.Update
@@ -112,7 +139,6 @@ namespace slotsi_citas.ViewModel
 
                     await _coleccionServicios.UpdateOneAsync(filtro, actualizacion);
 
-                    // Actualizar valores en el objeto original local
                     _servicioOriginal.Nombre = Nombre;
                     _servicioOriginal.Precio = Precio;
                     _servicioOriginal.DuracionMinutos = DuracionMinutos;
@@ -120,13 +146,14 @@ namespace slotsi_citas.ViewModel
                     _servicioOriginal.Descripcion = Descripcion;
                     _servicioOriginal.DisponibleDomicilio = DisponibleDomicilio;
                     _servicioOriginal.Foto = Foto;
+                }
 
-                    await Application.Current.MainPage.Navigation.PopModalAsync();
-                }
-                catch (Exception ex)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Error", $"No se pudo guardar la información: {ex.Message}", "OK");
-                }
+                await Application.Current.MainPage.Navigation.PopModalAsync();
             }
+            catch (Exception ex)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", $"No se pudo guardar la información: {ex.Message}", "OK");
+            }
+        }
     }
 }
