@@ -22,11 +22,15 @@ namespace slotsi_citas.ViewModel
 
         public ICommand EditarTrabajadorCommand { get; }
         public ICommand IrANuevoTrabajadorCommand { get; }
+        public ICommand CambiarEstadoActivoCommand { get; }
+
+        private int TrabajadoresActivosCount;
 
         public ObservableCollection<Trabajador> Trabajadores { get; set; } = new ObservableCollection<Trabajador>();
 
         public ListaTrabjadoresViewModel()
         {
+            CambiarEstadoActivoCommand = new Microsoft.Maui.Controls.Command<Trabajador>(async (trabajador) => await CambiarEstadoActivoAsync(trabajador));
             IrANuevoTrabajadorCommand = new Command(async () => await IrANuevoTrabajadorAsync());
             EditarTrabajadorCommand = new Microsoft.Maui.Controls.Command<Trabajador>(async (trabajador) => await EditarTrabajadorAsync(trabajador));
 
@@ -84,6 +88,41 @@ namespace slotsi_citas.ViewModel
             catch (Exception ex)
             {
                 Debug.WriteLine($"[ERROR MONGODB FETCH] {ex.Message}");
+            }
+        }
+
+        public async Task CambiarEstadoActivoAsync(Trabajador trabajador)
+        {
+            if (trabajador == null) return;
+
+            if (!trabajador.Activo)
+            {
+                bool confirmar = await Application.Current.MainPage.DisplayAlert(
+                    "Desactivar trabajador",
+                    $"¿Estás seguro de que deseas desactivar '{trabajador.Nombre}'? No podrá acceder al sistema.",
+                    "Desactivar",
+                    "Cancelar");
+
+                if (!confirmar)
+                {
+                    trabajador.Activo = true;
+                    return;
+                }
+            }
+
+            try
+            {
+                var filtro = Builders<Trabajador>.Filter.Eq(t => t.Id, trabajador.Id);
+                var actualizacion = Builders<Trabajador>.Update.Set(t => t.Activo, trabajador.Activo);
+
+                await _trabajadoresCollection.UpdateOneAsync(filtro, actualizacion);
+
+                TrabajadoresActivosCount = Trabajadores.Count(t => t.Activo);
+            }
+            catch (Exception ex)
+            {
+                trabajador.Activo = !trabajador.Activo;
+                await Application.Current.MainPage.DisplayAlert("Error", $"Error al actualizar: {ex.Message}", "OK");
             }
         }
 

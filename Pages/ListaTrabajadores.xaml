@@ -1,30 +1,34 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="slotsi_citas.Pages.ListaTrabajadores"
              xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
-             Title="ListaTrabajadores"
+             x:Class="slotsi_citas.Pages.ListaTrabajadores"
+             Title="Lista de Trabajadores"
              BackgroundColor="#F8FAFC">
 
     <Grid RowDefinitions="Auto, *">
 
-        <Label Grid.Row="0" Text="Lista de Trabajadores" FontSize="22" FontAttributes="Bold" TextColor="#2563EB" Margin="20,16,20,8" />
-        
-        <Button Text="+" FontSize="30" FontAttributes="Bold" TextColor="White" BackgroundColor="#2563EB" WidthRequest="60" HeightRequest="60" CornerRadius="30"
-                HorizontalOptions="End" VerticalOptions="End" Margin="0,0,20,30"
-                Command="{Binding IrANuevoTrabajadorCommand}"/>
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="20,20,20,15" BackgroundColor="#FFFFFF">
+            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                <Label Text="Gestión de Catálogo" FontSize="22" FontAttributes="Bold" TextColor="#111827" />
+                <Label Text="{Binding TrabajadoresActivosCount, StringFormat='{0} trabajadores activos'}" FontSize="13" TextColor="#6B7280" />
+            </VerticalStackLayout>
+        </Grid>
 
-        <CollectionView Grid.Row="1" ItemsSource="{Binding Trabajadores}"  Margin="16,0">
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Trabajadores}" Margin="16,12">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 12" BackgroundColor="White" Margin="0,0,0,12" Padding="12">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding Activo}" Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </DataTrigger>
+                        </Border.Triggers>
 
                         <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
-
                             <Border Grid.Column="0" WidthRequest="56" HeightRequest="56" StrokeShape="RoundRectangle 28" StrokeThickness="0" VerticalOptions="Center">
                                 <Image Source="{Binding Foto, FallbackValue='profile_picture.png'}" Aspect="AspectFill" />
                             </Border>
-
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
                                 <HorizontalStackLayout Spacing="8">
                                     <Image WidthRequest="18" HeightRequest="18" VerticalOptions="Center">
@@ -62,8 +66,9 @@
                                     <Label Text="{Binding Correo}" FontSize="13" TextColor="#475569" VerticalOptions="Center" />
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
+
                             <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="10" HorizontalOptions="End">
-                                <Switch IsToggled="{Binding Activo}" OnColor="#2563EB" HorizontalOptions="End"/>
+                                <Switch IsToggled="{Binding Activo}" OnColor="#2563EB" HorizontalOptions="End" Toggled="OnEstadotrabajadorToggled"/>
                                 <HorizontalStackLayout Spacing="15" HorizontalOptions="End">
                                     <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24" 
                                                  Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ListaTrabjadoresViewModel}}, Path=EditarTrabajadorCommand}"            
@@ -80,10 +85,26 @@
                                     </ImageButton>
                                 </HorizontalStackLayout>
                             </VerticalStackLayout>
+
                         </Grid>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
+        <Button Grid.Row="1"
+                Text="+" 
+                FontSize="30" 
+                FontAttributes="Bold" 
+                TextColor="White" 
+                BackgroundColor="#2563EB" 
+                WidthRequest="60" 
+                HeightRequest="60" 
+                CornerRadius="30"
+                HorizontalOptions="End" 
+                VerticalOptions="End" 
+                Margin="0,0,20,30"
+                Command="{Binding IrANuevoTrabajadorCommand}"/>
+
     </Grid>
 </ContentPage>

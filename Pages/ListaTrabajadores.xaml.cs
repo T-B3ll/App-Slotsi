@@ -22,4 +22,14 @@ public partial class ListaTrabajadores : ContentPage
             await _viewModel.CargarTrabajadoresAsync();
         }
     }
+    private async void OnEstadotrabajadorToggled(object sender, ToggledEventArgs e)
+    {
+        if (sender is Switch switchControl && switchControl.BindingContext is Models.Trabajador trab)
+        {
+            if (BindingContext is ViewModel.ListaTrabjadoresViewModel _viewModel)
+            {
+                await _viewModel.CambiarEstadoActivoAsync(trab);
+            }
+        }
+    }
 }

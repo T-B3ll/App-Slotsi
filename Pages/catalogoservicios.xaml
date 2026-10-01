@@ -22,7 +22,6 @@
                             <RoundRectangle CornerRadius="10" />
                         </Border.StrokeShape>
 
-                        <!-- DataTrigger para cambiar la opacidad visual cuando Activo sea False -->
                         <Border.Triggers>
                             <DataTrigger TargetType="Border" Binding="{Binding Activo}" Value="False">
                                 <Setter Property="Opacity" Value="0.5" />
@@ -31,14 +30,12 @@
 
                         <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
 
-                            <!-- Imagen del servicio -->
                             <Grid Grid.Column="0">
                                 <Border WidthRequest="60" HeightRequest="60" BackgroundColor="#F3F4F6" StrokeShape="RoundRectangle 8">
                                     <Image Source="{Binding Foto}" Aspect="AspectFill"/>
                                 </Border>
                             </Grid>
 
-                            <!-- Información principal -->
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
                                 <Label Text="{Binding Nombre}" FontSize="15" FontAttributes="Bold" TextColor="#1F2937" />
                                 <HorizontalStackLayout Spacing="8">
@@ -49,18 +46,14 @@
                                 <Label Text="{Binding Categoria, StringFormat='Categoría: {0}'}" FontSize="11" TextColor="#9CA3AF" />
                             </VerticalStackLayout>
 
-                            <!-- Switch y Botones de Acción -->
                             <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="10" HorizontalOptions="End">
 
-                                <!-- El Switch SIEMPRE permanece interactivo para poder activar/desactivar el servicio -->
                                 <Switch IsToggled="{Binding Activo}" OnColor="#2563EB" HorizontalOptions="End" Toggled="OnEstadoServicioToggled"/>
 
-                                <!-- IsEnabled="{Binding Activo}" bloquea/habilita automáticamente los botones sin recargar la página -->
                                 <HorizontalStackLayout Spacing="15" 
                                                        HorizontalOptions="End" 
                                                        IsEnabled="{Binding Activo}">
 
-                                    <!-- Botón Editar -->
                                     <ImageButton BackgroundColor="Transparent" 
                                                  WidthRequest="24" 
                                                  HeightRequest="24"
@@ -71,7 +64,6 @@
                                         </ImageButton.Source>
                                     </ImageButton>
 
-                                    <!-- Botón Eliminar -->
                                     <ImageButton BackgroundColor="Transparent" 
                                                  WidthRequest="24" 
                                                  HeightRequest="24"
