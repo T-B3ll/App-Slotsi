@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:slotsi_citas.ViewModel"
+             x:Class="slotsi_citas.Pages.NuevoTrabajador"
+             Title="{Binding TituloPagina, FallbackValue='Nuevo Trabajador'}"
+             BackgroundColor="#F8FAFC">
+
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="16">
+
+            <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Margin="0,10">
+                <Grid WidthRequest="90" HeightRequest="90">
+                    <Ellipse Fill="#EEF2FF" Stroke="#6366F1" StrokeThickness="1" />
+
+                    <Border WidthRequest="90" HeightRequest="90" StrokeShape="RoundRectangle 45" StrokeThickness="0" VerticalOptions="Center" HorizontalOptions="Center">
+                        <Image Source="{Binding FotoPrevisualizacion}" 
+                               Aspect="AspectFill" />
+                    </Border>
+
+                    <ImageButton CornerRadius="18" WidthRequest="36" HeightRequest="36" 
+                                 BackgroundColor="#2563EB" HorizontalOptions="End" 
+                                 VerticalOptions="End" 
+                                 Command="{Binding SeleccionarFotoCommand}">
+                        <ImageButton.Source>
+                            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe412;" Color="black" Size="10" />
+                        </ImageButton.Source>
+                    </ImageButton>
+                </Grid>
+                <Label Text="Subir foto de perfil" FontSize="13" TextColor="#64748B" HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="6">
+                <HorizontalStackLayout Spacing="2">
+                    <Label Text="Nombre y apellido" TextColor="#1E293B" FontAttributes="Bold" />
+                    <Label Text="*" TextColor="#EF4444" />
+                </HorizontalStackLayout>
+                <Border Stroke="#E2E8F0" StrokeShape="RoundRectangle 8" Padding="12,0" BackgroundColor="#F8FAFC">
+                    <Entry Placeholder="Ej. Carlos Rodríguez" 
+                           PlaceholderColor="#94A3B8" 
+                           Text="{Binding Nombre}" 
+                           TextColor="#0F172A" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="6">
+                <HorizontalStackLayout Spacing="2">
+                    <Label Text="Especialidad" TextColor="#1E293B" FontAttributes="Bold" />
+                    <Label Text="*" TextColor="#EF4444" />
+                </HorizontalStackLayout>
+                <Border Stroke="#E2E8F0" StrokeShape="RoundRectangle 8" Padding="12,0" BackgroundColor="#F8FAFC">
+                    <Entry Placeholder="Ej. Barbero Principal" 
+                           PlaceholderColor="#94A3B8" 
+                           Text="{Binding Especialidad}" 
+                           TextColor="#0F172A" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="6">
+                <HorizontalStackLayout Spacing="2">
+                    <Label Text="Número telefónico" TextColor="#1E293B" FontAttributes="Bold" />
+                    <Label Text="*" TextColor="#EF4444" />
+                </HorizontalStackLayout>
+                <Border Stroke="#E2E8F0" StrokeShape="RoundRectangle 8" Padding="12,0" BackgroundColor="#F8FAFC">
+                    <Entry Placeholder="Ej. +505-8989-9090" 
+                           PlaceholderColor="#94A3B8" 
+                           Keyboard="Telephone" 
+                           Text="{Binding Telefono}" 
+                           TextColor="#0F172A" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="6">
+                <HorizontalStackLayout Spacing="2">
+                    <Label Text="Correo electrónico" TextColor="#1E293B" FontAttributes="Bold" />
+                    <Label Text="*" TextColor="#EF4444" />
+                </HorizontalStackLayout>
+                <Border Stroke="#E2E8F0" StrokeShape="RoundRectangle 8" Padding="12,0" BackgroundColor="#F8FAFC">
+                    <Entry Placeholder="Ej. carlos.rod@gmail.com" 
+                           PlaceholderColor="#94A3B8" 
+                           Keyboard="Email" 
+                           Text="{Binding Correo}" 
+                           TextColor="#0F172A" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="6">
+                <HorizontalStackLayout Spacing="2">
+                    <Label Text="Número de cédula" TextColor="#1E293B" FontAttributes="Bold" />
+                    <Label Text="*" TextColor="#EF4444" />
+                </HorizontalStackLayout>
+                <Border Stroke="#E2E8F0" StrokeShape="RoundRectangle 8" Padding="12,0" BackgroundColor="#F8FAFC">
+                    <Entry Placeholder="Ej. 212-232123-2002Q" 
+                           PlaceholderColor="#94A3B8" 
+                           Text="{Binding Cedula}" 
+                           TextColor="#0F172A" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="6">
+                <HorizontalStackLayout Spacing="2">
+                    <Label Text="Título o Certificado Profesional" TextColor="#1E293B" FontAttributes="Bold" />
+                    <Label Text="*" TextColor="#EF4444" />
+                </HorizontalStackLayout>
+                <Border Stroke="#3B82F6" StrokeDashArray="4,2" StrokeThickness="1.5" StrokeShape="RoundRectangle 8" Padding="20" BackgroundColor="#F0F9FF">
+                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                        <Image WidthRequest="32" HeightRequest="32" HorizontalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource FontFamily="MaterialIcons"
+                                                 Glyph="&#xe2c6;" 
+                                                 Color="#2563EB" 
+                                                 Size="32" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="{Binding NombreDocumento, FallbackValue='Subir documento del título profesional'}" FontSize="13" TextColor="#2563EB" FontAttributes="Bold" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding SubirDocumentoCommand}" />
+                    </Border.GestureRecognizers>
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="8" Margin="0,8,0,0">
+                <HorizontalStackLayout Spacing="2">
+                    <Label Text="Horario de Trabajo" TextColor="#1E293B" FontAttributes="Bold" FontSize="15" />
+                    <Label Text="*" TextColor="#EF4444" />
+                </HorizontalStackLayout>
+
+                <CollectionView ItemsSource="{Binding ListaHorariosUI}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="viewmodels:HorarioTrabajoVm">
+                            <Border Stroke="#E2E8F0" 
+                                    StrokeShape="RoundRectangle 10" 
+                                    BackgroundColor="#FFFFFF" 
+                                    Padding="12" 
+                                    Margin="0,0,0,10">
+
+                                <Grid RowDefinitions="Auto, Auto" RowSpacing="8">
+
+                                    <Grid Grid.Row="0" ColumnDefinitions="*, Auto">
+                                        <Label Grid.Column="0" 
+                                               Text="{Binding Dia}" 
+                                               TextColor="#0F172A" 
+                                               FontAttributes="Bold" 
+                                               FontSize="14" 
+                                               VerticalOptions="Center" />
+
+                                        <Switch Grid.Column="1" 
+                                                IsToggled="{Binding EsLaboral}" 
+                                                OnColor="#2563EB" 
+                                                VerticalOptions="Center" />
+                                    </Grid>
+
+                                    <Grid Grid.Row="1" 
+                                          ColumnDefinitions="*, Auto, *" 
+                                          ColumnSpacing="8" 
+                                          IsVisible="{Binding EsLaboral}">
+
+                                        <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                            <Label Text="Entrada" FontSize="11" TextColor="#64748B" />
+                                            <Border Stroke="#E2E8F0" StrokeShape="RoundRectangle 6" Padding="8,2" BackgroundColor="#F8FAFC">
+                                                <TimePicker Time="{Binding HoraInicio}" 
+                                                            Format="hh:mm tt" 
+                                                            TextColor="#0F172A" 
+                                                            FontSize="13" 
+                                                            HorizontalOptions="Center" />
+                                            </Border>
+                                        </VerticalStackLayout>
+
+                                        <Label Grid.Column="1" 
+                                               Text="a" 
+                                               FontSize="13" 
+                                               TextColor="#94A3B8" 
+                                               VerticalOptions="End" 
+                                               Margin="0,0,0,8" />
+
+                                        <VerticalStackLayout Grid.Column="2" Spacing="4">
+                                            <Label Text="Salida" FontSize="11" TextColor="#64748B" />
+                                            <Border Stroke="#E2E8F0" StrokeShape="RoundRectangle 6" Padding="8,2" BackgroundColor="#F8FAFC">
+                                                <TimePicker Time="{Binding HoraFin}" 
+                                                            Format="hh:mm tt" 
+                                                            TextColor="#0F172A" 
+                                                            FontSize="13" 
+                                                            HorizontalOptions="Center" />
+                                            </Border>
+                                        </VerticalStackLayout>
+
+                                    </Grid>
+
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <Button Text="Guardar Trabajador" 
+                    BackgroundColor="#2563EB" 
+                    TextColor="White" 
+                    FontAttributes="Bold" 
+                    CornerRadius="10" 
+                    HeightRequest="50" 
+                    Margin="0,12,0,20"
+                    Command="{Binding GuardarTrabajadorCommand}" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

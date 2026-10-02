@@ -4,113 +4,84 @@
              x:Class="slotsi_citas.Pages.catalogoservicios"
              Title="Gestión de Servicios"
              BackgroundColor="#F3F4F6"
-             Shell.NavBarIsVisible="False">
+             Shell.NavBarIsVisible="True">
 
     <Grid RowDefinitions="Auto, *">
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="20,20,20,15" BackgroundColor="#FFFFFF">
             <VerticalStackLayout Grid.Column="0" Spacing="2">
                 <Label Text="Gestión de Catálogo" FontSize="22" FontAttributes="Bold" TextColor="#111827" />
-                <Label Text="1 servicios activos" FontSize="13" TextColor="#6B7280" />
+                <Label Text="{Binding ServiciosActivosCount, StringFormat='{0} servicios activos'}" FontSize="13" TextColor="#6B7280" />
             </VerticalStackLayout>
         </Grid>
 
-        <!--lista de servicos activos-->
-        <ScrollView Grid.Row="1" Padding="16,10,16,80">
-            <VerticalStackLayout Spacing="12">
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Servicios}" Margin="16,10,16,80">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#FFFFFF" Padding="10" Margin="0,0,0,12" Opacity="1">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="10" />
+                        </Border.StrokeShape>
 
-                <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#FFFFFF" Padding="10">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="10" />
-                    </Border.StrokeShape>
-                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
-                        <Border Grid.Column="0" WidthRequest="60" HeightRequest="60" BackgroundColor="#F3F4F6" StrokeShape="RoundRectangle 8">
-                            <Label Text="Imagen" FontSize="12" TextColor="#9CA3AF" HorizontalOptions="Center"/>
-                        </Border>
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding Activo}" Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </DataTrigger>
+                        </Border.Triggers>
 
-                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                            <Label Text="Corte Clásico" FontSize="15" FontAttributes="Bold" TextColor="#1F2937" />
-                            <HorizontalStackLayout Spacing="8">
-                                <Label Text="$25" FontSize="13" FontAttributes="Bold" TextColor="#10B981" />
-                                <Label Text="•" FontSize="13" TextColor="#9CA3AF"/>
-                                <Label Text="30 min" FontSize="13" TextColor="#6B7280" />
-                            </HorizontalStackLayout>
-                            <Label Text="Categoría: Cortes" FontSize="11" TextColor="#9CA3AF" />
-                        </VerticalStackLayout>
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
 
-                        <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="10" HorizontalOptions="End">
-                            <Switch IsToggled="True" OnColor="#2563EB" HorizontalOptions="End"/>
-                            <HorizontalStackLayout Spacing="15" HorizontalOptions="End">
-                                <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24">
-                                    <ImageButton.Source>
-                                        <FontImageSource FontFamily="MaterialIcons" 
-                                                         Glyph="&#xe3c9;" 
-                                                         Color="#2563EB" 
-                                                         Size="24"/>
-                                    </ImageButton.Source>
-                                </ImageButton>
+                            <Grid Grid.Column="0">
+                                <Border WidthRequest="60" HeightRequest="60" BackgroundColor="#F3F4F6" StrokeShape="RoundRectangle 8">
+                                    <Image Source="{Binding Foto}" Aspect="AspectFill"/>
+                                </Border>
+                            </Grid>
 
-                                <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24">
-                                    <ImageButton.Source>
-                                        <FontImageSource FontFamily="MaterialIcons" 
-                                                         Glyph="&#xe872;" 
-                                                         Color="#EF4444" 
-                                                         Size="24"/>
-                                    </ImageButton.Source>
-                                </ImageButton>
-                            </HorizontalStackLayout>
-                        </VerticalStackLayout>
-                    </Grid>
-                </Border>
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                <Label Text="{Binding Nombre}" FontSize="15" FontAttributes="Bold" TextColor="#1F2937" />
+                                <HorizontalStackLayout Spacing="8">
+                                    <Label Text="{Binding Precio, StringFormat='${0:F2}'}" FontSize="13" FontAttributes="Bold" TextColor="#10B981" />
+                                    <Label Text="•" FontSize="13" TextColor="#9CA3AF"/>
+                                    <Label Text="{Binding DuracionMinutos, StringFormat='{0} min'}" FontSize="13" TextColor="#6B7280" />
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding Categoria, StringFormat='Categoría: {0}'}" FontSize="11" TextColor="#9CA3AF" />
+                            </VerticalStackLayout>
 
-                <!--Lista de servicios inactivos-->
-                <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#F9FAFB" Padding="10" Opacity="0.6">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="10" />
-                    </Border.StrokeShape>
-                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
-                        <Border Grid.Column="0" WidthRequest="60" HeightRequest="60" BackgroundColor="#E5E7EB" StrokeShape="RoundRectangle 8">
-                            <Label Text="Imagen" FontSize="12" TextColor="#9CA3AF" HorizontalOptions="Center"/>
-                        </Border>
-                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                            <Label Text="Tinte Completo" FontSize="15" FontAttributes="Bold" TextColor="#1F2937" TextDecorations="Strikethrough"/>
-                            <HorizontalStackLayout Spacing="8">
-                                <Label Text="$60" FontSize="13" FontAttributes="Bold" TextColor="#6B7280" />
-                                <Label Text="•" FontSize="13" TextColor="#9CA3AF"/>
-                                <Label Text="120 min" FontSize="13" TextColor="#6B7280" />
-                            </HorizontalStackLayout>
-                            <Label Text="Categoría: Colorimetría" FontSize="11" TextColor="#9CA3AF" />
-                        </VerticalStackLayout>
-                        <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="10" HorizontalOptions="End">
-                            <Switch IsToggled="False" OnColor="#2563EB" HorizontalOptions="End"/>
-                            <HorizontalStackLayout Spacing="15" HorizontalOptions="End">
+                            <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="10" HorizontalOptions="End">
 
-                                <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24">
-                                    <ImageButton.Source>
-                                        <FontImageSource FontFamily="MaterialIcons" 
-                                                         Glyph="&#xe3c9;" 
-                                                         Color="#2563EB" 
-                                                         Size="24"/>
-                                    </ImageButton.Source>
-                                </ImageButton>
+                                <Switch IsToggled="{Binding Activo}" OnColor="#2563EB" HorizontalOptions="End" Toggled="OnEstadoServicioToggled"/>
 
-                                <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24">
-                                    <ImageButton.Source>
-                                        <FontImageSource FontFamily="MaterialIcons" 
-                                                         Glyph="&#xe872;" 
-                                                         Color="#EF4444" 
-                                                         Size="24"/>
-                                    </ImageButton.Source>
-                                </ImageButton>
+                                <HorizontalStackLayout Spacing="15" 
+                                                       HorizontalOptions="End" 
+                                                       IsEnabled="{Binding Activo}">
 
-                            </HorizontalStackLayout>
-                        </VerticalStackLayout>
-                    </Grid>
-                </Border>
+                                    <ImageButton BackgroundColor="Transparent" 
+                                                 WidthRequest="24" 
+                                                 HeightRequest="24"
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditarServicioCommand}"
+                                                 CommandParameter="{Binding .}">
+                                        <ImageButton.Source>
+                                            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe3c9;" Color="#2563EB" Size="24"/>
+                                        </ImageButton.Source>
+                                    </ImageButton>
 
-            </VerticalStackLayout>
-        </ScrollView>
+                                    <ImageButton BackgroundColor="Transparent" 
+                                                 WidthRequest="24" 
+                                                 HeightRequest="24"
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EliminarServicioCommand}"
+                                                 CommandParameter="{Binding .}">
+                                        <ImageButton.Source>
+                                            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe872;" Color="#EF4444" Size="24"/>
+                                        </ImageButton.Source>
+                                    </ImageButton>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
 
-        <!---Boton para nuevo servicio-->
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
         <Button Grid.Row="1" 
                 Text="+" 
                 FontSize="30" 
@@ -122,11 +93,11 @@
                 CornerRadius="30"
                 HorizontalOptions="End" 
                 VerticalOptions="End" 
-                Margin="0,0,20,30">
+                Margin="0,0,20,30"
+                Command="{Binding CreaServicioCommand}">
             <Button.Shadow>
                 <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.2" />
             </Button.Shadow>
         </Button>
-
     </Grid>
 </ContentPage>

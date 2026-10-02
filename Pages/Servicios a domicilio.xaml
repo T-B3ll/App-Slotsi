@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="slotsi_citas.Pages.Servicios_a_domicilio"
+             Title="Servicios_a_domicilio"
+             BackgroundColor="#FFFFFF">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="20,16" BackgroundColor="White">
+            <Label Grid.Column="0" 
+                   Text="Trabajos a domicilio" 
+                   FontSize="20" 
+                   FontAttributes="Bold" 
+                   TextColor="#2563EB" 
+                   VerticalOptions="Center" />
+
+            <ImageButton Grid.Column="1" 
+                         BackgroundColor="Transparent" 
+                         WidthRequest="28" 
+                         HeightRequest="28">
+                <ImageButton.Source>
+                    <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7F4;" Color="#2563EB" Size="24" />
+                </ImageButton.Source>
+            </ImageButton>
+        </Grid>
+
+        <ScrollView Grid.Row="1" Padding="16,0,16,20">
+            <VerticalStackLayout Spacing="20">
+
+                <Grid ColumnDefinitions="*, *, *" ColumnSpacing="12">
+                    <Border Grid.Column="0" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12" BackgroundColor="#FFFFFF">
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Ellipse WidthRequest="48" HeightRequest="48" Fill="#F1F5F9" HorizontalOptions="Center" />
+                            <Label Text="Barbería" FontSize="11" TextColor="#334155" FontAttributes="Bold" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Column="1" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12" BackgroundColor="#FFFFFF">
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Ellipse WidthRequest="48" HeightRequest="48" Fill="#F1F5F9" HorizontalOptions="Center" />
+                            <Label Text="Horario" FontSize="11" TextColor="#334155" FontAttributes="Bold" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <Border Grid.Column="2" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12" BackgroundColor="#FFFFFF">
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                            <Ellipse WidthRequest="48" HeightRequest="48" Fill="#F1F5F9" HorizontalOptions="Center" />
+                            <Label Text="Servicios" FontSize="11" TextColor="#334155" FontAttributes="Bold" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+
+                <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
+                    <Ellipse WidthRequest="44" HeightRequest="44" Fill="#E2E8F0" />
+                    <VerticalStackLayout VerticalOptions="Center" Spacing="2">
+                        <Label Text="Barbería Móvil" FontSize="16" FontAttributes="Bold" TextColor="#0F172A" />
+                        <Label Text="Selecciona tu horario y el servicio a domicilio" FontSize="11" TextColor="#64748B" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="¿Qué necesitas hoy?" FontSize="18" FontAttributes="Bold" TextColor="#0F172A" />
+                            <Label Text="Servicios disponibles para domicilio" FontSize="11" TextColor="#64748B" />
+                        </VerticalStackLayout>
+
+                        <Border Grid.Column="1" Stroke="#CBD5E1" StrokeThickness="1" StrokeShape="RoundRectangle 20" Padding="12,6" VerticalOptions="Center">
+                            <HorizontalStackLayout Spacing="4">
+                                <Label Text="Ver agenda" FontSize="11" TextColor="#334155" FontAttributes="Bold" VerticalOptions="Center" />
+                                <Image WidthRequest="14" HeightRequest="14" VerticalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE5CC;" Color="#334155" Size="14" />
+                                    </Image.Source>
+                                </Image>
+                            </HorizontalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="70, *" ColumnSpacing="12">
+                        <Border Grid.Column="0" HeightRequest="70" StrokeThickness="0" StrokeShape="RoundRectangle 8" BackgroundColor="#F1F5F9" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                            <Label Text="Corte de pelo" FontSize="15" FontAttributes="Bold" TextColor="#0F172A" />
+                            <Label Text="Estilo personalizado" FontSize="12" TextColor="#64748B" />
+                            <Border StrokeThickness="0" BackgroundColor="#F1F5F9" StrokeShape="RoundRectangle 4" Padding="6,2" HorizontalOptions="Start">
+                                <Label Text="Popular" FontSize="10" TextColor="#334155" FontAttributes="Bold" />
+                            </Border>
+                            <Label Text="Duración estimada 30–45 min" FontSize="11" TextColor="#64748B" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="70, *" ColumnSpacing="12">
+                        <Border Grid.Column="0" HeightRequest="70" StrokeThickness="0" StrokeShape="RoundRectangle 8" BackgroundColor="#F1F5F9" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                            <Label Text="Barba &amp; perfilado" FontSize="15" FontAttributes="Bold" TextColor="#0F172A" />
+                            <Label Text="Afeitado y forma" FontSize="12" TextColor="#64748B" />
+                            <Border StrokeThickness="0" BackgroundColor="#F1F5F9" StrokeShape="RoundRectangle 4" Padding="6,2" HorizontalOptions="Start">
+                                <Label Text="Clásico" FontSize="10" TextColor="#334155" FontAttributes="Bold" />
+                            </Border>
+                            <Label Text="Duración estimada 20–30 min" FontSize="11" TextColor="#64748B" />
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <Grid ColumnDefinitions="70, *" ColumnSpacing="12">
+                        <Border Grid.Column="0" HeightRequest="70" StrokeThickness="0" StrokeShape="RoundRectangle 8" BackgroundColor="#F1F5F9" />
+                        <VerticalStackLayout Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                            <Label Text="Corte + Barba" FontSize="15" FontAttributes="Bold" TextColor="#0F172A" />
+                            <Label Text="Pack completo" FontSize="12" TextColor="#64748B" />
+                            <Border StrokeThickness="0" BackgroundColor="#F1F5F9" StrokeShape="RoundRectangle 4" Padding="6,2" HorizontalOptions="Start">
+                                <Label Text="Mejor valor" FontSize="10" TextColor="#334155" FontAttributes="Bold" />
+                            </Border>
+                            <Label Text="Duración estimada 50–70 min" FontSize="11" TextColor="#64748B" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Servicio a realizar" FontSize="14" FontAttributes="Bold" TextColor="#0F172A" />
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <HorizontalStackLayout Spacing="8">
+                            <Border StrokeThickness="0" BackgroundColor="#F1F5F9" StrokeShape="RoundRectangle 16" Padding="14,8">
+                                <Label Text="Corte de pelo" FontSize="12" TextColor="#0F172A" FontAttributes="Bold" />
+                            </Border>
+                            <Border StrokeThickness="0" BackgroundColor="#F1F5F9" StrokeShape="RoundRectangle 16" Padding="14,8">
+                                <Label Text="Barba &amp; perfilado" FontSize="12" TextColor="#0F172A" FontAttributes="Bold" />
+                            </Border>
+                            <Border StrokeThickness="0" BackgroundColor="#F1F5F9" StrokeShape="RoundRectangle 16" Padding="14,8">
+                                <Label Text="Corte + Barba" FontSize="12" TextColor="#0F172A" FontAttributes="Bold" />
+                            </Border>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+                    <Label Text="Puedes cambiarlo cuando quieras antes de confirmar." FontSize="11" TextColor="#64748B" Margin="0,2,0,0" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Trabajador asignado" FontSize="14" FontAttributes="Bold" TextColor="#0F172A" />
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <HorizontalStackLayout Spacing="8">
+                            <Border StrokeThickness="0" BackgroundColor="#F1F5F9" StrokeShape="RoundRectangle 16" Padding="14,8">
+                                <Label Text="Cualquiera disponible" FontSize="12" TextColor="#0F172A" FontAttributes="Bold" />
+                            </Border>
+                            <Border StrokeThickness="0" BackgroundColor="#F1F5F9" StrokeShape="RoundRectangle 16" Padding="14,8">
+                                <Label Text="Barbero 1" FontSize="12" TextColor="#0F172A" FontAttributes="Bold" />
+                            </Border>
+                            <Border StrokeThickness="0" BackgroundColor="#F1F5F9" StrokeShape="RoundRectangle 16" Padding="14,8">
+                                <Label Text="Barbero 2" FontSize="12" TextColor="#0F172A" FontAttributes="Bold" />
+                            </Border>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+                    <Label Text="La asignación depende de la disponibilidad del horario." FontSize="11" TextColor="#64748B" Margin="0,2,0,0" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Dirección para el servicio" FontSize="14" FontAttributes="Bold" TextColor="#0F172A" />
+                    <Border Stroke="#E2E8F0" StrokeShape="RoundRectangle 8" Padding="12,0" BackgroundColor="#FFFFFF">
+                        <Entry Placeholder="Ej. Av. Siempre Viva 742, Piso 3" TextColor="#0F172A" PlaceholderColor="#94A3B8" />
+                    </Border>
+                    <Label Text="Incluye ciudad y zona para estimar la ruta." FontSize="11" TextColor="#64748B" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Rango de horario" FontSize="14" FontAttributes="Bold" TextColor="#0F172A" />
+                    <Label Text="Selecciona un turno (puedes combinar con el día)" FontSize="11" TextColor="#64748B" Margin="0,-4,0,4" />
+
+                    <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *" RowSpacing="10" ColumnSpacing="10">
+                        <Border Grid.Row="0" Grid.Column="0" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12" BackgroundColor="#FFFFFF">
+                            <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                                <Ellipse WidthRequest="32" HeightRequest="32" Fill="#F1F5F9" />
+                                <Label Text="Mañana" FontAttributes="Bold" TextColor="#0F172A" VerticalOptions="Center" FontSize="13" />
+                            </HorizontalStackLayout>
+                        </Border>
+
+                        <Border Grid.Row="0" Grid.Column="1" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12" BackgroundColor="#FFFFFF">
+                            <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                                <Ellipse WidthRequest="32" HeightRequest="32" Fill="#F1F5F9" />
+                                <Label Text="Mediodía" FontAttributes="Bold" TextColor="#0F172A" VerticalOptions="Center" FontSize="13" />
+                            </HorizontalStackLayout>
+                        </Border>
+
+                        <Border Grid.Row="1" Grid.Column="0" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12" BackgroundColor="#FFFFFF">
+                            <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                                <Ellipse WidthRequest="32" HeightRequest="32" Fill="#F1F5F9" />
+                                <Label Text="Tarde" FontAttributes="Bold" TextColor="#0F172A" VerticalOptions="Center" FontSize="13" />
+                            </HorizontalStackLayout>
+                        </Border>
+
+                        <Border Grid.Row="1" Grid.Column="1" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="12" BackgroundColor="#FFFFFF">
+                            <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                                <Ellipse WidthRequest="32" HeightRequest="32" Fill="#F1F5F9" />
+                                <Label Text="Noche" FontAttributes="Bold" TextColor="#0F172A" VerticalOptions="Center" FontSize="13" />
+                            </HorizontalStackLayout>
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Día y hora preferidos" FontSize="14" FontAttributes="Bold" TextColor="#0F172A" />
+                    <Border Stroke="#E2E8F0" StrokeShape="RoundRectangle 8" Padding="12,0" BackgroundColor="#FFFFFF">
+                        <Entry Placeholder="Ej. Jue 12 · 18:30" TextColor="#0F172A" PlaceholderColor="#94A3B8" />
+                    </Border>
+                    <Label Text="Si no hay disponibilidad exacta, te proponemos la más cercana." FontSize="11" TextColor="#64748B" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="12">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <VerticalStackLayout Grid.Column="0">
+                            <Label Text="Disponibilidad estimada" FontSize="16" FontAttributes="Bold" TextColor="#0F172A" />
+                            <Label Text="Horarios sugeridos para servicios a domicilio (Barbería)" FontSize="11" TextColor="#64748B" />
+                        </VerticalStackLayout>
+
+                        <Border Grid.Column="1" Stroke="#0F172A" StrokeThickness="1" StrokeShape="RoundRectangle 20" Padding="10,6" VerticalOptions="Center">
+                            <HorizontalStackLayout Spacing="4">
+                                <Label Text="Confirmar disponibilidad" FontSize="10" TextColor="#0F172A" FontAttributes="Bold" VerticalOptions="Center" />
+                                <Image WidthRequest="12" HeightRequest="12" VerticalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE5CC;" Color="#0F172A" Size="12" />
+                                    </Image.Source>
+                                </Image>
+                            </HorizontalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <VerticalStackLayout Spacing="12">
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <Ellipse Grid.Column="0" WidthRequest="32" HeightRequest="32" Fill="#E2E8F0" VerticalOptions="Center" Margin="0,0,10,0" />
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="Disponible" FontSize="13" FontAttributes="Bold" TextColor="#0F172A" />
+                                <Label Text="Hoy · 17:00 - 19:00" FontSize="11" TextColor="#64748B" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End">
+                                <Label Text="Tu dirección:" FontSize="11" TextColor="#0F172A" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                                <Label Text="~12 min de camino" FontSize="11" TextColor="#0F172A" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <Ellipse Grid.Column="0" WidthRequest="32" HeightRequest="32" Fill="#E2E8F0" VerticalOptions="Center" Margin="0,0,10,0" />
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="Pocas plazas" FontSize="13" FontAttributes="Bold" TextColor="#0F172A" />
+                                <Label Text="Mañana · 10:00 - 12:00" FontSize="11" TextColor="#64748B" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End">
+                                <Label Text="Solo 1" FontSize="11" TextColor="#0F172A" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                                <Label Text="trabajador libre" FontSize="11" TextColor="#0F172A" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <Ellipse Grid.Column="0" WidthRequest="32" HeightRequest="32" Fill="#E2E8F0" VerticalOptions="Center" Margin="0,0,10,0" />
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="Próximos días" FontSize="13" FontAttributes="Bold" TextColor="#0F172A" />
+                                <Label Text="Vie · 16:30 - 18:00" FontSize="11" TextColor="#64748B" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" HorizontalOptions="End">
+                                <Label Text="Confirmación" FontSize="11" TextColor="#0F172A" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                                <Label Text="inmediata" FontSize="11" TextColor="#0F172A" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="10" Margin="0,10,0,0">
+                    <Button Text="Añadir otro servicio" 
+                            BackgroundColor="Transparent" 
+                            TextColor="#0F172A" 
+                            BorderColor="#0F172A" 
+                            BorderWidth="1" 
+                            CornerRadius="10" 
+                            HeightRequest="48" 
+                            FontAttributes="Bold" />
+
+                    <Button Text="Cancelar" 
+                            BackgroundColor="Transparent" 
+                            TextColor="#0F172A" 
+                            BorderColor="#0F172A" 
+                            BorderWidth="1" 
+                            CornerRadius="10" 
+                            HeightRequest="48" 
+                            FontAttributes="Bold" />
+
+                    <Button Text="Programar servicio" 
+                            BackgroundColor="#2563EB" 
+                            TextColor="White" 
+                            CornerRadius="10" 
+                            HeightRequest="48" 
+                            FontAttributes="Bold" />
+                </VerticalStackLayout>
+
+                <Border StrokeThickness="0" StrokeShape="RoundRectangle 12" BackgroundColor="#E2E8F0" HeightRequest="180" Margin="0,10,0,10">
+                    <Grid>
+                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8">
+                            <Image WidthRequest="24" HeightRequest="24" HorizontalOptions="Center">
+                                <Image.Source>
+                                    <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE55F;" Color="#64748B" Size="24" />
+                                </Image.Source>
+                            </Image>
+                            <Label Text="Vista del área de servicio para el barbero a domicilio" 
+                                   FontSize="13" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#0F172A" 
+                                   HorizontalTextAlignment="Center" 
+                                   Padding="20,0" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Border Grid.Row="2" Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="White" Padding="0,8">
+            <Grid ColumnDefinitions="*, *, *, *">
+
+                <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                    <Image WidthRequest="22" HeightRequest="22" HorizontalOptions="Center">
+                        <Image.Source>
+                            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#2563EB" Size="22" />
+                        </Image.Source>
+                    </Image>
+                    <Label Text="Inicio" FontSize="10" TextColor="#2563EB" FontAttributes="Bold" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                    <Image WidthRequest="22" HeightRequest="22" HorizontalOptions="Center">
+                        <Image.Source>
+                            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xEBCC;" Color="#94A3B8" Size="22" />
+                        </Image.Source>
+                    </Image>
+                    <Label Text="Citas" FontSize="10" TextColor="#94A3B8" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
+                    <Image WidthRequest="22" HeightRequest="22" HorizontalOptions="Center">
+                        <Image.Source>
+                            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE55F;" Color="#94A3B8" Size="22" />
+                        </Image.Source>
+                    </Image>
+                    <Label Text="Sucursal" FontSize="10" TextColor="#94A3B8" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="3" Spacing="2" HorizontalOptions="Center">
+                    <Image WidthRequest="22" HeightRequest="22" HorizontalOptions="Center">
+                        <Image.Source>
+                            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FD;" Color="#94A3B8" Size="22" />
+                        </Image.Source>
+                    </Image>
+                    <Label Text="Perfil" FontSize="10" TextColor="#94A3B8" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+            </Grid>
+        </Border>
+
+    </Grid>
+</ContentPage>

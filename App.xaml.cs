@@ -11,12 +11,14 @@ namespace slotsi_citas
         {
             InitializeComponent();
             _serviceProvider = serviceProvider;
+
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            var Loginpage = _serviceProvider.GetRequiredService<LoginPage>();
-            return new Window(new NavigationPage(Loginpage));
+
+            return new Window(new AppShell());
+
         }
     }
 }

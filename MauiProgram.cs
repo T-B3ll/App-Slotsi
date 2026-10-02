@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using slotsi_citas.Pages;
-using slotsi_citas.ViewModel;
-using Syncfusion.Maui.Toolkit.Hosting;
-using Supabase;
 using slotsi_citas.Services;
-using slotsi_citas.Pages;
+using slotsi_citas.ViewModel;
+using slotsi_citas.ViewModels;
+using Supabase;
+using Syncfusion.Maui.Toolkit.Hosting;
 
 namespace slotsi_citas;
 
@@ -20,7 +21,6 @@ public static class MauiProgram
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-
 
 
                 fonts.AddFont("MauiMaterialAssets.ttf", "MaterialIcons");
@@ -45,7 +45,6 @@ public static class MauiProgram
 
         client.InitializeAsync().Wait();
 
-        // 2. Registrar Servicios Nuevos
         builder.Services.AddSingleton(client);        
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<UsuarioService>();
@@ -54,25 +53,26 @@ public static class MauiProgram
         builder.Services.AddTransient<Cita_UsuarioViewModel>();
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<UsuarioBasicoViewModel>();
+        builder.Services.AddTransient<ListaTrabjadoresViewModel>();
+
+        builder.Services.AddTransient<NuevoTrabajadorViewModel>();
+        builder.Services.AddTransient<NuevoTrabajador>();
 
         builder.Services.AddTransient<Cita_ClientePage>();
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<RegistroUsuarioBasico>();
 
-
-        // Registrar ViewModels
-
         builder.Services.AddTransient<Cita_UsuarioViewModel>();
 
         builder.Services.AddTransient<Cita_ClientePage>();
-
 
         builder.Services.AddSingleton<RecuperacionService>();
         builder.Services.AddTransient<RecuperarContra>();
         builder.Services.AddTransient<NuevaContra>();
 
+        builder.Services.AddTransient<NuevoTrabajador>();
+        builder.Services.AddTransient<ListaTrabajadores>();
 
-       
         builder.Services.AddTransient<CalendarioPage>();
         builder.Services.AddTransient<catalogoservicios>();
         builder.Services.AddTransient<DueñosNegociosPage>();
