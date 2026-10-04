@@ -57,7 +57,7 @@
                                     <ImageButton BackgroundColor="Transparent" 
                                                  WidthRequest="24" 
                                                  HeightRequest="24"
-                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditarServicioCommand}"
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditarservicioCommand}"
                                                  CommandParameter="{Binding .}">
                                         <ImageButton.Source>
                                             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe3c9;" Color="#2563EB" Size="24"/>
@@ -67,7 +67,7 @@
                                     <ImageButton BackgroundColor="Transparent" 
                                                  WidthRequest="24" 
                                                  HeightRequest="24"
-                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EliminarServicioCommand}"
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.EditarervicioCommand}"
                                                  CommandParameter="{Binding .}">
                                         <ImageButton.Source>
                                             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe872;" Color="#EF4444" Size="24"/>

@@ -1,4 +1,7 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using slotsi_citas.Models;
 using slotsi_citas.Pages;
 using slotsi_citas.Services;
@@ -11,8 +14,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Controls;
 
 namespace slotsi_citas.ViewModel
 {
@@ -24,7 +25,19 @@ namespace slotsi_citas.ViewModel
         public ICommand IrANuevoTrabajadorCommand { get; }
         public ICommand CambiarEstadoActivoCommand { get; }
 
-        private int TrabajadoresActivosCount;
+        private int _trabajadoresActivosCount;
+        public int TrabajadoresActivosCount
+        {
+            get => _trabajadoresActivosCount;
+            set
+            {
+                if (_trabajadoresActivosCount != value)
+                {
+                    _trabajadoresActivosCount = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public ObservableCollection<Trabajador> Trabajadores { get; set; } = new ObservableCollection<Trabajador>();
 
@@ -70,11 +83,38 @@ namespace slotsi_citas.ViewModel
 
             try
             {
-                Debug.WriteLine("[MONGODB] Consultando colección Trabajadores...");
+                string usuarioId = Preferences.Get("UsuarioId", string.Empty);
 
-                var lista = await _trabajadoresCollection.Find(_ => true).ToListAsync();
+                if (string.IsNullOrEmpty(usuarioId))
+                {
+                    Debug.WriteLine("[SESIÓN ERROR] No se encontró 'UsuarioId' en Preferences.");
+                    return;
+                }
 
-                Debug.WriteLine($"[MONGODB] Documentos encontrados: {lista.Count}");
+                if (!ObjectId.TryParse(usuarioId, out ObjectId usuarioObjectId))
+                {
+                    Debug.WriteLine($"[MONGODB ERROR] El UsuarioId '{usuarioId}' no es un ObjectId válido.");
+                    return;
+                }
+
+                var client = new MongoClient(MongoDbSettings.ConnectionString);
+                var database = client.GetDatabase(MongoDbSettings.DatabaseName);
+                var negociosCollection = database.GetCollection<BsonDocument>("Negocios");
+
+                var filtroNegocio = Builders<BsonDocument>.Filter.Eq("UsuarioId", usuarioObjectId);
+                var negocioDoc = await negociosCollection.Find(filtroNegocio).FirstOrDefaultAsync();
+
+                if (negocioDoc == null)
+                {
+                    Debug.WriteLine("[MONGODB ERROR] No se encontró ningún negocio vinculado a este UsuarioId.");
+                    return;
+                }
+
+                string negocioIdActual = negocioDoc["_id"].ToString();
+                Preferences.Set("negocio_id", negocioIdActual);
+
+                var filtroTrabajadores = Builders<Trabajador>.Filter.Eq(t => t.NegocioId, negocioIdActual);
+                var lista = await _trabajadoresCollection.Find(filtroTrabajadores).ToListAsync();
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -83,6 +123,7 @@ namespace slotsi_citas.ViewModel
                     {
                         Trabajadores.Add(trabajador);
                     }
+                    TrabajadoresActivosCount = Trabajadores.Count(t => t.Activo);
                 });
             }
             catch (Exception ex)

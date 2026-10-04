@@ -19,7 +19,7 @@
     </Shell.FlyoutHeader>
 
 
-    <FlyoutItem Title="Trabajos a Domicilio" Route="LoginPage ">
+    <FlyoutItem Title="Trabajos a Domicilio" Route="LoginPage">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#334155" Size="24" />
         </FlyoutItem.Icon>

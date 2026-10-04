@@ -16,7 +16,10 @@ namespace slotsi_citas.Pages
 		protected override async void OnAppearing()
 		{
 			base.OnAppearing();
-			await _vm.CargarServiciosAsync();
+			if (BindingContext is CatalogoServiciosViewModel vm)
+			{
+				await _vm.CargarServiciosAsync();
+			}
 		}
 
 		private async void OnEstadoServicioToggled(object sender, ToggledEventArgs e)

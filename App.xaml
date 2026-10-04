@@ -18,7 +18,6 @@
             <Color x:Key="OccupiedColor">#FFFBEB</Color>
             <Color x:Key="UnavailableColor">#F3F4F6</Color>
 
-            <!-- Estilos reutilizables -->
             <Style x:Key="ButtonAgendarCita" TargetType="Button">
                 <Setter Property="BackgroundColor" Value="Transparent"/>
                 <Setter Property="TextColor" Value="{StaticResource PrimaryColor}"/>

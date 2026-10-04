@@ -6,15 +6,17 @@ using slotsi_citas.Services;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Maui.Storage;
 
 namespace slotsi_citas.ViewModel
 {
     public class LoginViewModel : INotifyPropertyChanged
     {
         private readonly UsuarioService _usuarioService;
-        private string _email;
         private readonly IServiceProvider _serviceProvider;
+        private string _email;
         private string _password;
         private bool _isBusy;
 
@@ -39,7 +41,6 @@ namespace slotsi_citas.ViewModel
         }
 
         public ICommand LoginCommand { get; }
-
 
         public LoginViewModel(UsuarioService usuarioService, IServiceProvider serviceProvider)
         {
@@ -73,7 +74,6 @@ namespace slotsi_citas.ViewModel
 
         private async Task ValidarYEntrarAsync(string identificador, string password)
         {
-
             var usuario = await _usuarioService.ObtenerPorIdentificadorAsync(identificador);
 
             if (usuario == null || usuario.Contrasena != password)
@@ -82,28 +82,23 @@ namespace slotsi_citas.ViewModel
                 return;
             }
 
+            string idUsuarioString = usuario.Id.ToString();
 
-            Preferences.Set("UsuarioId", usuario.Id.ToString());
+            Preferences.Set("UsuarioId", idUsuarioString);
+            Preferences.Set("UsuarioIdSesion", idUsuarioString); 
             Preferences.Set("EsDuenoNegocio", usuario.TipoUsuario);
             Preferences.Set("UsuarioCorreo", usuario.Correo);
 
-            Page paginaDestino;
+            Application.Current.MainPage = new AppShell();
 
-            //aqui es donde dirige si es cliente basico o dueño de engocio
-         
             if (!usuario.TipoUsuario)
             {
-                //  RUTA PARA CLIENTE BÁSICO
-                paginaDestino = _serviceProvider.GetRequiredService<CatalogoCliente>();
+                await Shell.Current.GoToAsync("//catalogocliente");
             }
             else
             {
-                // RUTA PARA DUEÑO DE NEGOCIO
-                paginaDestino = _serviceProvider.GetRequiredService<PagoSuscripcionPage>();
+                await Shell.Current.GoToAsync("//ListaTrabajadores");
             }
-
-
-            Application.Current.MainPage = new NavigationPage(paginaDestino);
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)

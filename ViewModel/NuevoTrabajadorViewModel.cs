@@ -1,4 +1,5 @@
-﻿using Microsoft.Maui.Controls;
+﻿using System.Diagnostics;
+using Microsoft.Maui.Controls;
 using Microsoft.Maui.Media;
 using MongoDB.Driver;
 using slotsi_citas.Models;
@@ -306,17 +307,57 @@ namespace slotsi_citas.ViewModels
 
         private async Task GuardarTrabajadorAsync()
         {
-            if (string.IsNullOrWhiteSpace(Nombre) || string.IsNullOrWhiteSpace(Correo))
+            if (string.IsNullOrWhiteSpace(Nombre) ||
+                string.IsNullOrWhiteSpace(Correo) ||
+                string.IsNullOrWhiteSpace(Telefono) ||
+                string.IsNullOrWhiteSpace(Cedula) ||
+                string.IsNullOrWhiteSpace(Especialidad))
             {
-                await Shell.Current.DisplayAlert("Validación", "Completa los campos requeridos (Nombre y Correo).", "OK");
+                await Shell.Current.DisplayAlert("Campos requeridos", "Debes rellenar todos los campos de información personal. No los dejes en blanco.", "OK");
+                return;
+            }
+
+            string negocioIdActual = Preferences.Get("negocio_id", string.Empty);
+
+            if (string.IsNullOrEmpty(negocioIdActual))
+            {
+                string usuarioId = Preferences.Get("UsuarioId", string.Empty);
+
+                if (!string.IsNullOrEmpty(usuarioId) && MongoDB.Bson.ObjectId.TryParse(usuarioId, out var usuarioObjectId))
+                {
+                    try
+                    {
+                        var client = new MongoClient(MongoDbSettings.ConnectionString);
+                        var database = client.GetDatabase(MongoDbSettings.DatabaseName);
+                        var negociosCollection = database.GetCollection<MongoDB.Bson.BsonDocument>("Negocios");
+
+                        var filtroNegocio = Builders<MongoDB.Bson.BsonDocument>.Filter.Eq("UsuarioId", usuarioObjectId);
+                        var negocioDoc = await negociosCollection.Find(filtroNegocio).FirstOrDefaultAsync();
+
+                        if (negocioDoc != null)
+                        {
+                            negocioIdActual = negocioDoc["_id"].ToString();
+                            Preferences.Set("negocio_id", negocioIdActual);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine($"[ERROR FETCH NEGOCIO] {ex.Message}");
+                    }
+                }
+            }
+
+            if (string.IsNullOrEmpty(negocioIdActual))
+            {
+                await Shell.Current.DisplayAlert("Error de Sesión", "No se encontró ningún negocio asociado al usuario en sesión.", "OK");
                 return;
             }
 
             try
             {
                 string nombreCompleto = string.IsNullOrWhiteSpace(Apellido)
-                    ? Nombre
-                    : $"{Nombre} {Apellido}".Trim();
+                    ? Nombre.Trim()
+                    : $"{Nombre.Trim()} {Apellido.Trim()}";
 
                 var horariosConfigurados = ObtenerHorariosParaMongo();
 
@@ -324,14 +365,14 @@ namespace slotsi_citas.ViewModels
                 {
                     var nuevoTrabajador = new Trabajador
                     {
-                        NegocioId = "6ab59dce7557e344b191bd43",
+                        NegocioId = negocioIdActual,
                         Nombre = nombreCompleto,
-                        Especialidad = string.IsNullOrWhiteSpace(Especialidad) ? "Barbero Principal" : Especialidad,
-                        Correo = Correo,
-                        Telefono = Telefono,
-                        Cedula = Cedula,
-                        Foto = _fotoBase64,
-                        ArchivoProfesional = _archivoProfesionalBase64,
+                        Especialidad = Especialidad.Trim(),
+                        Correo = Correo.Trim(),
+                        Telefono = Telefono.Trim(),
+                        Cedula = Cedula.Trim(),
+                        Foto = _fotoBase64 ?? string.Empty,
+                        ArchivoProfesional = _archivoProfesionalBase64 ?? string.Empty,
                         Activo = Activo,
                         HorarioTrabajo = horariosConfigurados
                     };
@@ -343,12 +384,12 @@ namespace slotsi_citas.ViewModels
                     var filter = Builders<Trabajador>.Filter.Eq(t => t.Id, _trabajadorId);
                     var update = Builders<Trabajador>.Update
                         .Set(t => t.Nombre, nombreCompleto)
-                        .Set(t => t.Especialidad, string.IsNullOrWhiteSpace(Especialidad) ? "Barbero Principal" : Especialidad)
-                        .Set(t => t.Correo, Correo)
-                        .Set(t => t.Telefono, Telefono)
-                        .Set(t => t.Cedula, Cedula)
-                        .Set(t => t.Foto, _fotoBase64)
-                        .Set(t => t.ArchivoProfesional, _archivoProfesionalBase64)
+                        .Set(t => t.Especialidad, Especialidad.Trim())
+                        .Set(t => t.Correo, Correo.Trim())
+                        .Set(t => t.Telefono, Telefono.Trim())
+                        .Set(t => t.Cedula, Cedula.Trim())
+                        .Set(t => t.Foto, _fotoBase64 ?? string.Empty)
+                        .Set(t => t.ArchivoProfesional, _archivoProfesionalBase64 ?? string.Empty)
                         .Set(t => t.Activo, Activo)
                         .Set(t => t.HorarioTrabajo, horariosConfigurados);
 
@@ -372,6 +413,7 @@ namespace slotsi_citas.ViewModels
                 await Shell.Current.DisplayAlert("Error", $"No se pudo guardar en la base de datos: {ex.Message}", "OK");
             }
         }
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

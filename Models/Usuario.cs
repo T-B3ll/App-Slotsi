@@ -10,6 +10,7 @@ namespace slotsi_citas.Models
 {
     public class Usuario
     {
+        [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; } 
 
