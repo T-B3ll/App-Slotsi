@@ -92,6 +92,10 @@
 	  <MauiXaml Update="Pages\DueñosNegociosPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+
+	  <MauiXaml Update="Pages\EditarPerfilPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\LoginPage.xaml">
 		     <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

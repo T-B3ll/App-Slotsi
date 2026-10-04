@@ -99,7 +99,7 @@ namespace slotsi_citas.ViewModel
             else
             {
                 // RUTA PARA DUEÑO DE NEGOCIO
-                paginaDestino = _serviceProvider.GetRequiredService<PagoSuscripcionPage>();
+                paginaDestino = _serviceProvider.GetRequiredService<EditarPerfilPage>();
             }
 
 
