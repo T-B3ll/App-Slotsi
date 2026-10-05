@@ -9,10 +9,11 @@
     <ScrollView>
         <VerticalStackLayout Padding="24" Spacing="16">
 
+       
             <Label Text="Editar Información de Perfil" FontSize="24" FontAttributes="Bold" TextColor="#111827" />
             <Label Text="Actualiza tus datos personales y de negocio" FontSize="14" TextColor="#6B7280" Margin="0,-5,0,10"/>
 
-       
+        
             <Border StrokeShape="RoundRectangle 14" 
                     Stroke="#E5E7EB" 
                     BackgroundColor="#FAFBFC" 
@@ -20,16 +21,17 @@
                 <VerticalStackLayout Spacing="14">
                     <Label Text="Datos Personales" FontSize="17" FontAttributes="Bold" TextColor="#111827"/>
 
-               
+                  
                     <Label Text="Nombre completo *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
-                    <Entry Text="{Binding Usuario.NombreCompleto}" 
+                    <Entry x:Name="EntryNombre"
+                           Text="{Binding Usuario.NombreCompleto}" 
                            Placeholder="Tu nombre completo" 
                            PlaceholderColor="#9CA3AF"
                            TextColor="#111827"
                            IsEnabled="{Binding PuedeEditar}"
-                           BackgroundColor="#F9FAFB" HeightRequest="50"/>
+                           BackgroundColor="#F9FAFB" HeightRequest="50"/>   
 
-                   
+               
                     <Label Text="Correo electrónico *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
                     <Entry Text="{Binding Usuario.Correo}" 
                            IsReadOnly="True" 
@@ -37,28 +39,33 @@
                            TextColor="#6B7280"
                            BackgroundColor="#E5E7EB" 
                            HeightRequest="50"/>
-                    <Label Text="El correo no se puede modificar desde aquí." FontSize="10" TextColor="#9CA3AF" Margin="0,-8,0,0"/>
+                            <Label Text="El correo no se puede modificar desde aquí." FontSize="10" TextColor="#9CA3AF" Margin="0,-8,0,0"/>
 
-              
+                    
                     <Label Text="Teléfono *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
-                    <Entry Text="{Binding Usuario.Telefono}" 
+                    <Entry x:Name="EntryTelefono" 
                            Keyboard="Telephone"
-                           Placeholder="+505 0000 0000"
+                           Placeholder="+505 0000-0000"
                            PlaceholderColor="#9CA3AF"
                            TextColor="#111827"
                            IsEnabled="{Binding PuedeEditar}"
-                           BackgroundColor="#F9FAFB" HeightRequest="50"/>
+                           BackgroundColor="#F9FAFB" 
+                           HeightRequest="50"
+                           TextChanged="OnTelefonoChanged"/>
 
-                    <!-- Cédula -->
+                   
                     <Label Text="Cédula / ID *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
-                    <Entry Text="{Binding Usuario.Cedula}" 
-                           Keyboard="Numeric"
+                    <Entry x:Name="EntryCedula" 
+                           Keyboard="Text"
                            Placeholder="000-000000-0000A"
                            PlaceholderColor="#9CA3AF"
                            TextColor="#111827"
                            IsEnabled="{Binding PuedeEditar}"
-                           BackgroundColor="#F9FAFB" HeightRequest="50"/>
+                           BackgroundColor="#F9FAFB" 
+                           HeightRequest="50"
+                           TextChanged="OnCedulaChanged"/>
 
+                 
                     <Label Text="Nueva contraseña" TextColor="#111827" FontSize="14" FontAttributes="Bold" Margin="0,10,0,0"/>
                     <Entry x:Name="EntryPassword"
                            Placeholder="Dejar vacío si no desea cambiar" 
@@ -72,7 +79,6 @@
                 </VerticalStackLayout>
             </Border>
 
-         
             <Border StrokeShape="RoundRectangle 14" 
                     Stroke="#E5E7EB" 
                     BackgroundColor="#FAFBFC" 
@@ -82,7 +88,7 @@
                 <VerticalStackLayout Spacing="14">
                     <Label Text="💼 Configuración del Negocio" FontSize="17" FontAttributes="Bold" TextColor="#2563EB"/>
 
-                    
+
                     <Label Text="Foto de perfil" TextColor="#111827" FontSize="14" FontAttributes="Bold" Margin="0,10,0,0"/>
                     <Label Text="Sube una foto clara de tu rostro" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,5"/>
                     <Border x:Name="FrameFotoPerfil" 
@@ -97,7 +103,7 @@
                         </HorizontalStackLayout>
                     </Border>
 
-                
+
                     <Label Text="Modalidad de atención" TextColor="#111827" FontSize="14" FontAttributes="Bold" Margin="0,10,0,0"/>
                     <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
                         <Border x:Name="FrameSede" Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#E5E7EB" BackgroundColor="White" Padding="10">
@@ -120,7 +126,7 @@
                         </Border>
                     </Grid>
 
-              
+     
                     <Label Text="Nombre del negocio" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
                     <Entry Text="{Binding NombreNegocio}" Placeholder="Ej: Barbería El Pele" 
                            PlaceholderColor="#9CA3AF"
@@ -136,6 +142,7 @@
                            PlaceholderColor="#9CA3AF"
                            TextColor="#111827" FontSize="16" BackgroundColor="#F9FAFB" HeightRequest="50"/>
 
+                 
                     <Label Text="Horario de Atención" TextColor="#111827" FontSize="17" FontAttributes="Bold" Margin="0,20,0,15"/>
 
                     <Border BackgroundColor="#FAFBFC" Stroke="#E5E7EB" StrokeShape="RoundRectangle 14" Padding="18">
@@ -144,7 +151,7 @@
                                 <DataTemplate x:DataType="vm:HorarioTrabajoVm">
                                     <VerticalStackLayout Spacing="8" Padding="0,0,0,15">
 
-                                       
+                                        <!-- Fila Superior: Checkbox Día + Switch Pausa -->
                                         <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" ColumnSpacing="10">
                                             <CheckBox Grid.Column="0" Color="#3B82F6" VerticalOptions="Center" Scale="0.9"
                                                       IsChecked="{Binding EsLaboral}"/>
@@ -154,6 +161,7 @@
 
                                             <BoxView Grid.Column="2" Color="Transparent" HorizontalOptions="Fill"/>
 
+                                     
                                             <Border Grid.Column="3" BackgroundColor="#4B5563" StrokeShape="RoundRectangle 16" 
                                                     Padding="4,3" VerticalOptions="Center">
                                                 <Switch IsToggled="False" OnColor="#3B82F6" ThumbColor="#FFFFFF" Scale="0.95"/>
@@ -163,6 +171,7 @@
                                                    VerticalOptions="Center" Margin="4,0,0,0"/>
                                         </Grid>
 
+                                      
                                         <HorizontalStackLayout Spacing="8" IsVisible="{Binding EsLaboral}">
                                             <TimePicker Format="HH:mm" FontSize="14" BackgroundColor="#F9FAFB" TextColor="#1F2937" 
                                                         Time="{Binding HoraInicio}" HeightRequest="44" HorizontalOptions="FillAndExpand"/>
@@ -180,6 +189,7 @@
                         </CollectionView>
                     </Border>
 
+             
                     <Label Text="Documentos de Verificación" TextColor="#111827" FontSize="14" FontAttributes="Bold" Margin="0,10,0,0"/>
                     <Border Stroke="#2563EB" StrokeShape="RoundRectangle 12" BackgroundColor="#EFF6FF" Padding="20">
                         <Button Text="Subir PDF" BackgroundColor="Transparent" TextColor="#2563EB" 
@@ -188,8 +198,10 @@
                 </VerticalStackLayout>
             </Border>
 
+           
             <Grid ColumnDefinitions="*,*" ColumnSpacing="12" Margin="0,20,0,40">
 
+               
                 <Button Grid.Column="0"
                         Text="Cancelar" 
                         BackgroundColor="Transparent" 
@@ -201,6 +213,7 @@
                         HeightRequest="50"
                         Clicked="OnCancelarClicked"/>
 
+              
                 <Button Grid.Column="1"
                         Text="Guardar Cambios" 
                         BackgroundColor="#2563EB" 
