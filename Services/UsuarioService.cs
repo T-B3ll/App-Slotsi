@@ -95,5 +95,11 @@ namespace slotsi_citas.Services
             await _usuarios.UpdateOneAsync(filtro, update);
         }
 
+        public async Task<Usuario?> ObtenerPorIdAsync(string id)
+        {
+            var filtro = Builders<Usuario>.Filter.Eq(u => u.Id, id);
+            return await _usuarios.Find(filtro).FirstOrDefaultAsync();
+        }
+
     }
 }

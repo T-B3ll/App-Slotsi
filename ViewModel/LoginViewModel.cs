@@ -94,7 +94,7 @@ namespace slotsi_citas.ViewModel
             if (!usuario.TipoUsuario)
             {
                 //  RUTA PARA CLIENTE BÁSICO
-                paginaDestino = _serviceProvider.GetRequiredService<CatalogoCliente>();
+                paginaDestino = _serviceProvider.GetRequiredService<EditarPerfilPage>();
             }
             else
             {
