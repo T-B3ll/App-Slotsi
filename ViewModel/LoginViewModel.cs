@@ -93,7 +93,7 @@ namespace slotsi_citas.ViewModel
 
             if (!usuario.TipoUsuario)
             {
-                await Shell.Current.GoToAsync("//catalogocliente");
+                await Shell.Current.GoToAsync("DueñosNegociosPage");
             }
             else
             {

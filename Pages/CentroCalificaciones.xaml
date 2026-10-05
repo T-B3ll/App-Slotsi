@@ -1,75 +1,72 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
              x:Class="slotsi_citas.Pages.CentroCalificaciones"
              Title="Centro de calificaciones"
              Shell.NavBarIsVisible="True"
              BackgroundColor="#FAFAFA">
 
-    <ContentPage.BindingContext>
-        <vm:CentroCalificacionesViewModel />
-    </ContentPage.BindingContext>
+    <Grid RowDefinitions="Auto, Auto, *">
 
-    <Grid RowDefinitions="Auto, *">
-
-        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto, Auto" Padding="16,12" BackgroundColor="White">
-            <ImageButton Grid.Column="0" Source="ic_back.png" HeightRequest="22" WidthRequest="22" VerticalOptions="Center" />
-            <Label Grid.Column="1" Text="Centro de calificaciones" FontAttributes="Bold" FontSize="18" TextColor="#111111" VerticalOptions="Center" Margin="12,0,0,0" />
-            <ImageButton Grid.Column="2" Source="ic_bell.png" HeightRequest="22" WidthRequest="22" Margin="0,0,12,0" VerticalOptions="Center" />
-            <ImageButton Grid.Column="3" Source="ic_settings.png" HeightRequest="22" WidthRequest="22" VerticalOptions="Center" />
-        </Grid>
-
-        <!-- Contenido principal con datos de la BD -->
-        <ScrollView Grid.Row="1">
-            <VerticalStackLayout Padding="16" Spacing="16">
-
-                <Label Text="Historial de Valoraciones" FontAttributes="Bold" FontSize="18" TextColor="#111111" />
-
-                <!-- Vista Horizontal tipo carrusel -->
-                <Border StrokeShape="RoundRectangle 10" Stroke="#1976D2" StrokeDashArray="3,2" StrokeThickness="1.5" BackgroundColor="#F8FAFC" Padding="12">
-                    <VerticalStackLayout Spacing="10">
-                        <Label Text="Puntúa tu experiencia" FontAttributes="Bold" FontSize="14" TextColor="#111111" />
-
-                        <CollectionView ItemsSource="{Binding HistorialCalificaciones}" HeightRequest="130">
-                            <CollectionView.ItemsLayout>
-                                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10" />
-                            </CollectionView.ItemsLayout>
-                            <CollectionView.ItemTemplate>
-                                <DataTemplate>
-                                    <Border WidthRequest="160" StrokeShape="RoundRectangle 8" Stroke="Transparent" BackgroundColor="#EFEFEF" Padding="10">
-                                        <VerticalStackLayout Spacing="4">
-                                            <Label Text="{Binding NegocioCalificado}" FontSize="12" FontAttributes="Bold" TextColor="#222222" LineBreakMode="TailTruncation" />
-                                            <Label Text="{Binding EstrellasVisuales}" FontSize="12" TextColor="#FFB300" />
-                                            <Label Text="{Binding Comentario}" FontSize="11" TextColor="#444444" LineBreakMode="TailTruncation" MaxLines="2" />
-                                            <Label Text="{Binding UsuarioCalificador, StringFormat='Por: {0}'}" FontSize="10" TextColor="#777777" Margin="0,4,0,0" />
-                                        </VerticalStackLayout>
-                                    </Border>
-                                </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
-                    </VerticalStackLayout>
-                </Border>
-                <Label Text="Lista de Calificaciones" FontAttributes="Bold" FontSize="16" TextColor="#111111" Margin="0,8,0,0" />
-                <VerticalStackLayout BindableLayout.ItemsSource="{Binding HistorialCalificaciones}" Spacing="10">
-                    <BindableLayout.ItemTemplate>
-                        <DataTemplate>
-                            <Border StrokeShape="RoundRectangle 8" Stroke="#E0E0E0" BackgroundColor="White" Padding="12">
-                                <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto">
-                                    <VerticalStackLayout Grid.Row="0" Grid.Column="0">
-                                        <Label Text="{Binding NegocioCalificado}" FontAttributes="Bold" FontSize="14" TextColor="#222222" />
-                                        <Label Text="{Binding UsuarioCalificador, StringFormat='Calificado por: {0}'}" FontSize="11" TextColor="#666666" />
-                                    </VerticalStackLayout>
-
-                                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding EstrellasVisuales}" FontSize="14" TextColor="#FFB300" HorizontalOptions="End" />
-
-                                    <Label Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Comentario, StringFormat='&quot;{0}&quot;'}" FontSize="12" FontAttributes="Italic" TextColor="#444444" Margin="0,6,0,0" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </BindableLayout.ItemTemplate>
+        <Border Grid.Row="0" Margin="16,12" Padding="16" StrokeShape="RoundRectangle 12" BackgroundColor="White" Stroke="#E0E0E0">
+            <Grid ColumnDefinitions="*, Auto">
+                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                    <Label Text="Puntuación General" FontAttributes="Bold" FontSize="16" TextColor="#111111" />
+                    <Label Text="{Binding TotalCalificaciones, StringFormat='Basado en {0} opiniones'}" FontSize="12" TextColor="#666666" />
                 </VerticalStackLayout>
 
+                <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                    <Label Text="★" FontSize="22" TextColor="#FFB300" />
+                    <Label Text="{Binding PromedioCalificacion}" FontAttributes="Bold" FontSize="22" TextColor="#111111" />
+                </HorizontalStackLayout>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, *" Margin="16,0,16,12" ColumnSpacing="10">
+            <Button Grid.Column="0"
+                    Text="Recibidas"
+                    BackgroundColor="{Binding ColorBotonRecibidas}"
+                    TextColor="{Binding TextoBotonRecibidas}"
+                    FontAttributes="Bold"
+                    CornerRadius="8"
+                    Command="{Binding SeleccionarPestanaCommand}"
+                    CommandParameter="Recibidas" />
+
+            <Button Grid.Column="1"
+                    Text="Realizadas"
+                    BackgroundColor="{Binding ColorBotonRealizadas}"
+                    TextColor="{Binding TextoBotonRealizadas}"
+                    FontAttributes="Bold"
+                    CornerRadius="8"
+                    Command="{Binding SeleccionarPestanaCommand}"
+                    CommandParameter="Realizadas" />
+        </Grid>
+        <ScrollView Grid.Row="2" Padding="16,0,16,16">
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding ListaCalificaciones}" Spacing="10">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate>
+                        <Border StrokeShape="RoundRectangle 10" Stroke="#E5E7EB" BackgroundColor="White" Padding="14">
+                            <VerticalStackLayout Spacing="6">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding TituloMostrado}" FontAttributes="Bold" FontSize="14" TextColor="#1F2937" />
+                                        <Label Text="{Binding SubtituloMostrado}" FontSize="12" TextColor="#6B7280" />
+                                    </VerticalStackLayout>
+
+                                    <Label Grid.Column="1" Text="{Binding EstrellasVisuales}" FontSize="14" TextColor="#FFB300" VerticalOptions="Start" />
+                                </Grid>
+
+                                <Label Text="{Binding Comentario, StringFormat='&quot;{0}&quot;'}" FontSize="13" TextColor="#374151" FontAttributes="Italic" Margin="0,4,0,0" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+
+                <BindableLayout.EmptyView>
+                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Margin="0,50">
+                        <Label Text="No hay reseñas en este apartado." TextColor="#9CA3AF" FontSize="14" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </BindableLayout.EmptyView>
             </VerticalStackLayout>
         </ScrollView>
     </Grid>

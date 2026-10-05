@@ -97,6 +97,26 @@ public partial class DueñosNegociosPage : ContentPage
         ActualizarLista(resultados.ToList());
     }
 
+    private async void OnNegocioSeleccionado(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.CurrentSelection.FirstOrDefault() is Negocio negocioSeleccionado)
+        {
+            if (sender is CollectionView collectionView)
+            {
+                collectionView.SelectedItem = null;
+            }
+
+            if (string.IsNullOrEmpty(negocioSeleccionado.Id))
+            {
+                await DisplayAlert("Aviso", $"El negocio '{negocioSeleccionado.NombreNegocio}' no tiene un ID registrado.", "OK");
+                return;
+            }
+
+            Preferences.Set("NegocioSeleccionadoId", negocioSeleccionado.Id);
+
+            await Shell.Current.GoToAsync("//catalogocliente");
+        }
+    }
 
     private string NormalizarTexto(string texto)
     {

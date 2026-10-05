@@ -16,4 +16,9 @@ public partial class CatalogoCliente : ContentPage
         base.OnAppearing();
         await _vm.CargarservicioClienteAsync();
     }
+
+    private async void OnVolverClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync("DueñosNegociosPage");
+    }
 }

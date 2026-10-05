@@ -99,11 +99,20 @@ namespace slotsi_citas.ViewModel
             }
         }
 
-        public async Task CargarservicioClienteAsync()
+        public async Task CargarservicioClienteAsync(string? negocioId = null)
         {
             try
             {
-                string? negocioId = await ObtenerNegocioIdDeSesionAsync();
+                if (string.IsNullOrEmpty(negocioId))
+                {
+                    negocioId = Preferences.Get("NegocioSeleccionadoId", string.Empty);
+                }
+
+                if (string.IsNullOrEmpty(negocioId))
+                {
+                    negocioId = await ObtenerNegocioIdDeSesionAsync();
+                }
+
                 if (string.IsNullOrEmpty(negocioId)) return;
 
                 FilterDefinition<Servicios> filtroNegocio;
