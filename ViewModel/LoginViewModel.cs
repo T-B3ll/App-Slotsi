@@ -87,23 +87,29 @@ namespace slotsi_citas.ViewModel
             Preferences.Set("EsDuenoNegocio", usuario.TipoUsuario);
             Preferences.Set("UsuarioCorreo", usuario.Correo);
 
-            Page paginaDestino;
-
+            var appShell = _serviceProvider.GetRequiredService<AppShell>();
+            Application.Current.MainPage = appShell;
             //aqui es donde dirige si es cliente basico o dueño de engocio
-         
+            
+            
+            string rutaDestino;
+
             if (!usuario.TipoUsuario)
             {
-                //  RUTA PARA CLIENTE BÁSICO
-                paginaDestino = _serviceProvider.GetRequiredService<EditarPerfilPage>();
+                // RUTA PARA CLIENTE BÁSICO
+                rutaDestino = "//Cita_ClientePage";
             }
             else
             {
                 // RUTA PARA DUEÑO DE NEGOCIO
-                paginaDestino = _serviceProvider.GetRequiredService<EditarPerfilPage>();
+                rutaDestino = "//Cita_UsuarioPage";
             }
 
+            // Navegar a la página correspondiente dentro del Shell
+            await Shell.Current.GoToAsync(rutaDestino);
 
-            Application.Current.MainPage = new NavigationPage(paginaDestino);
+
+
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)

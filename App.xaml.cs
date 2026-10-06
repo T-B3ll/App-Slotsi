@@ -20,5 +20,16 @@ namespace slotsi_citas
             return new Window(new AppShell());
 
         }
+
+        protected override void OnSleep()
+        {
+            base.OnSleep();
+
+            Preferences.Remove("UsuarioId");
+            Preferences.Remove("EsDuenoNegocio");
+            Preferences.Remove("UsuarioCorreo");
+
+          
+        }
     }
 }

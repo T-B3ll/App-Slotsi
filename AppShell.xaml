@@ -4,10 +4,8 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:pages="clr-namespace:slotsi_citas.Pages"
-    Title="Slotsi"
-    FlyoutBehavior="Flyout"
-    BackgroundColor="#2563EB">
-    
+    Title="Slotsi">
+
 
     <Shell.FlyoutHeader>
         <Grid HeightRequest="140" BackgroundColor="#2563EB" Padding="20">
@@ -19,12 +17,17 @@
     </Shell.FlyoutHeader>
 
 
-    <FlyoutItem Title="Trabajos a Domicilio" Route="LoginPage ">
-        <FlyoutItem.Icon>
-            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#334155" Size="24" />
-        </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:LoginPage}" />
-    </FlyoutItem>
+    <ShellContent 
+        Route="LoginPage" 
+        ContentTemplate="{DataTemplate pages:LoginPage}" 
+        FlyoutItemIsVisible="False" />
+
+    <ShellContent 
+        Route="RegistroUsuariosPage" 
+        ContentTemplate="{DataTemplate pages:RegistroUsuariosPage}" 
+        FlyoutItemIsVisible="False" />
+
+
 
     <FlyoutItem Title="Citas Cliente" Route="Cita_ClientePage">
         <FlyoutItem.Icon>
@@ -54,13 +57,6 @@
         <ShellContent ContentTemplate="{DataTemplate pages:CatalogoCliente}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Registro de Usuarios" Route="RegistroUsuariosPage">
-        <FlyoutItem.Icon>
-            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FE;" Color="#334155" Size="24" />
-        </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:RegistroUsuariosPage}" />
-    </FlyoutItem>
-
     <FlyoutItem Title="Calendario" Route="CalendarioPage">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE916;" Color="#334155" Size="24" />
@@ -88,5 +84,36 @@
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:CentroCalificaciones}" />
     </FlyoutItem>
+
+
+
+    <FlyoutItem Title="Dueños de Negocios" Route="DueñosNegociosPage">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xF12E;" Color="#334155" Size="24" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:DueñosNegociosPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Editar Perfil" Route="EditarPerfilPage">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE745;" Color="#334155" Size="24" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:EditarPerfilPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Pago Suscripción" Route="PagoSuscripcionPage">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE870;" Color="#334155" Size="24" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:PagoSuscripcionPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Servicios a Domicilio" Route="Servicios_a_domicilio">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE558;" Color="#334155" Size="24" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:Servicios_a_domicilio}" />
+    </FlyoutItem>
+
 
 </Shell>

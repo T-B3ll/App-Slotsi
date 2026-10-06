@@ -34,7 +34,7 @@ public static class MauiProgram
 #endif
 
 
-        
+        builder.Services.AddTransient<AppShell>();
         var supabaseUrl = "https://vnasklmkkamytgwymzih.supabase.co";
         var supabaseKey = "sb_publishable_z8qlsYsGV7mYU4iJGGu8NA_fljnaFtq";
 

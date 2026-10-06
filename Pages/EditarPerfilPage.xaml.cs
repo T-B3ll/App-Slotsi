@@ -8,7 +8,7 @@ public partial class EditarPerfilPage : ContentPage
 {
     private readonly EditarPerfilViewModel _viewModel;
 
-    // Banderas para evitar bucles infinitos al formatear texto
+
     private bool _isUpdatingTelefono = false;
     private bool _isUpdatingCedula = false;
     private bool _isUpdatingRuc = false;
@@ -19,7 +19,7 @@ public partial class EditarPerfilPage : ContentPage
         _viewModel = viewModel;
         BindingContext = viewModel;
 
-        // Asignar eventos a los Frames de Modalidad
+   
         FrameSede.GestureRecognizers.Add(new TapGestureRecognizer
         { Command = new Command(() => SeleccionarModalidad("Sede")) });
         FrameDomicilio.GestureRecognizers.Add(new TapGestureRecognizer
@@ -27,7 +27,7 @@ public partial class EditarPerfilPage : ContentPage
         FrameMixta.GestureRecognizers.Add(new TapGestureRecognizer
         { Command = new Command(() => SeleccionarModalidad("Mixta")) });
 
-        // Asignar evento al botón de foto
+     
         FrameFotoPerfil.GestureRecognizers.Add(new TapGestureRecognizer
         { Command = viewModel.SeleccionarFotoCommand });
     }
@@ -42,7 +42,7 @@ public partial class EditarPerfilPage : ContentPage
         FrameMixta.Stroke = modalidad == "Mixta" ? colorActivo : colorInactivo;
     }
 
-    // ✅ VALIDACIÓN Y FORMATO DE TELÉFONO (Ej: 8888-1234)
+    
     private void OnTelefonoChanged(object sender, TextChangedEventArgs e)
     {
         if (_isUpdatingTelefono || sender is not Entry entry) return;
@@ -58,7 +58,7 @@ public partial class EditarPerfilPage : ContentPage
             entry.Text = formatted;
             entry.CursorPosition = formatted.Length;
 
-            // Actualizar el ViewModel solo con los dígitos limpios
+            
             if (_viewModel.Usuario != null)
                 _viewModel.Usuario.Telefono = digits;
 
@@ -66,7 +66,6 @@ public partial class EditarPerfilPage : ContentPage
         });
     }
 
-    // ✅ VALIDACIÓN Y FORMATO DE CÉDULA (Ej: 001-010190-0000A)
     private void OnCedulaChanged(object sender, TextChangedEventArgs e)
     {
         if (_isUpdatingCedula || sender is not Entry entry) return;
@@ -91,7 +90,7 @@ public partial class EditarPerfilPage : ContentPage
         });
     }
 
-    // ✅ VALIDACIÓN Y FORMATO DE RUC (Ej: J0000000000)
+    
     private void OnRucChanged(object sender, TextChangedEventArgs e)
     {
         if (_isUpdatingRuc || sender is not Entry entry) return;
