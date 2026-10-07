@@ -63,6 +63,9 @@ namespace slotsi_citas.Models
         [BsonIgnore]
         public bool NoTieneFoto => string.IsNullOrEmpty(Foto);
 
+        [BsonIgnore]
+        public string ModalidadTexto => DisponibleDomicilio ? "🏠 A Domicilio" : "💈 En Local";
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {

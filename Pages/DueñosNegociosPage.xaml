@@ -2,8 +2,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="slotsi_citas.Pages.DueñosNegociosPage"
+             Title="Dueños de Negocio"
              BackgroundColor="#F3F4F6"
-             NavigationPage.HasNavigationBar="False">
+             Shell.NavBarIsVisible="True"
+             Shell.FlyoutBehavior="Flyout">
 
     <Grid RowDefinitions="Auto, *, Auto">
 
@@ -11,9 +13,8 @@
                 <VerticalStackLayout Spacing="16">
 
                     <VerticalStackLayout Spacing="4">
-                        <Label Text="Dueños de Negocio" FontSize="26" FontAttributes="Bold" TextColor="#111827"/>
-                        <Label Text="Usuarios con verificación de identidad" FontSize="14" TextColor="#6B7280"/>
-                    </VerticalStackLayout>
+                    <Label Text="Dueños de Negocio" FontSize="26" FontAttributes="Bold" TextColor="#111827"/>
+                </VerticalStackLayout>
 
                     <Frame BackgroundColor="#F9FAFB" BorderColor="#E5E7EB" CornerRadius="12" Padding="16,0" HeightRequest="48" HasShadow="False">
                         <Grid ColumnDefinitions="Auto, *, Auto">

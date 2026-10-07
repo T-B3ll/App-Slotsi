@@ -1,94 +1,108 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Shell BackgroundColor="#2563EB" FlyoutBackgroundColor="White" FlyoutBehavior="Flyout" Title="Slotsi" x:Class="slotsi_citas.AppShell" xmlns="http://schemas.microsoft.com/dotnet/2021/maui" xmlns:pages="clr-namespace:slotsi_citas.Pages" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+<Shell
+    x:Class="slotsi_citas.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:pages="clr-namespace:slotsi_citas.Pages"
+    Title="Slotsi"
+    FlyoutBehavior="Flyout"
+    BackgroundColor="#2563EB"
+    FlyoutBackgroundColor="White">
 
-    <!-- ENCABEZADO DEL MENÚ LATERAL -->
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Grid ColumnDefinitions="44, *" HeightRequest="50" Padding="16,0">
+                <Image Grid.Column="0" Source="{Binding Icon}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="22" HeightRequest="22"/>
+                <Label Grid.Column="1" Text="{Binding Title}" TextColor="#1E293B"  FontSize="14" FontAttributes="Bold" VerticalOptions="Center" Margin="8,0,0,0"/>
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+
     <Shell.FlyoutHeader>
-        <Grid BackgroundColor="#2563EB" HeightRequest="150" Padding="20">
-            <VerticalStackLayout Spacing="6" VerticalOptions="End">
-                <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
-                    <Border BackgroundColor="#3B82F6" HeightRequest="44" Stroke="Transparent" StrokeShape="RoundRectangle 22" WidthRequest="44">
-                        <Label FontSize="20" HorizontalOptions="Center" Text="✂️" VerticalOptions="Center"/>
-                    </Border>
-                    <VerticalStackLayout VerticalOptions="Center">
-                        <Label FontAttributes="Bold" FontSize="20" Text="Slotsi Citas" TextColor="White"/>
-                        <Label FontSize="12" Text="Gestión de Barbería" TextColor="#DBEAFE"/>
-                    </VerticalStackLayout>
-                </HorizontalStackLayout>
+        <Grid HeightRequest="140" BackgroundColor="#2563EB" Padding="20">
+            <VerticalStackLayout VerticalOptions="End" Spacing="4">
+                <Label Text="Slotsi Citas" FontSize="20" FontAttributes="Bold" TextColor="White" />
+                <Label Text="Gestión de Barbería" FontSize="12" TextColor="#E0E7FF" />
             </VerticalStackLayout>
         </Grid>
     </Shell.FlyoutHeader>
 
-    <!-- ÍTEMS DE NAVEGACIÓN -->
-    <FlyoutItem Route="LoginPage" Title="Trabajos a Domicilio">
+    <FlyoutItem Title="Pago de la suscripcion" Route="PagoSuscripcionPage">
         <FlyoutItem.Icon>
-            <FontImageSource Color="#2563EB" FontFamily="MaterialIcons" Glyph="&#xE88A;" Size="22"/>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:LoginPage}"/>
+        <ShellContent ContentTemplate="{DataTemplate pages:PagoSuscripcionPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Route="Cita_ClientePage" Title="Citas Cliente">
+    <FlyoutItem Title="Citas Cliente" Route="Cita_ClientePage">
         <FlyoutItem.Icon>
-            <FontImageSource Color="#2563EB" FontFamily="MaterialIcons" Glyph="&#xEBCC;" Size="22"/>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xEBCC;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:Cita_ClientePage}"/>
+        <ShellContent ContentTemplate="{DataTemplate pages:Cita_ClientePage}" />
     </FlyoutItem>
 
-    <FlyoutItem Route="Cita_UsuarioPage" Title="Citas Barbero">
+    <FlyoutItem Title="Citas Barbero" Route="Cita_UsuarioPage">
         <FlyoutItem.Icon>
-            <FontImageSource Color="#2563EB" FontFamily="MaterialIcons" Glyph="&#xE7FD;" Size="22"/>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FD;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:Cita_UsuarioPage}"/>
+        <ShellContent ContentTemplate="{DataTemplate pages:Cita_UsuarioPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Route="cataloservicios" Title="Catálogo de Servicios">
+    <FlyoutItem Title="Catálogo de Servicios" Route="cataloservicios">
         <FlyoutItem.Icon>
-            <FontImageSource Color="#2563EB" FontFamily="MaterialIcons" Glyph="&#xE8EF;" Size="22"/>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8EF;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:catalogoservicios}"/>
+        <ShellContent ContentTemplate="{DataTemplate pages:catalogoservicios}" />
     </FlyoutItem>
 
-    <FlyoutItem Route="catalogocliente" Title="Catálogo de Clientes">
+    <FlyoutItem Title="Catálogo de Clientes" Route="catalogocliente">
         <FlyoutItem.Icon>
-            <FontImageSource Color="#2563EB" FontFamily="MaterialIcons" Glyph="&#xE7EF;" Size="22"/>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7EF;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:CatalogoCliente}"/>
+        <ShellContent ContentTemplate="{DataTemplate pages:CatalogoCliente}" />
     </FlyoutItem>
 
-    <FlyoutItem Route="RegistroUsuariosPage" Title="Registro de Usuarios">
+    <FlyoutItem Title="Registro de Usuarios" Route="RegistroUsuariosPage">
         <FlyoutItem.Icon>
-            <FontImageSource Color="#2563EB" FontFamily="MaterialIcons" Glyph="&#xE7FE;" Size="22"/>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FE;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:RegistroUsuariosPage}"/>
+        <ShellContent ContentTemplate="{DataTemplate pages:RegistroUsuariosPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Route="CalendarioPage" Title="Calendario">
+    <FlyoutItem Title="Calendario" Route="CalendarioPage">
         <FlyoutItem.Icon>
-            <FontImageSource Color="#2563EB" FontFamily="MaterialIcons" Glyph="&#xE916;" Size="22"/>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE916;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:CalendarioPage}"/>
+        <ShellContent ContentTemplate="{DataTemplate pages:CalendarioPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Route="SeleccionarCitaPage" Title="Seleccionar Cita">
+    <FlyoutItem Title="Seleccionar Cita" Route="SeleccionarCitaPage">
         <FlyoutItem.Icon>
-            <FontImageSource Color="#2563EB" FontFamily="MaterialIcons" Glyph="&#xE8B5;" Size="22"/>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8B5;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:SeleccionarCitaPage}"/>
+        <ShellContent ContentTemplate="{DataTemplate pages:SeleccionarCitaPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Route="ListaTrabajadores" Title="Trabajadores">
+    <FlyoutItem Title="Trabajadores" Route="ListaTrabajadores">
         <FlyoutItem.Icon>
-            <FontImageSource Color="#2563EB" FontFamily="MaterialIcons" Glyph="&#xE7FB;" Size="22"/>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FB;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:ListaTrabajadores}"/>
+        <ShellContent ContentTemplate="{DataTemplate pages:ListaTrabajadores}" />
     </FlyoutItem>
 
-    <FlyoutItem Route="Calificaciones" Title="Calificaciones">
+    <FlyoutItem Title="Calificaciones" Route="Calificaciones">
         <FlyoutItem.Icon>
-            <FontImageSource Color="#2563EB" FontFamily="MaterialIcons" Glyph="&#xE838;" Size="22"/>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE838;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:CentroCalificaciones}"/>
+        <ShellContent ContentTemplate="{DataTemplate pages:CentroCalificaciones}" />
     </FlyoutItem>
 
+    <FlyoutItem Title="Dueños de Negocio" Route="dueñosnegocios">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FB;" Color="#2563EB" Size="22"/>
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:DueñosNegociosPage}"/>
+    </FlyoutItem>
 
     <Shell.FlyoutFooter>
         <Border BackgroundColor="#FEF2F2" Margin="16,10,16,20" Padding="12" Stroke="#FEE2E2" StrokeShape="RoundRectangle 10">
@@ -97,7 +111,7 @@
             </Border.GestureRecognizers>
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
                 <Image Source="{FontImageSource FontFamily=MaterialIcons, Glyph='&#xE8AC;', Color=#DC2626, Size=22}"/>
-                <Label FontAttributes="Bold" FontSize="14" Text="Cerrar Sesión" TextColor="#DC2626" VerticalOptions="Center"/>
+                <Label Text="Cerrar Sesión" TextColor="#DC2626" FontAttributes="Bold" FontSize="14" VerticalOptions="Center"/>
             </HorizontalStackLayout>
         </Border>
     </Shell.FlyoutFooter>

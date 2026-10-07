@@ -20,7 +20,7 @@
                 <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.05" />
             </Border.Shadow>
 
-            <VerticalStackLayout Padding="20,16" Spacing="14">
+            <VerticalStackLayout Padding="20,16" Spacing="12">
                 <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
                     <Button Grid.Column="0" Text="←" FontSize="20" FontAttributes="Bold" TextColor="#0F172A" BackgroundColor="#F1F5F9" CornerRadius="20" WidthRequest="40" HeightRequest="40" 
                             Padding="0" Clicked="OnVolverClicked"/>
@@ -33,19 +33,36 @@
                         <RoundRectangle CornerRadius="12" />
                     </Border.StrokeShape>
                     <Grid ColumnDefinitions="Auto, *">
-                        <Label Grid.Column="0" Text="&#xE8B6;" FontFamily="MaterialIcons" FontSize="20" TextColor="#94A3B8" VerticalOptions="Center" Margin="0,0,8,0" />
-                        <Entry Grid.Column="1" Placeholder="Buscar cortes, barba, tintes..." PlaceholderColor="#94A3B8" FontSize="14" HeightRequest="44" BackgroundColor="Transparent" Text="{Binding Textobusqueda}"/>
+                        <Label Grid.Column="0" Text="&#xE8B6;" FontFamily="MaterialIcons" FontSize="20" TextColor="#0F172A" VerticalOptions="Center" Margin="0,0,8,0" />
+                        <Entry Grid.Column="1" Placeholder="Buscar cortes, barba, tintes..." PlaceholderColor="#94A3B8" FontSize="14" HeightRequest="44" BackgroundColor="Transparent" Text="{Binding TextoBusqueda}"/>
                     </Grid>
                 </Border>
 
                 <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
                     <HorizontalStackLayout Spacing="8">
-                        <Button Text="Todos" BackgroundColor="#2563EB" TextColor="White" CornerRadius="20" HeightRequest="36" Padding="16,0" FontAttributes="Bold" FontSize="13"/>
-                        <Button Text="Cortes" BackgroundColor="#F1F5F9" TextColor="#475569" CornerRadius="20" HeightRequest="36" Padding="16,0" FontAttributes="Bold" FontSize="13"/>
-                        <Button Text="Barba" BackgroundColor="#F1F5F9" TextColor="#475569" CornerRadius="20" HeightRequest="36" Padding="16,0" FontAttributes="Bold" FontSize="13"/>
-                        <Button Text="Color" BackgroundColor="#F1F5F9" TextColor="#475569" CornerRadius="20" HeightRequest="36" Padding="16,0" FontAttributes="Bold" FontSize="13"/>
+                        <Button Text="Todos" 
+                                Command="{Binding FiltrarModalidadCommand}" 
+                                CommandParameter="Todos"
+                                BackgroundColor="{Binding ColorBtnTodos}" 
+                                TextColor="{Binding TextColorBtnTodos}" 
+                                CornerRadius="20" HeightRequest="34" Padding="16,0" FontAttributes="Bold" FontSize="12"/>
+
+                        <Button Text="💈 En Local" 
+                                Command="{Binding FiltrarModalidadCommand}" 
+                                CommandParameter="Local"
+                                BackgroundColor="{Binding ColorBtnLocal}" 
+                                TextColor="{Binding TextColorBtnLocal}" 
+                                CornerRadius="20" HeightRequest="34" Padding="16,0" FontAttributes="Bold" FontSize="12"/>
+
+                        <Button Text="🏠 A Domicilio" 
+                                Command="{Binding FiltrarModalidadCommand}" 
+                                CommandParameter="Domicilio"
+                                BackgroundColor="{Binding ColorBtnDomicilio}" 
+                                TextColor="{Binding TextColorBtnDomicilio}" 
+                                CornerRadius="20" HeightRequest="34" Padding="16,0" FontAttributes="Bold" FontSize="12"/>
                     </HorizontalStackLayout>
                 </ScrollView>
+
             </VerticalStackLayout>
         </Border>
 
@@ -72,6 +89,14 @@
                                 <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
                                     <Label Text="&#xE3F4;" FontFamily="MaterialIcons" FontSize="32" TextColor="#CBD5E1" HorizontalOptions="Center" IsVisible="{Binding NoTieneFoto}"/>
                                 </VerticalStackLayout>
+
+                                <Border HorizontalOptions="Start" VerticalOptions="Start" Margin="8" Padding="6,2" BackgroundColor="#CC0F172A" StrokeThickness="0">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <Label Text="{Binding ModalidadTexto}" 
+                                           FontSize="9" TextColor="#FFFFFF" FontAttributes="Bold" VerticalOptions="Center" />
+                                </Border>
 
                                 <Border HorizontalOptions="End" VerticalOptions="Start" Margin="8" Padding="8,4" BackgroundColor="#CC0F172A" StrokeThickness="0">
                                     <Border.StrokeShape>
