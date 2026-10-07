@@ -17,7 +17,7 @@ namespace slotsi_citas.Models
         }
 
         private dynamic? _cita;
-        // Permite asignarle tanto Cita_cliente como CitaUsuario sin error de conversión
+        // Permite asignar tanto en Cita_cliente como CitaUsuario sin error de conversión
         public dynamic? Cita
         {
             get => _cita;

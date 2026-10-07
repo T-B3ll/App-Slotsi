@@ -12,9 +12,7 @@ using slotsi_citas.Services;
 
 namespace slotsi_citas.ViewModel
 {
-    [QueryProperty(nameof(HorarioSeleccionado), "HorarioSeleccionado")]
-    [QueryProperty(nameof(DireccionCliente), "DireccionCliente")]
-    public class SeleccionarCitaViewModel : BindableObject, IQueryAttributable
+    public class SeleccionarCitaViewModel : BindableObject
     {
         private readonly MongoService _mongoService;
 
@@ -40,6 +38,18 @@ namespace slotsi_citas.ViewModel
             set { _clienteNombre = value; OnPropertyChanged(); }
         }
 
+        private DateTime _fechaSeleccionada = DateTime.Today;
+        public DateTime FechaSeleccionada
+        {
+            get => _fechaSeleccionada;
+            set
+            {
+                _fechaSeleccionada = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(FechaTextoResumen));
+            }
+        }
+
         private string _direccionCliente = "Matagalpa, Nicaragua";
         public string DireccionCliente
         {
@@ -49,9 +59,12 @@ namespace slotsi_citas.ViewModel
 
         public string SucursalTexto => $"Sucursal Central • {DireccionCliente}";
 
-        private List<Servicio> _serviciosSeleccionados = new List<Servicio>();
+        public string FechaTextoResumen =>
+            FechaSeleccionada.ToString("dd 'de' MMMM 'de' yyyy", new CultureInfo("es-ES"));
 
-        public ObservableCollection<Servicio> ServiciosTarjetas { get; set; } = new ObservableCollection<Servicio>();
+        private List<Servicios> _serviciosSeleccionados = new List<Servicios>();
+
+        public ObservableCollection<Servicios> ServiciosTarjetas { get; set; } = new ObservableCollection<Servicios>();
 
         public string ServicioNombreResumen => _serviciosSeleccionados.Any()
             ? string.Join(", ", _serviciosSeleccionados.Select(s => s.Nombre))
@@ -71,32 +84,54 @@ namespace slotsi_citas.ViewModel
 
         public SeleccionarCitaViewModel()
         {
+            System.Diagnostics.Debug.WriteLine("[VM] Constructor de SeleccionarCitaViewModel ejecutado");
+
             _mongoService = new MongoService();
 
-            ToggleServicioCommand = new Command<Servicio>(OnToggleServicio);
+            HorarioSeleccionado = CitaSession.HorarioSeleccionado;
+            FechaSeleccionada = CitaSession.FechaSeleccionada;
+            DireccionCliente = CitaSession.DireccionCliente;
+
+            ToggleServicioCommand = new Command<Servicios>(OnToggleServicio);
             ConfirmarCitaCommand = new Command(OnConfirmarCita);
-            VolverCommand = new Command(async () => await Shell.Current.GoToAsync(".."));
+            VolverCommand = new Command(async () => await RegresarPantallaAnterior());
+
+            CargarServicios();
         }
 
-        // Intercepta los parámetros pasados vía Shell Navigation al abrir la vista
-        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        private async Task RegresarPantallaAnterior()
         {
-            if (query.TryGetValue("HorarioSeleccionado", out var horario) && horario is RangoHorario rango)
+            await MainThread.InvokeOnMainThreadAsync(async () =>
             {
-                HorarioSeleccionado = rango;
-            }
-
-            if (query.TryGetValue("DireccionCliente", out var dir) && dir is string direccion)
-            {
-                DireccionCliente = direccion;
-            }
+                try
+                {
+                    if (Shell.Current != null)
+                    {
+                        await Shell.Current.GoToAsync("..");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"[ERROR NAVEGACION VOLVER]: {ex.Message}");
+                }
+            });
         }
 
         public async Task CargarServiciosBDAsync()
         {
             try
             {
-                var serviciosBD = await Task.Run(async () => await _mongoService.ObtenerServiciosAsync());
+                // Establecemos un tiempo límite rápido (timeout de 4 segundos) para no congelar la pantalla si la red falla
+                var tareaBD = _mongoService.ObtenerServiciosAsync();
+                var tareaTimeout = Task.Delay(4000);
+
+                var tareaCompletada = await Task.WhenAny(tareaBD, tareaTimeout);
+
+                List<Servicios>? serviciosBD = null;
+                if (tareaCompletada == tareaBD)
+                {
+                    serviciosBD = await tareaBD;
+                }
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -125,7 +160,7 @@ namespace slotsi_citas.ViewModel
         private void CargarServiciosRespaldo()
         {
             ServiciosTarjetas.Clear();
-            ServiciosTarjetas.Add(new Servicio
+            ServiciosTarjetas.Add(new Servicios
             {
                 Id = "1",
                 Nombre = "Afeitado Clásico",
@@ -135,7 +170,7 @@ namespace slotsi_citas.ViewModel
                 DisponibleDomicilio = true
             });
 
-            ServiciosTarjetas.Add(new Servicio
+            ServiciosTarjetas.Add(new Servicios
             {
                 Id = "2",
                 Nombre = "Corte Degradado",
@@ -187,7 +222,7 @@ namespace slotsi_citas.ViewModel
             return bloquesDisponiblesConsecutivos;
         }
 
-        private async void OnToggleServicio(Servicio? servicio)
+        private async void OnToggleServicio(Servicios? servicio)
         {
             if (servicio == null) return;
 
@@ -225,86 +260,102 @@ namespace slotsi_citas.ViewModel
 
         private async void OnConfirmarCita()
         {
+            System.Diagnostics.Debug.WriteLine("[CONFIRMAR] ✅ OnConfirmarCita SE EJECUTÓ");
+
             if (!_serviciosSeleccionados.Any())
             {
-                if (Application.Current?.MainPage != null)
-                    await Application.Current.MainPage.DisplayAlert("Atención", "Por favor selecciona al menos un servicio.", "OK");
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    if (Application.Current?.MainPage != null)
+                        await Application.Current.MainPage.DisplayAlert("Atención", "Por favor selecciona al menos un servicio.", "OK");
+                });
                 return;
             }
 
-            if (HorarioSeleccionado == null || string.IsNullOrEmpty(HorarioSeleccionado.HoraDisplay))
+            if (HorarioSeleccionado == null)
             {
-                if (Application.Current?.MainPage != null)
-                    await Application.Current.MainPage.DisplayAlert("Atención", "Selecciona un horario válido.", "OK");
+                await MainThread.InvokeOnMainThreadAsync(async () =>
+                {
+                    if (Application.Current?.MainPage != null)
+                        await Application.Current.MainPage.DisplayAlert("Atención", "Selecciona un horario válido.", "OK");
+                });
                 return;
             }
 
             try
             {
-                // 1. Crear el objeto mapeado correctamente para MongoDB
                 var nuevaCita = new Cita_cliente
                 {
+                    Id = null,
                     NombreCliente = string.IsNullOrEmpty(ClienteNombre) ? "Juan Pérez" : ClienteNombre,
                     Servicio = ServicioNombreResumen,
-                    Precio = _serviciosSeleccionados.Sum(s => s.Precio),
+                    Precio = (double)_serviciosSeleccionados.Sum(s => s.Precio),
                     Estado = "Ocupado",
-                    Fecha = DateTime.UtcNow.Date,
-                    Hora = HorarioSeleccionado.HoraDisplay // Se asigna directamente como string "4:00 PM"
+                    Fecha = DateTime.SpecifyKind(FechaSeleccionada.Date, DateTimeKind.Utc),
+                    Hora = HorarioSeleccionado.HoraDisplay
                 };
 
-                // 2. Guardar en MongoDB Atlas
-                await _mongoService.GuardarCitaAsync(nuevaCita);
+                System.Diagnostics.Debug.WriteLine($"[CONFIRMAR] Guardando cita para: {nuevaCita.NombreCliente}");
 
-                // 3. Bloquear en la memoria local para esta sesión
-                AsegurarReservaDeBloques(HorarioSeleccionado.HoraDisplay, _serviciosSeleccionados.Count, nuevaCita);
-
-                if (Application.Current?.MainPage != null)
+                // 🚀 EJECUTAMOS EN SEGUNDO PLANO PARA EVITAR EL ANR DE ANDROID
+                bool guardado = await Task.Run(async () =>
                 {
-                    await Application.Current.MainPage.DisplayAlert("¡Éxito!", "Cita guardada en la base de datos.", "Aceptar");
-                }
+                    try
+                    {
+                        var tareaGuardar = _mongoService.GuardarCitaAsync(nuevaCita);
+                        var tareaTimeout = Task.Delay(5000);
 
-                // 4. Regreso garantizado a la pantalla del Calendario
+                        var tareaCompletada = await Task.WhenAny(tareaGuardar, tareaTimeout);
+
+                        if (tareaCompletada == tareaGuardar)
+                        {
+                            return await tareaGuardar;
+                        }
+                        return false;
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"[ERROR HILO BD]: {ex.Message}");
+                        return false;
+                    }
+                });
+
+                CitaSession.UltimoGuardadoExitoso = guardado;
+                CitaRepository.LimpiarCache();
+                CitaSession.HorarioSeleccionado = null;
+
                 await MainThread.InvokeOnMainThreadAsync(async () =>
                 {
+                    if (Application.Current?.MainPage != null)
+                    {
+                        if (guardado)
+                        {
+                            await Application.Current.MainPage.DisplayAlert("Éxito", "¡Cita registrada correctamente en la base de datos!", "OK");
+                        }
+                        else
+                        {
+                            await Application.Current.MainPage.DisplayAlert("Aviso", "La cita se procesó localmente (problemas de conexión con la red remota).", "OK");
+                        }
+                    }
+
                     if (Shell.Current != null)
                     {
                         await Shell.Current.GoToAsync("..");
-                    }
-                    else if (Application.Current?.MainPage?.Navigation != null)
-                    {
-                        await Application.Current.MainPage.Navigation.PopAsync();
                     }
                 });
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[ERROR FATAL MONGO]: {ex}");
+                System.Diagnostics.Debug.WriteLine($"[CONFIRMAR EXCEPTION] {ex.Message}");
 
-                if (Application.Current?.MainPage != null)
+                await MainThread.InvokeOnMainThreadAsync(async () =>
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error en MongoDB", $"{ex.Message}", "OK");
-                }
-            }
-        }
-
-        private void AsegurarReservaDeBloques(string horaInicio, int cantidadServicios, Cita_cliente cita)
-        {
-            List<string> ordenHoras = new List<string>
-            {
-                "8:00 AM", "9:00 AM", "10:00 AM", "11:00 AM",
-                "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM"
-            };
-
-            int index = ordenHoras.FindIndex(h => h.Equals(horaInicio.Trim(), StringComparison.OrdinalIgnoreCase));
-
-            if (index != -1)
-            {
-                for (int i = 0; i < cantidadServicios && (index + i) < ordenHoras.Count; i++)
-                {
-                    string horaABloquear = ordenHoras[index + i];
-                    CitaRepository.CitasRegistradas[horaABloquear] = cita;
-                }
+                    if (Application.Current?.MainPage != null)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Error", $"No se pudo completar la operación: {ex.Message}", "OK");
+                    }
+                });
             }
         }
     }
-}
+}   

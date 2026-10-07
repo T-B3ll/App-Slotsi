@@ -82,7 +82,10 @@ public static class MauiProgram
         builder.Services.AddTransient<SeleccionarCitaPage>();
         builder.Services.AddTransient<SeleccionarCitaViewModel>();
 
-        builder.Services.AddSingleton<EmailJSService>();
+        builder.Services.AddTransient<SeleccionarCitaPage>();
+        builder.Services.AddTransient<SeleccionarCitaViewModel>();
+
+        builder.Services.AddSingleton<EmailJSService>();    
         builder.Services.AddSingleton<RecuperacionService>(); 
         builder.Services.AddTransient<RecuperarContrasenaViewModel>();
         return builder.Build();

@@ -1,6 +1,5 @@
 ﻿using MongoDB.Driver;
 using slotsi_citas.Models;
-using slotsi_citas.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,6 +14,17 @@ namespace slotsi_citas.Services
         {
             var client = new MongoClient(MongoDbSettings.ConnectionString);
             _database = client.GetDatabase(MongoDbSettings.DatabaseName);
+
+            // --- PRUEBA DE DIAGNÓSTICO DE CONEXIÓN A ATLAS ---
+            try
+            {
+                _database.RunCommand<MongoDB.Bson.BsonDocument>(new MongoDB.Bson.BsonDocument("ping", 1));
+                System.Diagnostics.Debug.WriteLine(">>> [EXITO] Conexion con MongoDB Atlas establecida correctamente.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($">>> [ERROR FATAL DE CONEXION ATLAS]: {ex.Message}");
+            }
         }
 
         // --- MÉTODOS DE USUARIOS ---
@@ -37,26 +47,26 @@ namespace slotsi_citas.Services
         }
 
         // --- MÉTODOS DE SERVICIOS (UN SOLO MÉTODO) ---
-        public async Task<List<Servicio>> ObtenerServiciosAsync()
+        public async Task<List<Servicios>> ObtenerServiciosAsync()
         {
             try
             {
                 // Busca primero en "Servicios" y si está vacía busca en "servicios"
-                var collection = _database.GetCollection<Servicio>("Servicios");
+                var collection = _database.GetCollection<Servicios>("Servicios");
                 var lista = await collection.Find(_ => true).ToListAsync();
 
                 if (lista == null || !lista.Any())
                 {
-                    var collectionMin = _database.GetCollection<Servicio>("servicios");
+                    var collectionMin = _database.GetCollection<Servicios>("servicios");
                     lista = await collectionMin.Find(_ => true).ToListAsync();
                 }
 
-                return lista ?? new List<Servicio>();
+                return lista ?? new List<Servicios>();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[ERROR MONGODB SERVICIOS]: {ex.Message}");
-                return new List<Servicio>();
+                return new List<Servicios>();
             }
         }
 
@@ -65,13 +75,18 @@ namespace slotsi_citas.Services
         {
             try
             {
+                System.Diagnostics.Debug.WriteLine($"[MONGO] Intentando guardar cita: Fecha={cita.Fecha}, Hora={cita.Hora}, Cliente={cita.NombreCliente}");
+
                 var collection = _database.GetCollection<Cita_cliente>("Citas");
                 await collection.InsertOneAsync(cita);
+
+                System.Diagnostics.Debug.WriteLine($"[MONGO] ✅ Cita guardada con ID: {cita.Id}");
                 return true;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"[ERROR MONGODB CITAS]: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[MONGO ERROR]: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"[MONGO STACK]: {ex.StackTrace}");
                 return false;
             }
         }

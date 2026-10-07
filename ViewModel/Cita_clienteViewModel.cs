@@ -7,7 +7,9 @@ using slotsi_citas.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace slotsi_citas.ViewModels
@@ -15,18 +17,32 @@ namespace slotsi_citas.ViewModels
     public class Cita_clienteViewModel : BindableObject
     {
         private readonly IServiceProvider? _serviceProvider;
-        private string _rangoSemanal = "Ago 18 - 24, 2026";
+        private readonly MongoService _mongoService;
+        private bool _cargando;
+        private DateTime _fechaSeleccionada = DateTime.Today;
 
-        public string RangoSemanal
+        // Caché local en memoria para cargas instantáneas
+        private static readonly Dictionary<string, List<Cita_cliente>> _cacheCitas = new();
+
+        public DateTime FechaSeleccionada
         {
-            get => _rangoSemanal;
-            set { _rangoSemanal = value; OnPropertyChanged(); }
+            get => _fechaSeleccionada;
+            set
+            {
+                if (_fechaSeleccionada != value)
+                {
+                    _fechaSeleccionada = value;
+                    OnPropertyChanged();
+                    CargarHorarios();
+                }
+            }
         }
 
         public ObservableCollection<RangoHorario> RangosHorarios { get; set; }
 
         public ICommand SemanaAnteriorCommand { get; }
         public ICommand SemanaSiguienteCommand { get; }
+        public ICommand CambiarAFechaDeHoyCommand { get; }
         public ICommand AgendarCitaClienteCommand { get; }
 
         public Cita_clienteViewModel() : this(null) { }
@@ -34,71 +50,119 @@ namespace slotsi_citas.ViewModels
         public Cita_clienteViewModel(IServiceProvider? serviceProvider)
         {
             _serviceProvider = serviceProvider;
+            _mongoService = new MongoService();
             RangosHorarios = new ObservableCollection<RangoHorario>();
 
-            SemanaAnteriorCommand = new Command(() => { });
-            SemanaSiguienteCommand = new Command(() => { });
+            SemanaAnteriorCommand = new Command(() =>
+            {
+                FechaSeleccionada = FechaSeleccionada.AddDays(-1);
+            });
+
+            SemanaSiguienteCommand = new Command(() =>
+            {
+                FechaSeleccionada = FechaSeleccionada.AddDays(1);
+            });
+
+            CambiarAFechaDeHoyCommand = new Command(() =>
+            {
+                FechaSeleccionada = DateTime.Today;
+            });
+
             AgendarCitaClienteCommand = new Command<RangoHorario>(AgendarCita);
 
+            _fechaSeleccionada = DateTime.Today;
             CargarHorarios();
         }
 
-        public void CargarHorarios()
+        public async void CargarHorarios()
         {
-            RangosHorarios.Clear();
+            if (_cargando) return;
+            _cargando = true;
 
-            List<string> horas = new List<string>
+            try
             {
-                "8:00 AM", "9:00 AM", "10:00 AM", "11:00 AM",
-                "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM"
-            };
+                RangosHorarios.Clear();
 
-            foreach (var hora in horas)
+                List<string> horas = new List<string>
+                {
+                    "8:00 AM", "9:00 AM", "10:00 AM", "11:00 AM",
+                    "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM"
+                };
+
+                var citasMongo = await ObtenerCitasDeFechaRapidoAsync(FechaSeleccionada);
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    CitaRepository.LimpiarCache();
+
+                    foreach (var hora in horas)
+                    {
+                        var citaMongo = citasMongo?.FirstOrDefault(c =>
+                            c.Hora?.Equals(hora, StringComparison.OrdinalIgnoreCase) == true);
+
+                        if (citaMongo != null)
+                        {
+                            RangosHorarios.Add(new RangoHorario
+                            {
+                                HoraDisplay = hora,
+                                Cita = citaMongo
+                            });
+                            CitaRepository.CitasRegistradas[hora] = citaMongo;
+                        }
+                        else if (hora == "1:00 PM")
+                        {
+                            RangosHorarios.Add(new RangoHorario
+                            {
+                                HoraDisplay = hora,
+                                Cita = new Cita_cliente { Estado = "NoDisponible" }
+                            });
+                        }
+                        else
+                        {
+                            RangosHorarios.Add(new RangoHorario
+                            {
+                                HoraDisplay = hora,
+                                Cita = null
+                            });
+                        }
+                    }
+                });
+            }
+            catch (Exception ex)
             {
-                string claveLocalOcupada = $"Cita_Ocupada_{hora}";
-                bool estaGuardadaLocalmente = Preferences.Default.Get(claveLocalOcupada, false);
+                System.Diagnostics.Debug.WriteLine($"[ERROR CARGANDO HORARIOS]: {ex.Message}");
+            }
+            finally
+            {
+                _cargando = false;
+            }
+        }
 
-                if (estaGuardadaLocalmente && !CitaRepository.CitasRegistradas.ContainsKey(hora))
-                {
-                    string clienteLocal = Preferences.Default.Get($"Cliente_{hora}", "Cliente");
-                    CitaRepository.CitasRegistradas[hora] = new Cita_cliente
-                    {
-                        Hora = hora,
-                        Estado = "Ocupado",
-                        NombreCliente = clienteLocal
-                    };
-                }
+        private async Task<List<Cita_cliente>> ObtenerCitasDeFechaRapidoAsync(DateTime fecha)
+        {
+            string claveCache = fecha.ToString("yyyy-MM-dd");
 
-                if (CitaRepository.CitasRegistradas.TryGetValue(hora, out var citaGuardada))
-                {
-                    Preferences.Default.Set(claveLocalOcupada, true);
-                    Preferences.Default.Set($"Cliente_{hora}", citaGuardada.NombreCliente ?? "Cliente");
+            if (_cacheCitas.TryGetValue(claveCache, out var citasCache))
+            {
+                return citasCache;
+            }
 
-                    RangosHorarios.Add(new RangoHorario
-                    {
-                        HoraDisplay = hora,
-                        Cita = citaGuardada
-                    });
-                }
-                else if (hora == "1:00 PM")
-                {
-                    RangosHorarios.Add(new RangoHorario
-                    {
-                        HoraDisplay = hora,
-                        Cita = new Cita_cliente { Estado = "NoDisponible" }
-                    });
-                }
-                else
-                {
-                    Preferences.Default.Remove(claveLocalOcupada);
-                    Preferences.Default.Remove($"Cliente_{hora}");
+            try
+            {
+                // Ejecutamos la consulta a MongoDB en un hilo secundario para liberar la UI
+                var todasLasCitas = await Task.Run(async () => await _mongoService.ObtenerCitasAsync());
 
-                    RangosHorarios.Add(new RangoHorario
-                    {
-                        HoraDisplay = hora,
-                        Cita = null
-                    });
-                }
+                var listaFiltrada = todasLasCitas?
+                    .Where(c => c.Fecha.Date == fecha.Date)
+                    .ToList() ?? new List<Cita_cliente>();
+
+                _cacheCitas[claveCache] = listaFiltrada;
+                return listaFiltrada;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ERROR MONGODB]: {ex.Message}");
+                return new List<Cita_cliente>();
             }
         }
 
@@ -124,17 +188,23 @@ namespace slotsi_citas.ViewModels
 
             string direccionGuardada = Preferences.Default.Get("direccion_guardada", "Matagalpa, Nicaragua");
 
+            // Guardamos los datos de forma segura en la sesión estática antes de navegar
+            CitaSession.HorarioSeleccionado = rango;
+            CitaSession.FechaSeleccionada = FechaSeleccionada;
+            CitaSession.DireccionCliente = direccionGuardada;
+
             var parametros = new Dictionary<string, object>
             {
                 { "HorarioSeleccionado", rango },
-                { "DireccionCliente", direccionGuardada }
+                { "DireccionCliente", direccionGuardada },
+                { "FechaSeleccionada", FechaSeleccionada }
             };
 
             try
             {
                 if (Shell.Current != null)
                 {
-                    await Shell.Current.GoToAsync(nameof(SeleccionarCitaPage), parametros);
+                    await Shell.Current.GoToAsync($"{nameof(SeleccionarCitaPage)}", parametros);
                 }
                 else
                 {
@@ -150,12 +220,17 @@ namespace slotsi_citas.ViewModels
 
         private async void NavegarFallback(RangoHorario rango, string direccionGuardada)
         {
+            CitaSession.HorarioSeleccionado = rango;
+            CitaSession.FechaSeleccionada = FechaSeleccionada;
+            CitaSession.DireccionCliente = direccionGuardada;
+
             var paginaDestino = _serviceProvider?.GetService<SeleccionarCitaPage>() ?? new SeleccionarCitaPage();
 
             if (paginaDestino.BindingContext is SeleccionarCitaViewModel vm)
             {
                 vm.HorarioSeleccionado = rango;
                 vm.DireccionCliente = direccionGuardada;
+                vm.FechaSeleccionada = FechaSeleccionada;
             }
 
             var window = Application.Current?.Windows.FirstOrDefault();
@@ -167,6 +242,7 @@ namespace slotsi_citas.ViewModels
 
         public void RefrescarCitasCliente()
         {
+            _cacheCitas.Remove(FechaSeleccionada.ToString("yyyy-MM-dd"));
             CargarHorarios();
         }
     }
