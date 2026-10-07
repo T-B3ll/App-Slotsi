@@ -39,7 +39,7 @@
                            TextColor="#6B7280"
                            BackgroundColor="#E5E7EB" 
                            HeightRequest="50"/>
-                            <Label Text="El correo no se puede modificar desde aquí." FontSize="10" TextColor="#9CA3AF" Margin="0,-8,0,0"/>
+                          
 
                     
                     <Label Text="Teléfono *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
@@ -151,7 +151,7 @@
                                 <DataTemplate x:DataType="vm:HorarioTrabajoVm">
                                     <VerticalStackLayout Spacing="8" Padding="0,0,0,15">
 
-                                        <!-- Fila Superior: Checkbox Día + Switch Pausa -->
+                                 
                                         <Grid ColumnDefinitions="Auto,Auto,*,Auto,Auto" ColumnSpacing="10">
                                             <CheckBox Grid.Column="0" Color="#3B82F6" VerticalOptions="Center" Scale="0.9"
                                                       IsChecked="{Binding EsLaboral}"/>
