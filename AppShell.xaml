@@ -7,15 +7,23 @@
     Title="Slotsi">
 
     <TabBar>
-        <!-- Pestaña 1: Vista del Cliente -->
-        <Tab Title="Vista Cliente" Icon="calendar.png">
+        <!-- Pestaña 1: Registro de Usuario (AHORA ES LA PRIMERA) -->
+        <Tab Title="Registro" Icon="profile.png">
             <ShellContent
-                Title="Citas Cliente"
-                ContentTemplate="{DataTemplate pages:Cita_ClientePage}"
-                Route="Cita_ClientePage" />
+                Title="Registro de Usuario"
+                ContentTemplate="{DataTemplate pages:RegistroUsuariosPage}"
+                Route="RegistroUsuariosPage" />
         </Tab>
 
-        <!-- Pestaña 2: Vista del Usuario / Barbero -->
+        <!-- Pestaña 2: Vista Cliente (Login primero) -->
+        <Tab Title="Vista Cliente" Icon="calendar.png">
+            <ShellContent
+                Title="Iniciar Sesión"
+                ContentTemplate="{DataTemplate pages:LoginPage}"
+                Route="LoginPage" />
+        </Tab>
+
+        <!-- Pestaña 3: Vista Barbero -->
         <Tab Title="Vista Barbero" Icon="profile.png">
             <ShellContent
                 Title="Citas Barbero"
@@ -23,13 +31,15 @@
                 Route="Cita_UsuarioPage" />
         </Tab>
 
+        <!-- Pestaña 4: Catalogo de servicios -->
         <Tab Title="Catalogo de servicios" Icon="profile.png">
             <ShellContent
-            Title="Servicios disponibles"
-            ContentTemplate="{DataTemplate pages:catalogoservicios}"
-            Route="cataloservicios" />
+                Title="Servicios disponibles"
+                ContentTemplate="{DataTemplate pages:catalogoservicios}"
+                Route="cataloservicios" />
         </Tab>
 
+        <!-- Pestaña 5: Catalogo de cliente -->
         <Tab Title="Catalogo de cliente" Icon="profile.png">
             <ShellContent
                 Title="Clientes"
@@ -37,20 +47,12 @@
                 Route="catalogocliente" />
         </Tab>
 
-        <!-- Pestaña 3: Registro de Usuario -->
-        <Tab Title="Registro" Icon="Profile.png">
-            <ShellContent
-                    Title="Registro"
-                    ContentTemplate="{DataTemplate pages:RegistroUsuariosPage}"
-                    Route="RegistroUsuariosPage" />
-        </Tab>
-
-        <!-- Pestaña 4: Calendario Citas -->
+        <!-- Pestaña 6: Calendario Citas -->
         <Tab Title="Calendario" Icon="calendar.png">
             <ShellContent
-                    Title="Calendario"
-                    ContentTemplate="{DataTemplate pages:CalendarioPage}"
-                    Route="CalendarioPage" />
+                Title="Calendario"
+                ContentTemplate="{DataTemplate pages:CalendarioPage}"
+                Route="CalendarioPage" />
         </Tab>
     </TabBar>
 

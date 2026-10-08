@@ -4,6 +4,7 @@ using slotsi_citas.Models;
 using slotsi_citas.Pages;
 using slotsi_citas.Services;
 using slotsi_citas.ViewModel;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -228,9 +229,7 @@ namespace slotsi_citas.ViewModels
 
             if (paginaDestino.BindingContext is SeleccionarCitaViewModel vm)
             {
-                vm.HorarioSeleccionado = rango;
-                vm.DireccionCliente = direccionGuardada;
-                vm.FechaSeleccionada = FechaSeleccionada;
+             
             }
 
             var window = Application.Current?.Windows.FirstOrDefault();
