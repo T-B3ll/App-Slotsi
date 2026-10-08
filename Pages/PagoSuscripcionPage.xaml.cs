@@ -15,6 +15,8 @@ public partial class PagoSuscripcionPage : ContentPage
     public PagoSuscripcionPage()
     {
         InitializeComponent();
+        Shell.SetFlyoutBehavior(this, FlyoutBehavior.Flyout);
+
         _viewModel = new PagoSuscripcionViewModel(new SuscripcionService());
         BindingContext = _viewModel;
 
@@ -122,7 +124,7 @@ public partial class PagoSuscripcionPage : ContentPage
     {
         var usuarioId = Preferences.Get("UsuarioId", string.Empty);
 
-        // Validamos directamente con nuestro servicio local
+      
         bool yaPago = await _servicioLocal.YaPagoEsteMesAsync(usuarioId);
 
         if (yaPago)

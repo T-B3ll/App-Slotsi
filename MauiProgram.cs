@@ -34,7 +34,7 @@ public static class MauiProgram
 #endif
 
 
-        
+        builder.Services.AddTransient<AppShell>();
         var supabaseUrl = "https://vnasklmkkamytgwymzih.supabase.co";
         var supabaseKey = "sb_publishable_z8qlsYsGV7mYU4iJGGu8NA_fljnaFtq";
 
@@ -77,7 +77,9 @@ public static class MauiProgram
         builder.Services.AddTransient<catalogoservicios>();
         builder.Services.AddTransient<DueñosNegociosPage>();
         builder.Services.AddTransient<PagoSuscripcionPage>();
-
+        builder.Services.AddTransient<EditarPerfilPage>();
+        builder.Services.AddTransient<EditarPerfilViewModel>();
+        builder.Services.AddSingleton<NegocioService>();
 
         builder.Services.AddTransient<CatalogoCliente>();
         builder.Services.AddTransient<LoginViewModel>();

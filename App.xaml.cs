@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using slotsi_citas.Pages;
 
 namespace slotsi_citas
 {
@@ -11,9 +10,14 @@ namespace slotsi_citas
         {
             InitializeComponent();
             _serviceProvider = serviceProvider;
-            var loginPage = serviceProvider.GetRequiredService<Pages.LoginPage>();
-            MainPage = new NavigationPage(loginPage);
+
+            // ❌ ELIMINADO: MainPage = new NavigationPage(...) o MainPage = new AppShell();
         }
 
+        // ✅ MÉTODO CORRECTO PARA .NET MAUI MODERNO
+        protected override Window CreateWindow(IActivationState? activationState)
+        {
+            return new Window(new AppShell());
+        }
     }
 }

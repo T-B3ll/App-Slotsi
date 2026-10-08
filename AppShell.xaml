@@ -9,15 +9,17 @@
     BackgroundColor="#2563EB"
     FlyoutBackgroundColor="White">
 
+    <!-- Plantilla visual del menú lateral -->
     <Shell.ItemTemplate>
         <DataTemplate>
             <Grid ColumnDefinitions="44, *" HeightRequest="50" Padding="16,0">
                 <Image Grid.Column="0" Source="{Binding Icon}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="22" HeightRequest="22"/>
-                <Label Grid.Column="1" Text="{Binding Title}" TextColor="#1E293B"  FontSize="14" FontAttributes="Bold" VerticalOptions="Center" Margin="8,0,0,0"/>
+                <Label Grid.Column="1" Text="{Binding Title}" TextColor="#1E293B" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" Margin="8,0,0,0"/>
             </Grid>
         </DataTemplate>
     </Shell.ItemTemplate>
 
+    <!-- Encabezado del Menú Lateral -->
     <Shell.FlyoutHeader>
         <Grid HeightRequest="140" BackgroundColor="#2563EB" Padding="20">
             <VerticalStackLayout VerticalOptions="End" Spacing="4">
@@ -27,13 +29,11 @@
         </Grid>
     </Shell.FlyoutHeader>
 
-    <FlyoutItem Title="Pago de la suscripcion" Route="PagoSuscripcionPage">
-        <FlyoutItem.Icon>
-            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#2563EB" Size="22" />
-        </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:PagoSuscripcionPage}" />
-    </FlyoutItem>
+    <!-- PÁGINAS OCULTAS (Login y Registro) -->
+    <ShellContent Route="LoginPage" ContentTemplate="{DataTemplate pages:LoginPage}" FlyoutItemIsVisible="False" />
+    <ShellContent Route="RegistroUsuariosPage" ContentTemplate="{DataTemplate pages:RegistroUsuariosPage}" FlyoutItemIsVisible="False" />
 
+    <!-- MENÚ LATERAL (Flyout) -->
     <FlyoutItem Title="Citas Cliente" Route="Cita_ClientePage">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xEBCC;" Color="#2563EB" Size="22" />
@@ -62,25 +62,11 @@
         <ShellContent ContentTemplate="{DataTemplate pages:CatalogoCliente}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Registro de Usuarios" Route="RegistroUsuariosPage">
-        <FlyoutItem.Icon>
-            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FE;" Color="#2563EB" Size="22" />
-        </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:RegistroUsuariosPage}" />
-    </FlyoutItem>
-
     <FlyoutItem Title="Calendario" Route="CalendarioPage">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE916;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:CalendarioPage}" />
-    </FlyoutItem>
-
-    <FlyoutItem Title="Seleccionar Cita" Route="SeleccionarCitaPage">
-        <FlyoutItem.Icon>
-            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8B5;" Color="#2563EB" Size="22" />
-        </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:SeleccionarCitaPage}" />
     </FlyoutItem>
 
     <FlyoutItem Title="Trabajadores" Route="ListaTrabajadores">
@@ -90,13 +76,6 @@
         <ShellContent ContentTemplate="{DataTemplate pages:ListaTrabajadores}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Calificaciones" Route="Calificaciones">
-        <FlyoutItem.Icon>
-            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE838;" Color="#2563EB" Size="22" />
-        </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:CentroCalificaciones}" />
-    </FlyoutItem>
-
     <FlyoutItem Title="Dueños de Negocio" Route="dueñosnegocios">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FB;" Color="#2563EB" Size="22"/>
@@ -104,6 +83,14 @@
         <ShellContent ContentTemplate="{DataTemplate pages:DueñosNegociosPage}"/>
     </FlyoutItem>
 
+    <FlyoutItem Title="Pago de la suscripcion" Route="PagoSuscripcionPage">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#2563EB" Size="22" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:PagoSuscripcionPage}" />
+    </FlyoutItem>
+
+    <!-- PIE DEL MENÚ LATERAL -->
     <Shell.FlyoutFooter>
         <Border BackgroundColor="#FEF2F2" Margin="16,10,16,20" Padding="12" Stroke="#FEE2E2" StrokeShape="RoundRectangle 10">
             <Border.GestureRecognizers>
@@ -115,5 +102,30 @@
             </HorizontalStackLayout>
         </Border>
     </Shell.FlyoutFooter>
+
+    <!-- BARRA INFERIOR O RUTAS ADICIONALES (Aquí van las que daban error al estar fuera) -->
+    <TabBar>
+        <ShellContent Title="Editar Perfil" Route="EditarPerfilPage" FlyoutItemIsVisible="False">
+            <ShellContent.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE745;" Color="#334155" Size="24" />
+            </ShellContent.Icon>
+            <ShellContent.ContentTemplate>
+                <DataTemplate>
+                    <pages:EditarPerfilPage />
+                </DataTemplate>
+            </ShellContent.ContentTemplate>
+        </ShellContent>
+
+        <ShellContent Title="Servicios a Domicilio" Route="Servicios_a_domicilio" FlyoutItemIsVisible="False">
+            <ShellContent.Icon>
+                <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE558;" Color="#334155" Size="24" />
+            </ShellContent.Icon>
+            <ShellContent.ContentTemplate>
+                <DataTemplate>
+                    <pages:Servicios_a_domicilio />
+                </DataTemplate>
+            </ShellContent.ContentTemplate>
+        </ShellContent>
+    </TabBar>
 
 </Shell>
