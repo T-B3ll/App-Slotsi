@@ -16,7 +16,7 @@
                        Aspect="AspectFit"
                        Margin="0,0,0,40"/>
 
-              
+
                 <Label Text="Iniciar Sesión" 
                        FontSize="28" 
                        FontAttributes="Bold" 
@@ -46,7 +46,7 @@
                            VerticalOptions="Center"/>
                 </Frame>
 
-             
+
                 <Label Text="Contraseña" 
                        FontSize="14" 
                        TextColor="#4B5563" 
@@ -81,7 +81,7 @@
                     </Grid>
                 </Frame>
 
-              
+
                 <Label Text="¿Recuperar contraseña?" 
                 TextColor="#2563EB" 
                 FontSize="14"

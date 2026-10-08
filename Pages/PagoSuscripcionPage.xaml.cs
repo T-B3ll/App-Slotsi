@@ -15,8 +15,6 @@ public partial class PagoSuscripcionPage : ContentPage
     public PagoSuscripcionPage()
     {
         InitializeComponent();
-        Shell.SetFlyoutBehavior(this, FlyoutBehavior.Flyout);
-
         _viewModel = new PagoSuscripcionViewModel(new SuscripcionService());
         BindingContext = _viewModel;
 
@@ -42,11 +40,11 @@ public partial class PagoSuscripcionPage : ContentPage
         {
             _isUpdating = true;
 
-      
+
             EntryCard.Text = formatted;
             EntryCard.CursorPosition = formatted.Length;
 
-  
+
             _viewModel.NumeroTarjeta = digits;
 
             _isUpdating = false;
@@ -71,7 +69,7 @@ public partial class PagoSuscripcionPage : ContentPage
             EntryExpiry.Text = formatted;
             EntryExpiry.CursorPosition = formatted.Length;
 
-           
+
             _viewModel.FechaExpiracion = formatted;
 
             _isUpdating = false;
@@ -119,12 +117,12 @@ public partial class PagoSuscripcionPage : ContentPage
         _viewModel.MetodoSeleccionado = btn.Text;
     }
 
-   
+
     private async void OnPagarClicked(object sender, EventArgs e)
     {
         var usuarioId = Preferences.Get("UsuarioId", string.Empty);
 
-      
+        // Validamos directamente con nuestro servicio local
         bool yaPago = await _servicioLocal.YaPagoEsteMesAsync(usuarioId);
 
         if (yaPago)

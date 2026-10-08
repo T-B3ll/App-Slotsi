@@ -22,9 +22,7 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 
-
-                fonts.AddFont("MauiMaterialAssets.ttf", "MaterialIcons");
-
+             
                 fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialIcons");
 
             });
@@ -34,18 +32,18 @@ public static class MauiProgram
 #endif
 
 
-        builder.Services.AddTransient<AppShell>();
+
         var supabaseUrl = "https://vnasklmkkamytgwymzih.supabase.co";
         var supabaseKey = "sb_publishable_z8qlsYsGV7mYU4iJGGu8NA_fljnaFtq";
 
         var options = new SupabaseOptions();
         var client = new Client(supabaseUrl, supabaseKey, options);
 
-       
+
 
         client.InitializeAsync().Wait();
 
-        builder.Services.AddSingleton(client);        
+        builder.Services.AddSingleton(client);
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<UsuarioService>();
 
@@ -80,7 +78,6 @@ public static class MauiProgram
         builder.Services.AddTransient<EditarPerfilPage>();
         builder.Services.AddTransient<EditarPerfilViewModel>();
         builder.Services.AddSingleton<NegocioService>();
-
         builder.Services.AddTransient<CatalogoCliente>();
         builder.Services.AddTransient<LoginViewModel>();
 
@@ -88,7 +85,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<SuscripcionService>();
 
         builder.Services.AddSingleton<EmailJSService>();
-        builder.Services.AddSingleton<RecuperacionService>(); 
+        builder.Services.AddSingleton<RecuperacionService>();
         builder.Services.AddTransient<RecuperarContrasenaViewModel>();
         return builder.Build();
     }

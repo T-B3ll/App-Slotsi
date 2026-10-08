@@ -85,10 +85,9 @@ namespace slotsi_citas.ViewModel
             string idUsuarioString = usuario.Id.ToString();
 
             Preferences.Set("UsuarioId", idUsuarioString);
-            Preferences.Set("UsuarioIdSesion", idUsuarioString); 
+            Preferences.Set("UsuarioIdSesion", idUsuarioString);
             Preferences.Set("EsDuenoNegocio", usuario.TipoUsuario);
             Preferences.Set("UsuarioCorreo", usuario.Correo);
-
 
             Application.Current.MainPage = new AppShell();
 
@@ -100,31 +99,6 @@ namespace slotsi_citas.ViewModel
             {
                 await Shell.Current.GoToAsync("//ListaTrabajadores");
             }
-
-            var appShell = _serviceProvider.GetRequiredService<AppShell>();
-            Application.Current.MainPage = appShell;
-
-            
-            
-            string rutaDestino;
-
-            if (!usuario.TipoUsuario)
-            {
-                // RUTA PARA CLIENTE BÁSICO
-                rutaDestino = "//Cita_ClientePage";
-            }
-            else
-            {
-                // RUTA PARA DUEÑO DE NEGOCIO
-                rutaDestino = "//Cita_UsuarioPage";
-            }
-
-            // Navegar a la página correspondiente dentro del Shell
-            await Shell.Current.GoToAsync(rutaDestino);
-
-
-
-
         }
 
         protected void OnPropertyChanged([CallerMemberName] string name = null)

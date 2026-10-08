@@ -10,7 +10,7 @@ public partial class LoginPage : ContentPage
     private readonly IServiceProvider _serviceProvider;
     public LoginPage(LoginViewModel viewModel)
     {
-        InitializeComponent(); 
+        InitializeComponent();
         BindingContext = viewModel;
     }
     public LoginPage(LoginViewModel viewModel, IServiceProvider serviceProvider)
@@ -21,7 +21,7 @@ public partial class LoginPage : ContentPage
     }
     private async void OnForgotPasswordTapped(object sender, EventArgs e)
     {
-       
+
         var paginaRecuperar = _serviceProvider.GetRequiredService<RecuperarContra>();
 
         await Navigation.PushAsync(paginaRecuperar);
@@ -34,8 +34,8 @@ public partial class LoginPage : ContentPage
     }
     private void OnTogglePasswordVisibility(object sender, EventArgs e)
     {
-        
-      
+
+
     }
 
 }
