@@ -128,7 +128,7 @@
 
      
                     <Label Text="Nombre del negocio" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
-                    <Entry Text="{Binding NombreNegocio}" Placeholder="Ej: Barbería El Pele" 
+                    <Entry Text="{Binding NombreNegocio}" Placeholder="Ingresar correctamente El departamento, municipio o comunidad con su ubicación axacta " 
                            PlaceholderColor="#9CA3AF"
                            TextColor="#111827" FontSize="16" BackgroundColor="#F9FAFB" HeightRequest="50"/>
 

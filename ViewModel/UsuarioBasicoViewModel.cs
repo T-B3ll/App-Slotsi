@@ -2,20 +2,20 @@
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using slotsi_citas.Models; 
+using Microsoft.Maui.Controls;
+using slotsi_citas.Models;
 using slotsi_citas.Services;
 
-namespace slotsi_citas.ViewModel 
+namespace slotsi_citas.ViewModel
 {
     public class UsuarioBasicoViewModel : INotifyPropertyChanged
     {
         private readonly UsuarioService _usuarioService;
 
         private string _nombreCompleto = string.Empty;
-
-
         private Negocio _negocioData = new Negocio();
         private Usuario _usuarioData = new Usuario();
+
         public string NombreCompleto
         {
             get => _nombreCompleto;
@@ -56,13 +56,14 @@ namespace slotsi_citas.ViewModel
             get => _estaCargando;
             set { _estaCargando = value; OnPropertyChanged(); }
         }
+
         public string CategoriaNegocio
         {
             get => _negocioData.Categoria;
             set { _negocioData.Categoria = value; OnPropertyChanged(); }
         }
-        public ICommand RegistrarCommand { get; }
 
+        public ICommand RegistrarCommand { get; }
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
@@ -74,20 +75,65 @@ namespace slotsi_citas.ViewModel
         {
             _usuarioService = usuarioService;
 
+
             RegistrarCommand = new Command(async () =>
             {
-                var resultado = await RegistrarUsuarioAsync();
-
-                if (resultado.Exito)
+                // 1. Validar campos vacíos
+                if (string.IsNullOrWhiteSpace(NombreCompleto) ||
+                    string.IsNullOrWhiteSpace(Correo) ||
+                    string.IsNullOrWhiteSpace(Contrasena))
                 {
-                    await Application.Current.MainPage.DisplayAlert("Éxito", resultado.Mensaje, "OK");
+                    await Application.Current.MainPage.DisplayAlert("Error", "Campos obligatorios faltantes.", "OK");
+                    return;
                 }
-                else
+
+              
+                if (Contrasena.Length < 8)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", resultado.Mensaje, "OK");
+                    await Application.Current.MainPage.DisplayAlert("Error", "Mínimo 8 caracteres.", "OK");
+                    return;
+                }
+
+                EstaCargando = true;
+                try
+                {
+                  
+                    var existe = await _usuarioService.ObtenerPorCorreoAsync(Correo);
+                    if (existe != null)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Error", "Este correo ya está registrado.", "OK");
+                        return; 
+                    }
+
+                   
+                    await _usuarioService.CrearAsync(new Usuario
+                    {
+                        NombreCompleto = NombreCompleto.Trim(),
+                        Correo = Correo.Trim().ToLower(),
+                        Telefono = Telefono.Trim(),
+                        Cedula = Cedula.Trim(),
+                        Contrasena = Contrasena,
+                        TipoUsuario = false,
+                        EstaActivo = true
+                    });
+
+                    await Application.Current.MainPage.DisplayAlert("Éxito", "Usuario creado correctamente.", "OK");
+
+             
+                    await Application.Current.MainPage.Navigation.PopAsync();
+                }
+                catch (Exception ex)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+                
+                }
+                finally
+                {
+                    EstaCargando = false;
                 }
             });
         }
+
 
         public async Task<(bool Exito, string Mensaje)> RegistrarUsuarioAsync()
         {
@@ -104,33 +150,20 @@ namespace slotsi_citas.ViewModel
             }
 
             EstaCargando = true;
-
             try
             {
                 var usuarioExistente = await _usuarioService.ObtenerPorCorreoAsync(Correo);
+
                 if (usuarioExistente != null)
                 {
-                    return (false, "Este correo electrónico ya está registrado.");
+                    return (false, "Este correo electrónico ya está registrado en el sistema.");
                 }
 
-                var nuevoUsuario = new Usuario
-                {
-                    NombreCompleto = NombreCompleto.Trim(),
-                    Correo = Correo.Trim().ToLower(),
-                    Telefono = Telefono.Trim(),
-                    Cedula = Cedula.Trim(),
-                    Contrasena = Contrasena,
-                    TipoUsuario = false,
-                    EstaActivo = true
-                };
-
-                await _usuarioService.CrearAsync(nuevoUsuario);
-
-                return (true, "¡Cuenta creada exitosamente!");
+                return (true, "Validación exitosa");
             }
             catch (Exception ex)
             {
-                return (false, $"Error al registrar: {ex.Message}");
+                return (false, $"Error al validar: {ex.Message}");
             }
             finally
             {
