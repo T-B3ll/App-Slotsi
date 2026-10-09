@@ -59,22 +59,19 @@
                     <Label Text="Servicios disponibles" FontSize="15" FontAttributes="Bold" TextColor="#111827"/>
 
                     <CollectionView ItemsSource="{Binding ServiciosTarjetas}"
-                                    ItemsLayout="HorizontalList"
-                                    HeightRequest="260"
-                                    HorizontalScrollBarVisibility="Never">
+                ItemsLayout="HorizontalList"
+                HeightRequest="260"
+                HorizontalScrollBarVisibility="Never">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:Servicios">
                                 <Border WidthRequest="210"
-                                        HeightRequest="250"
-                                        BackgroundColor="#FFFFFF"
-                                        StrokeThickness="2"
-                                        StrokeShape="RoundRectangle 12"
-                                        Margin="0,0,12,0"
-                                        Padding="0">
-                                    <!-- Solución aplicada aquí para el color del borde -->
-                                    <Border.Stroke>
-                                        <SolidColorBrush Color="{Binding ColorBordeCard}" />
-                                    </Border.Stroke>
+                    HeightRequest="250"
+                    BackgroundColor="#FFFFFF"
+                    StrokeThickness="2"
+                    Stroke="#E5E7EB"
+                    StrokeShape="RoundRectangle 12"
+                    Margin="0,0,12,0"
+                    Padding="0">
 
                                     <Grid RowDefinitions="100, *">
                                         <Grid Grid.Row="0" BackgroundColor="#F3F4F6">
@@ -86,30 +83,30 @@
                                             <Label Text="{Binding Descripcion}" FontSize="10" TextColor="#6B7280"/>
 
                                             <Grid ColumnDefinitions="*, Auto">
-                                                <Label Grid.Column="0" Text="{Binding DuracionTexto}" FontSize="11" TextColor="#6B7280"/>
-                                                <Label Grid.Column="1" Text="{Binding PrecioTexto}" FontSize="12" FontAttributes="Bold" TextColor="#2563EB"/>
+                                                <Label Grid.Column="0" Text="{Binding DuracionMinutos, StringFormat='{0} min'}" FontSize="11" TextColor="#6B7280"/>
+                                                <Label Grid.Column="1" Text="{Binding Precio, StringFormat='C$ {0:N2}'}" FontSize="12" FontAttributes="Bold" TextColor="#2563EB"/>
                                             </Grid>
 
+                                            <!-- BOTÓN CON TEXTO Y COLOR FIJO PARA QUE SE VEA -->
                                             <Border Stroke="#2563EB"
-                                                    StrokeThickness="1"
-                                                    StrokeShape="RoundRectangle 8"
-                                                    Padding="0,6"
-                                                    Margin="0,6,0,0">
-                                                <!-- Solución aplicada aquí para el fondo del botón -->
-                                                <Border.Background>
-                                                    <SolidColorBrush Color="{Binding ColorFondoBoton}" />
-                                                </Border.Background>
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 8"
+                                Padding="0,6"
+                                Margin="0,6,0,0"
+                                BackgroundColor="Transparent">
 
                                                 <Border.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.ToggleServicioCommand}"
-                                                                          CommandParameter="{Binding .}"/>
+                                                      CommandParameter="{Binding .}"/>
                                                 </Border.GestureRecognizers>
-                                                <Label Text="{Binding TextoBoton}"
-                                                       TextColor="{Binding ColorTextoBoton}"
-                                                       FontSize="11"
-                                                       FontAttributes="Bold"
-                                                       HorizontalOptions="Center"
-                                                       VerticalOptions="Center"/>
+
+                                                <!-- TEXTO FIJO "AGREGAR +" EN LUGAR DE BINDING ROTO -->
+                                                <Label Text="Agregar +"
+                                   TextColor="#2563EB"
+                                   FontSize="11"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
                                             </Border>
                                         </VerticalStackLayout>
                                     </Grid>
