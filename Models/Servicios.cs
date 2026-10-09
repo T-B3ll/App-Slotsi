@@ -9,6 +9,8 @@ namespace slotsi_citas.Models
     [BsonIgnoreExtraElements]
     public class Servicios : INotifyPropertyChanged
     {
+        private bool _esSeleccionado;
+
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
@@ -70,6 +72,19 @@ namespace slotsi_citas.Models
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+         public bool EsSeleccionado
+        {
+            get => _esSeleccionado;
+            set
+            {
+                if (_esSeleccionado != value)
+                {
+                    _esSeleccionado = value;
+                    OnPropertyChanged(); 
+                }
+            }
         }
     }
 }
