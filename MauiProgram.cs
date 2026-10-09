@@ -61,7 +61,6 @@ public static class MauiProgram
         builder.Services.AddTransient<RegistroUsuarioBasico>();
 
         builder.Services.AddTransient<Cita_UsuarioViewModel>();
-
         builder.Services.AddTransient<Cita_ClientePage>();
 
         builder.Services.AddSingleton<RecuperacionService>();

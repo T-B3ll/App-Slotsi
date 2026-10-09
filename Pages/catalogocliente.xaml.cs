@@ -19,6 +19,6 @@ public partial class CatalogoCliente : ContentPage
 
     private async void OnVolverClicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("DueñosNegociosPage");
+        await Shell.Current.GoToAsync("//dueñosnegocios");
     }
 }

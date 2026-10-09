@@ -8,7 +8,7 @@
              Shell.FlyoutBehavior="Flyout">
     
     <Shell.BackButtonBehavior>
-        <BackButtonBehavior IsVisible="True" /> 
+        <BackButtonBehavior IsVisible="False" /> 
     </Shell.BackButtonBehavior>
     
     <Grid RowDefinitions="Auto, *, Auto">
