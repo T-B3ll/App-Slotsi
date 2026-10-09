@@ -85,6 +85,13 @@
         <ShellContent ContentTemplate="{DataTemplate pages:CentroCalificaciones}" />
     </FlyoutItem>
 
+    <FlyoutItem Title="Citas Cliente" Route="Cita_ClientePage">
+        <FlyoutItem.Icon>
+            <!-- 📅 Calendar Today: Perfecto para ver el historial o lista de citas -->
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE935;" Color="#2563EB" Size="22" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:Cita_ClientePage}" />
+    </FlyoutItem>
 
 
 

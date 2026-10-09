@@ -1,9 +1,31 @@
-namespace slotsi_citas.Pages;
+using Microsoft.Maui.Controls;
+using slotsi_citas.ViewModel;
+using System;
 
-public partial class SeleccionarCitaPage : ContentPage
+namespace slotsi_citas.Pages
 {
-    public SeleccionarCitaPage()
+    public partial class SeleccionarCitaPage : ContentPage
     {
-        InitializeComponent();
+        public SeleccionarCitaPage()
+        {
+            InitializeComponent();
+            BindingContext = new SeleccionarCitaViewModel();
+        }
+
+        public SeleccionarCitaPage(SeleccionarCitaViewModel vm)
+        {
+            InitializeComponent();
+            BindingContext = vm;
+        }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+
+            if (BindingContext is SeleccionarCitaViewModel vm)
+            {
+                await vm.CargarServiciosBDAsync();
+            }
+        }
     }
 }
