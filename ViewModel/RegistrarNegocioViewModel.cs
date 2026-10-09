@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
@@ -17,11 +19,22 @@ namespace slotsi_citas.ViewModel
         private readonly NegocioService _negocioService;
         private readonly UsuarioService _usuarioService;
 
-
         private Usuario _usuarioData = new Usuario();
         private Negocio _negocioData = new Negocio();
 
-      
+        // ✅ NUEVA PROPIEDAD PARA LA LISTA ACUMULATIVA DE DOCUMENTOS
+        private ObservableCollection<string> _listaDocumentos = new ObservableCollection<string>();
+        public ObservableCollection<string> ListaDocumentos
+        {
+            get => _listaDocumentos;
+            set { _listaDocumentos = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasDocumentos)); }
+        }
+
+        // ✅ PROPIEDAD AUXILIAR PARA MOSTRAR/OCULTAR MENSAJES EN EL XAML
+        public bool HasDocumentos => ListaDocumentos.Count > 0;
+
+        public ObservableCollection<DiaHorarioUI> ListaDiasHorario { get; set; } = new ObservableCollection<DiaHorarioUI>();
+
         public Command SeleccionarFotoCommand { get; }
         public Command SeleccionarDocumentoCommand { get; }
         public Command RegistrarCommand { get; }
@@ -35,9 +48,14 @@ namespace slotsi_citas.ViewModel
             SeleccionarFotoCommand = new Command(async () => await SeleccionarFotoAsync());
             SeleccionarDocumentoCommand = new Command(async () => await SeleccionarDocumentoAsync());
             RegistrarCommand = new Command(async () => await RegistrarNegocioAsync());
+
+            var dias = new[] { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" };
+            foreach (var dia in dias)
+            {
+                ListaDiasHorario.Add(new DiaHorarioUI { NombreDia = dia });
+            }
         }
 
-    
         public string Nombre
         {
             get => _usuarioData.NombreCompleto;
@@ -64,7 +82,6 @@ namespace slotsi_citas.ViewModel
             set { _usuarioData.Contrasena = value; OnPropertyChanged(); }
         }
 
-        
         public string NumeroRuc
         {
             get => _negocioData.NumeroRuc;
@@ -85,34 +102,63 @@ namespace slotsi_citas.ViewModel
             get => _negocioData.UrlFotoPerfil;
             set { _negocioData.UrlFotoPerfil = value; OnPropertyChanged(); }
         }
+
+        
         public string UrlDocumentoTitulo
         {
             get => _negocioData.UrlDocumentoTitulo;
             set { _negocioData.UrlDocumentoTitulo = value; OnPropertyChanged(); }
         }
+
         public string CategoriaNegocio
         {
             get => _negocioData.Categoria;
             set { _negocioData.Categoria = value; OnPropertyChanged(); }
         }
 
+        public string NombreNegocio
+        {
+            get => _negocioData.NombreNegocio;
+            set
+            {
+                _negocioData.NombreNegocio = value;
+                OnPropertyChanged();
+            }
+        }
+
+
+        private List<string> _urlsDocumentosSubidos = new List<string>();
 
         private async Task RegistrarNegocioAsync()
         {
+            if (!string.IsNullOrWhiteSpace(Correo))
+            {
+                var usuarioExistente = await _usuarioService.ObtenerPorCorreoAsync(Correo);
+
+                if (usuarioExistente != null)
+                {
+                    await Application.Current.MainPage.DisplayAlert(
+                        "Correo ya registrado",
+                        "Este correo electrónico ya está asociado a una cuenta de negocio. Por favor usa otro o inicia sesión.",
+                        "OK");
+                    return;
+                }
+            }
+
             if (string.IsNullOrWhiteSpace(Nombre) || string.IsNullOrWhiteSpace(Contrasena))
             {
                 await Application.Current.MainPage.DisplayAlert("Error", "Faltan datos obligatorios", "OK");
                 return;
             }
-            if (string.IsNullOrEmpty(UrlFotoPerfil) || string.IsNullOrEmpty(UrlDocumentoTitulo))
+
+            if (string.IsNullOrEmpty(UrlFotoPerfil) || !HasDocumentos)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Debes subir foto y documento", "OK");
+                await Application.Current.MainPage.DisplayAlert("Error", "Debes subir foto y al menos un documento", "OK");
                 return;
             }
 
             try
             {
-             
                 _usuarioData.TipoUsuario = true;
                 _usuarioData.EstaActivo = true;
                 await _usuarioService.CrearAsync(_usuarioData);
@@ -120,26 +166,61 @@ namespace slotsi_citas.ViewModel
                 if (string.IsNullOrEmpty(_usuarioData.Id))
                     throw new Exception("Error al generar ID de usuario.");
 
-       
                 _negocioData.UsuarioId = _usuarioData.Id;
                 _negocioData.FechaRegistro = DateTime.UtcNow;
+
+                if (_urlsDocumentosSubidos.Any())
+                {
+                    _negocioData.UrlDocumentoTitulo = _urlsDocumentosSubidos.First();
+                }
+
+                _negocioData.Horarios = new Dictionary<string, slotsi_citas.Models.Negocio.HorarioDia>();
+                _negocioData.DiasCerrados = new List<string>();
+
+                var mapDias = new Dictionary<string, string>
+        {
+            {"Lunes","Lun"}, {"Martes","Mar"}, {"Miércoles","Mie"},
+            {"Jueves","Jue"}, {"Viernes","Vie"}, {"Sábado","Sab"}, {"Domingo","Dom"}
+        };
+
+                foreach (var diaUI in ListaDiasHorario)
+                {
+                    if (!mapDias.ContainsKey(diaUI.NombreDia)) continue;
+
+                    string claveCorta = mapDias[diaUI.NombreDia];
+
+                    if (diaUI.EstaActivo)
+                    {
+                        var pausas = diaUI.TienePausa
+                            ? new List<string> {
+                        diaUI.PausaInicio.ToString("hh\\:mm"),
+                        diaUI.PausaFin.ToString("hh\\:mm")
+                              }
+                            : new List<string>();
+
+                        _negocioData.Horarios[claveCorta] = new slotsi_citas.Models.Negocio.HorarioDia
+                        {
+                            Apertura = diaUI.HoraApertura.ToString("hh\\:mm"),
+                            Cierre = diaUI.HoraCierre.ToString("hh\\:mm"),
+                            Pausas = pausas
+                        };
+                    }
+                    else
+                    {
+                        _negocioData.DiasCerrados.Add(claveCorta);
+                    }
+                }
+
                 await _negocioService.CrearAsync(_negocioData);
 
-               
                 await Application.Current.MainPage.DisplayAlert("Éxito", "Cuenta creada correctamente", "OK");
-
-                
                 await Application.Current.MainPage.Navigation.PopToRootAsync();
-
-           
             }
             catch (Exception ex)
             {
                 await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
             }
-
         }
-
 
         private async Task SeleccionarFotoAsync()
         {
@@ -158,25 +239,95 @@ namespace slotsi_citas.ViewModel
             catch (Exception ex) { await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK"); }
         }
 
+
         private async Task SeleccionarDocumentoAsync()
         {
             try
             {
-                var customFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>> { { DevicePlatform.Android, new[] { "application/pdf" } }, { DevicePlatform.iOS, new[] { "com.adobe.pdf" } } });
+                var customFileType = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+                {
+                    { DevicePlatform.Android, new[] { "application/pdf" } },
+                    { DevicePlatform.iOS, new[] { "com.adobe.pdf" } }
+                });
+
                 var file = await FilePicker.PickAsync(new PickOptions { PickerTitle = "Selecciona PDF", FileTypes = customFileType });
+
                 if (file != null)
                 {
-                    await Application.Current.MainPage.DisplayAlert("Subiendo...", "Espera.", "OK");
+                    await Application.Current.MainPage.DisplayAlert("Subiendo...", "Espera un momento.", "OK");
+
                     using var stream = await file.OpenReadAsync();
                     string fileName = $"doc_{Guid.NewGuid()}.pdf";
-                    UrlDocumentoTitulo = await _storageService.SubirArchivoAsync(stream, "documentos", fileName);
-                    await Application.Current.MainPage.DisplayAlert("Éxito", "Doc subido.", "OK");
+                    string url = await _storageService.SubirArchivoAsync(stream, "documentos", fileName);
+
+                 
+                    ListaDocumentos.Add(file.FileName);
+
+                   
+                    _urlsDocumentosSubidos.Add(url);
+
+                   
+                    OnPropertyChanged(nameof(HasDocumentos));
+
+                    await Application.Current.MainPage.DisplayAlert("Éxito", "Documento agregado a la lista.", "OK");
                 }
             }
             catch (Exception ex) { await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK"); }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string? name = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        protected void OnPropertyChanged([CallerMemberName] string? name = null) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        public class DiaHorarioUI : INotifyPropertyChanged
+        {
+            public string NombreDia { get; set; } = "";
+
+            private bool _estaActivo;
+            public bool EstaActivo
+            {
+                get => _estaActivo;
+                set { _estaActivo = value; OnPropertyChanged(); }
+            }
+
+            private TimeSpan _horaApertura = new TimeSpan(8, 0, 0);
+            public TimeSpan HoraApertura
+            {
+                get => _horaApertura;
+                set { _horaApertura = value; OnPropertyChanged(); }
+            }
+
+            private TimeSpan _horaCierre = new TimeSpan(18, 0, 0);
+            public TimeSpan HoraCierre
+            {
+                get => _horaCierre;
+                set { _horaCierre = value; OnPropertyChanged(); }
+            }
+
+            private bool _tienePausa;
+            public bool TienePausa
+            {
+                get => _tienePausa;
+                set { _tienePausa = value; OnPropertyChanged(); }
+            }
+
+            private TimeSpan _pausaInicio = new TimeSpan(12, 0, 0);
+            public TimeSpan PausaInicio
+            {
+                get => _pausaInicio;
+                set { _pausaInicio = value; OnPropertyChanged(); }
+            }
+
+            private TimeSpan _pausaFin = new TimeSpan(13, 0, 0);
+            public TimeSpan PausaFin
+            {
+                get => _pausaFin;
+                set { _pausaFin = value; OnPropertyChanged(); }
+            }
+
+            public event PropertyChangedEventHandler? PropertyChanged;
+            protected void OnPropertyChanged([CallerMemberName] string? name = null) =>
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
     }
 }

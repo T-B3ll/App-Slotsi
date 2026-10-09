@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="slotsi_citas.Pages.CentroCalificaciones"
+             Title="Centro de calificaciones"
+             Shell.NavBarIsVisible="True"
+             BackgroundColor="#FAFAFA">
+
+    <Grid RowDefinitions="Auto, Auto, *">
+
+        <Border Grid.Row="0" Margin="16,12" Padding="16" StrokeShape="RoundRectangle 12" BackgroundColor="White" Stroke="#E0E0E0">
+            <Grid ColumnDefinitions="*, Auto">
+                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                    <Label Text="Puntuación General" FontAttributes="Bold" FontSize="16" TextColor="#111111" />
+                    <Label Text="{Binding TotalCalificaciones, StringFormat='Basado en {0} opiniones'}" FontSize="12" TextColor="#666666" />
+                </VerticalStackLayout>
+
+                <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
+                    <Label Text="★" FontSize="22" TextColor="#FFB300" />
+                    <Label Text="{Binding PromedioCalificacion}" FontAttributes="Bold" FontSize="22" TextColor="#111111" />
+                </HorizontalStackLayout>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*, *" Margin="16,0,16,12" ColumnSpacing="10">
+            <Button Grid.Column="0"
+                    Text="Recibidas"
+                    BackgroundColor="{Binding ColorBotonRecibidas}"
+                    TextColor="{Binding TextoBotonRecibidas}"
+                    FontAttributes="Bold"
+                    CornerRadius="8"
+                    Command="{Binding SeleccionarPestanaCommand}"
+                    CommandParameter="Recibidas" />
+
+            <Button Grid.Column="1"
+                    Text="Realizadas"
+                    BackgroundColor="{Binding ColorBotonRealizadas}"
+                    TextColor="{Binding TextoBotonRealizadas}"
+                    FontAttributes="Bold"
+                    CornerRadius="8"
+                    Command="{Binding SeleccionarPestanaCommand}"
+                    CommandParameter="Realizadas" />
+        </Grid>
+        <ScrollView Grid.Row="2" Padding="16,0,16,16">
+            <VerticalStackLayout BindableLayout.ItemsSource="{Binding ListaCalificaciones}" Spacing="10">
+                <BindableLayout.ItemTemplate>
+                    <DataTemplate>
+                        <Border StrokeShape="RoundRectangle 10" Stroke="#E5E7EB" BackgroundColor="White" Padding="14">
+                            <VerticalStackLayout Spacing="6">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                        <Label Text="{Binding TituloMostrado}" FontAttributes="Bold" FontSize="14" TextColor="#1F2937" />
+                                        <Label Text="{Binding SubtituloMostrado}" FontSize="12" TextColor="#6B7280" />
+                                    </VerticalStackLayout>
+
+                                    <Label Grid.Column="1" Text="{Binding EstrellasVisuales}" FontSize="14" TextColor="#FFB300" VerticalOptions="Start" />
+                                </Grid>
+
+                                <Label Text="{Binding Comentario, StringFormat='&quot;{0}&quot;'}" FontSize="13" TextColor="#374151" FontAttributes="Italic" Margin="0,4,0,0" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </BindableLayout.ItemTemplate>
+
+                <BindableLayout.EmptyView>
+                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Margin="0,50">
+                        <Label Text="No hay reseñas en este apartado." TextColor="#9CA3AF" FontSize="14" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </BindableLayout.EmptyView>
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

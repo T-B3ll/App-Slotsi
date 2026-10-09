@@ -1,25 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.Maui.Controls;
+using slotsi_citas.Models;
+using slotsi_citas.Pages;
+using Microsoft.Extensions.DependencyInjection;
+using slotsi_citas.Services;
+using System;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using slotsi_citas.Services;
-
+using Microsoft.Maui.Storage;
 
 namespace slotsi_citas.ViewModel
 {
     public class LoginViewModel : INotifyPropertyChanged
     {
-        private readonly AuthService _authService;
+        private readonly UsuarioService _usuarioService;
+        private readonly IServiceProvider _serviceProvider;
         private string _email;
         private string _password;
         private bool _isBusy;
 
         public event PropertyChangedEventHandler PropertyChanged;
-
 
         public string Email
         {
@@ -41,17 +42,15 @@ namespace slotsi_citas.ViewModel
 
         public ICommand LoginCommand { get; }
 
-        public LoginViewModel(AuthService authService)
+        public LoginViewModel(UsuarioService usuarioService, IServiceProvider serviceProvider)
         {
-            _authService = authService;
+            _usuarioService = usuarioService;
+            _serviceProvider = serviceProvider;
             LoginCommand = new Command(async () => await ExecuteLogin());
         }
 
         private async Task ExecuteLogin()
         {
-            if (IsBusy) return;
-
-           
             if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
             {
                 await Application.Current.MainPage.DisplayAlert("Error", "Ingresa correo y contraseña", "OK");
@@ -61,18 +60,7 @@ namespace slotsi_citas.ViewModel
             IsBusy = true;
             try
             {
-            
-                var user = await _authService.LoginAsync(Email, Password);
-
-                if (user != null)
-                {
-                   
-                    await Shell.Current.GoToAsync("//MainPage");
-                }
-                else
-                {
-                    await Application.Current.MainPage.DisplayAlert("Error", "Credenciales incorrectas", "OK");
-                }
+                await ValidarYEntrarAsync(Email, Password);
             }
             catch (Exception ex)
             {
@@ -84,8 +72,36 @@ namespace slotsi_citas.ViewModel
             }
         }
 
+        private async Task ValidarYEntrarAsync(string identificador, string password)
+        {
+            var usuario = await _usuarioService.ObtenerPorIdentificadorAsync(identificador);
+
+            if (usuario == null || usuario.Contrasena != password)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "Usuario/Correo o contraseña incorrectos", "OK");
+                return;
+            }
+
+            string idUsuarioString = usuario.Id.ToString();
+
+            Preferences.Set("UsuarioId", idUsuarioString);
+            Preferences.Set("UsuarioIdSesion", idUsuarioString);
+            Preferences.Set("EsDuenoNegocio", usuario.TipoUsuario);
+            Preferences.Set("UsuarioCorreo", usuario.Correo);
+
+            Application.Current.MainPage = new AppShell();
+
+            if (!usuario.TipoUsuario)
+            {
+                await Shell.Current.GoToAsync("//dueñosnegocios");
+            }
+            else
+            {
+                await Shell.Current.GoToAsync("//ListaTrabajadores");
+            }
+        }
+
         protected void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-
     }
 }

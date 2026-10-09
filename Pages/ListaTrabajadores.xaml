@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
+             x:Class="slotsi_citas.Pages.ListaTrabajadores"
+             Title="Lista de Trabajadores"
+             BackgroundColor="#F8FAFC">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="20,20,20,15" BackgroundColor="#FFFFFF">
+            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                <Label Text="Gestión de Catálogo" FontSize="22" FontAttributes="Bold" TextColor="#111827" />
+                <Label Text="{Binding TrabajadoresActivosCount, StringFormat='{0} trabajadores activos'}" FontSize="13" TextColor="#6B7280" />
+            </VerticalStackLayout>
+        </Grid>
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Trabajadores}" Margin="16,12">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 12" BackgroundColor="White" Margin="0,0,0,12" Padding="12">
+                        <Border.Triggers>
+                            <DataTrigger TargetType="Border" Binding="{Binding Activo}" Value="False">
+                                <Setter Property="Opacity" Value="0.5" />
+                            </DataTrigger>
+                        </Border.Triggers>
+
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
+                            <Border Grid.Column="0" WidthRequest="56" HeightRequest="56" StrokeShape="RoundRectangle 28" StrokeThickness="0" VerticalOptions="Center">
+                                <Image Source="{Binding Foto, FallbackValue='profile_picture.png'}" Aspect="AspectFill" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
+                                <HorizontalStackLayout Spacing="8">
+                                    <Image WidthRequest="18" HeightRequest="18" VerticalOptions="Center">
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe7fd;" Color="#0F172A" Size="18" />
+                                        </Image.Source>
+                                    </Image>
+                                    <Label Text="{Binding Nombre}" FontAttributes="Bold" TextColor="#0F172A" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+
+                                <HorizontalStackLayout Spacing="8">
+                                    <Image WidthRequest="18" HeightRequest="18" VerticalOptions="Center">
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe8f9;" Color="#475569" Size="18" />
+                                        </Image.Source>
+                                    </Image>
+                                    <Label Text="{Binding Especialidad}" FontSize="13" TextColor="#475569" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+
+                                <HorizontalStackLayout Spacing="8">
+                                    <Image WidthRequest="18" HeightRequest="18" VerticalOptions="Center">
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe0cd;" Color="#475569" Size="18" />
+                                        </Image.Source>
+                                    </Image>
+                                    <Label Text="{Binding Telefono}" FontSize="13" TextColor="#475569" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+
+                                <HorizontalStackLayout Spacing="8">
+                                    <Image WidthRequest="18" HeightRequest="18" VerticalOptions="Center">
+                                        <Image.Source>
+                                            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe0be;" Color="#475569" Size="18" />
+                                        </Image.Source>
+                                    </Image>
+                                    <Label Text="{Binding Correo}" FontSize="13" TextColor="#475569" VerticalOptions="Center" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="10" HorizontalOptions="End">
+                                <Switch IsToggled="{Binding Activo}" OnColor="#2563EB" HorizontalOptions="End" Toggled="OnEstadotrabajadorToggled"/>
+                                <HorizontalStackLayout Spacing="15" HorizontalOptions="End">
+                                    <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24" 
+                                                 Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ListaTrabjadoresViewModel}}, Path=EditarTrabajadorCommand}"            
+                                                 CommandParameter="{Binding .}">
+                                        <ImageButton.Source>
+                                            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe3c9;" Color="#2563EB" Size="24"/>
+                                        </ImageButton.Source>
+                                    </ImageButton>
+
+                                    <ImageButton BackgroundColor="Transparent" WidthRequest="24" HeightRequest="24">
+                                        <ImageButton.Source>
+                                            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe872;" Color="#EF4444" Size="24"/>
+                                        </ImageButton.Source>
+                                    </ImageButton>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <Button Grid.Row="1"
+                Text="+" 
+                FontSize="30" 
+                FontAttributes="Bold" 
+                TextColor="White" 
+                BackgroundColor="#2563EB" 
+                WidthRequest="60" 
+                HeightRequest="60" 
+                CornerRadius="30"
+                HorizontalOptions="End" 
+                VerticalOptions="End" 
+                Margin="0,0,20,30"
+                Command="{Binding IrANuevoTrabajadorCommand}"/>
+
+    </Grid>
+</ContentPage>

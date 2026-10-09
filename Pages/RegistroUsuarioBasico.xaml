@@ -61,27 +61,31 @@
 
             <Label Text="Teléfono *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
             <Frame BackgroundColor="#F3F4F6" BorderColor="Transparent" CornerRadius="12" Padding="16,0" HeightRequest="56" HasShadow="False">
-                <Entry Placeholder="+505 8888-8888" 
+                <Entry x:Name="EntryTelefono"
+                       Placeholder="+505 8888-8888" 
                        Keyboard="Telephone" 
                        PlaceholderColor="#9CA3AF" 
                        TextColor="#111827" 
                        FontSize="16" 
                        BackgroundColor="Transparent" 
                        VerticalOptions="Center"
-                       Text="{Binding Telefono}"/>
+                       TextChanged="OnTelefonoChanged"/>
+                
             </Frame>
 
 
             <Label Text="Cédula *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
             <Frame BackgroundColor="#F3F4F6" BorderColor="Transparent" CornerRadius="12" Padding="16,0" HeightRequest="56" HasShadow="False">
-                <Entry Placeholder="0000-0000-0000J" 
+                <Entry x:Name="EntryCedula"
+                       Placeholder="0000-0000-0000J" 
                        Keyboard="Text" 
                        PlaceholderColor="#9CA3AF" 
                        TextColor="#111827" 
                        FontSize="16" 
                        BackgroundColor="Transparent" 
                        VerticalOptions="Center"
-                       Text="{Binding Cedula}"/>
+                       TextChanged="OnCedulaChanged"/>  
+
             </Frame>
 
             <Label Text="Establecer contraseña *" TextColor="#111827" FontSize="14" FontAttributes="Bold"/>
@@ -122,9 +126,8 @@
                     HeightRequest="58"
                     CornerRadius="14"
                     Margin="0,0,0,20"
-                    Command="{Binding RegistrarCommand}"
+                    Clicked="OnRegistrarseClicked"
                     IsEnabled="{Binding EstaCargando, Converter={StaticResource InverseBoolConverter}}"/>
-
 
             <ActivityIndicator IsRunning="{Binding EstaCargando}" 
                                IsVisible="{Binding EstaCargando}"

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+             x:Class="slotsi_citas.Pages.EditarServicio"
+             Title="Editar Servicio"
+             BackgroundColor="#F9FAFB"
+             android:Application.WindowSoftInputModeAdjust="Resize">
+
+    <ScrollView Padding="20">
+        <VerticalStackLayout Spacing="16" Margin="0,0,0,30">
+
+            <Label Text="{Binding TituloPantalla}" FontSize="22" FontAttributes="Bold" TextColor="#111827" />
+
+            <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                <Border WidthRequest="110" HeightRequest="110" Stroke="#D1D5DB" StrokeThickness="1" StrokeShape="RoundRectangle 16" BackgroundColor="#E5E7EB">
+                    <Image Source="{Binding Foto}" Aspect="AspectFill"/>
+                </Border>
+
+                <Button Text="Seleccionar Foto" 
+                        Command="{Binding CambiarFotoCommand}" 
+                        BackgroundColor="#E5E7EB" 
+                        TextColor="#374151" 
+                        CornerRadius="8" 
+                        HeightRequest="36" 
+                        FontSize="12"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Nombre del Servicio" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
+                    <Entry Text="{Binding Nombre}" TextColor="#374151" Placeholder="Ej. Corte Clásico" HeightRequest="45" />
+                </Border>
+            </VerticalStackLayout>
+
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
+                <VerticalStackLayout Grid.Column="0" Spacing="4">
+                    <Label Text="Precio ($)" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                    <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
+                        <Entry Text="{Binding Precio}" TextColor="#374151" Keyboard="Numeric" HeightRequest="45" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Grid.Column="1" Spacing="4">
+                    <Label Text="Duración (min)" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                    <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
+                        <Entry Text="{Binding DuracionMinutos}" TextColor="#374151" Keyboard="Numeric" HeightRequest="45" />
+                    </Border>
+                </VerticalStackLayout>
+            </Grid>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Categoría" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
+                    <Entry Text="{Binding Categoria}" TextColor="#374151" Placeholder="Ej. Barbería" HeightRequest="45" />
+                </Border>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Descripción" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,4" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
+                    <Editor Text="{Binding Descripcion}" TextColor="#374151" HeightRequest="90" AutoSize="Disabled"/>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Sección de Colaboradores Habilitados -->
+            <VerticalStackLayout Spacing="6" Margin="0,5">
+                <Label Text="Colaboradores Habilitados" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+
+                <CollectionView ItemsSource="{Binding Colaboradores}" HeightRequest="160">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border Stroke="#E5E7EB" StrokeThickness="1" Padding="10,6" Margin="0,0,0,8" StrokeShape="RoundRectangle 8" BackgroundColor="#FFFFFF">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label Grid.Column="0" Text="{Binding Nombre}" VerticalOptions="Center" TextColor="#1F2937" FontSize="14"/>
+                                    <CheckBox Grid.Column="1" IsChecked="{Binding IsSeleccionado}" Color="#2563EB"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                    <CollectionView.EmptyView>
+                        <Label Text="No se encontraron colaboradores registrados." TextColor="#9CA3AF" FontSize="12" HorizontalOptions="Center" Margin="0,10"/>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <Grid ColumnDefinitions="*, Auto" Margin="0,5">
+                <Label Grid.Column="0" Text="Disponible a domicilio" FontSize="14" TextColor="#374151" VerticalOptions="Center"/>
+                <Switch Grid.Column="1" IsToggled="{Binding DisponibleDomicilio}" OnColor="#2563EB"/>
+            </Grid>
+
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="12" Margin="0,15,0,20">
+                <Button Grid.Column="0" Text="Cancelar" Command="{Binding CancelarCommand}" BackgroundColor="#E5E7EB" TextColor="#374151" CornerRadius="8" HeightRequest="45"/>
+                <Button Grid.Column="1" Text="{Binding TextoBotonGuardar}" Command="{Binding GuardarCommand}" BackgroundColor="#2563EB" TextColor="White" CornerRadius="8" HeightRequest="45" FontAttributes="Bold"/>
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

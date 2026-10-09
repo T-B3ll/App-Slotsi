@@ -52,7 +52,21 @@ namespace slotsi_citas.Services
         }
 
 
-      
+
+        public async Task<Usuario?> ObtenerPorIdentificadorAsync(string identificador)
+        {
+
+            var textoLimpio = identificador.Trim();
+            var patron = $".*{textoLimpio}.*";
+
+            var filtro = Builders<Usuario>.Filter.Or(
+                        Builders<Usuario>.Filter.Regex(u => u.Correo, new MongoDB.Bson.BsonRegularExpression(patron, "i")),
+                        Builders<Usuario>.Filter.Regex(u => u.NombreCompleto, new MongoDB.Bson.BsonRegularExpression(patron, "i"))
+                                  );
+
+            return await _usuarios.Find(filtro).FirstOrDefaultAsync();
+        }
+
         public async Task CrearAsync(Usuario usuario) =>
             await _usuarios.InsertOneAsync(usuario);
 
@@ -79,6 +93,12 @@ namespace slotsi_citas.Services
             var filtro = Builders<Usuario>.Filter.Eq(u => u.Correo, correo.ToLower().Trim());
             var update = Builders<Usuario>.Update.Set(u => u.Contrasena, nuevaContrasena);
             await _usuarios.UpdateOneAsync(filtro, update);
+        }
+
+        public async Task<Usuario?> ObtenerPorIdAsync(string id)
+        {
+            var filtro = Builders<Usuario>.Filter.Eq(u => u.Id, id);
+            return await _usuarios.Find(filtro).FirstOrDefaultAsync();
         }
 
     }

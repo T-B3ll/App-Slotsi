@@ -2,83 +2,130 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="slotsi_citas.Pages.CatalogoCliente"
-             Title="Clientes"
-             BackgroundColor="#F9FAFB"
-             Shell.NavBarIsVisible="False">
+             Title="Catálogo del Negocio"
+             BackgroundColor="#F3F4F6"
+             Shell.NavBarIsVisible="True"
+             Shell.FlyoutBehavior="Disabled">
+
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="True" />
+    </Shell.BackButtonBehavior>
 
     <Grid RowDefinitions="Auto, *">
 
-        <VerticalStackLayout Grid.Row="0" Padding="20,20,20,10" Spacing="15" BackgroundColor="#FFFFFF">
-            <Grid ColumnDefinitions="*, Auto">
-                <Label Grid.Column="0" Text="¿Qué te harás hoy?" FontSize="24" FontAttributes="Bold" TextColor="#111827" />
+        <Image Source="{Binding Foto}" Aspect="AspectFill" />
 
-            </Grid>
+        <Border Grid.Row="0" StrokeThickness="0" BackgroundColor="#FFFFFF" Margin="0,0,0,8">
+            <Border.Shadow>
+                <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.05" />
+            </Border.Shadow>
 
-            <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#F3F4F6" Padding="12,0">
-                <Border.StrokeShape>
-                    <RoundRectangle CornerRadius="10" />
-                </Border.StrokeShape>
-                <Entry Placeholder="Buscar cortes, barba, tintes..." PlaceholderColor="#9CA3AF" FontSize="14" HeightRequest="45" BackgroundColor="Transparent"/>
-            </Border>
+            <VerticalStackLayout Padding="20,16" Spacing="12">
+                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                    <Button Grid.Column="0" Text="←" FontSize="20" FontAttributes="Bold" TextColor="#0F172A" BackgroundColor="#F1F5F9" CornerRadius="20" WidthRequest="40" HeightRequest="40" 
+                            Padding="0" Clicked="OnVolverClicked"/>
 
-            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                <HorizontalStackLayout Spacing="10">
-                    <Button Text="Todos" BackgroundColor="#2563EB" TextColor="White" CornerRadius="20" HeightRequest="35" Padding="15,0"/>
-                    <Button Text="Cortes" BackgroundColor="#E5E7EB" TextColor="#374151" CornerRadius="20" HeightRequest="35" Padding="15,0"/>
-                    <Button Text="Barba" BackgroundColor="#E5E7EB" TextColor="#374151" CornerRadius="20" HeightRequest="35" Padding="15,0"/>
-                </HorizontalStackLayout>
-            </ScrollView>
-        </VerticalStackLayout>
+                    <Label Grid.Column="1" Text="¿Qué te harás hoy?" FontSize="22" FontAttributes="Bold" TextColor="#0F172A" VerticalOptions="Center" />
+                </Grid>
 
-        <ScrollView Grid.Row="1" Padding="16,10,16,20">
-            <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="12" RowSpacing="15">
-
-                <!-- Tarjeta de Servicio 1 -->
-                <Border Grid.Row="0" Grid.Column="0" Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#FFFFFF">
+                <Border Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="#F8FAFC" Padding="12,0">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="12" />
                     </Border.StrokeShape>
-                    <VerticalStackLayout>
-                        <Grid HeightRequest="120" BackgroundColor="#E5E7EB">
-                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
-                                <Label FontFamily="MaterialIcons" Text="&#xe3f4;" FontSize="32" TextColor="#9CA3AF" HorizontalOptions="Center"/>
-                                <Label Text="Imagen" FontSize="12" TextColor="#9CA3AF" HorizontalOptions="Center"/>
-                            </VerticalStackLayout>
-                        </Grid>
-                        <VerticalStackLayout Padding="12" Spacing="5">
-                            <Label Text="Corte Clásico" FontSize="14" FontAttributes="Bold" TextColor="#1F2937" />
-                            <Label Text="30 min" FontSize="12" TextColor="#6B7280" />
-                            <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,0" VerticalOptions="End">
-                                <Label Grid.Column="0" Text="$25" FontSize="16" FontAttributes="Bold" TextColor="#2563EB" VerticalOptions="Center"/>
-                                <Button Grid.Column="1" Text="Agendar" BackgroundColor="#2563EB" TextColor="White" FontSize="11" CornerRadius="8" Padding="10,0" HeightRequest="30"/>
-                            </Grid>
-                        </VerticalStackLayout>
-                    </VerticalStackLayout>
+                    <Grid ColumnDefinitions="Auto, *">
+                        <Label Grid.Column="0" Text="&#xE8B6;" FontFamily="MaterialIcons" FontSize="20" TextColor="#0F172A" VerticalOptions="Center" Margin="0,0,8,0" />
+                        <Entry Grid.Column="1" Placeholder="Buscar cortes, barba, tintes..." PlaceholderColor="#94A3B8" FontSize="14" HeightRequest="44" BackgroundColor="Transparent" Text="{Binding TextoBusqueda}"/>
+                    </Grid>
                 </Border>
 
-                <Border Grid.Row="0" Grid.Column="1" Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#FFFFFF">
-                    <Border.StrokeShape>
-                        <RoundRectangle CornerRadius="12" />
-                    </Border.StrokeShape>
-                    <VerticalStackLayout>
-                        <Grid HeightRequest="120" BackgroundColor="#E5E7EB">
-     
-                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
-                                <Label FontFamily="MaterialIcons" Text="&#xe3f4;" FontSize="32" TextColor="#9CA3AF" HorizontalOptions="Center"/>
-                                <Label Text="Imagen" FontSize="12" TextColor="#9CA3AF" HorizontalOptions="Center"/>
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                    <HorizontalStackLayout Spacing="8">
+                        <Button Text="Todos" 
+                                Command="{Binding FiltrarModalidadCommand}" 
+                                CommandParameter="Todos"
+                                BackgroundColor="{Binding ColorBtnTodos}" 
+                                TextColor="{Binding TextColorBtnTodos}" 
+                                CornerRadius="20" HeightRequest="34" Padding="16,0" FontAttributes="Bold" FontSize="12"/>
+
+                        <Button Text="💈 En Local" 
+                                Command="{Binding FiltrarModalidadCommand}" 
+                                CommandParameter="Local"
+                                BackgroundColor="{Binding ColorBtnLocal}" 
+                                TextColor="{Binding TextColorBtnLocal}" 
+                                CornerRadius="20" HeightRequest="34" Padding="16,0" FontAttributes="Bold" FontSize="12"/>
+
+                        <Button Text="🏠 A Domicilio" 
+                                Command="{Binding FiltrarModalidadCommand}" 
+                                CommandParameter="Domicilio"
+                                BackgroundColor="{Binding ColorBtnDomicilio}" 
+                                TextColor="{Binding TextColorBtnDomicilio}" 
+                                CornerRadius="20" HeightRequest="34" Padding="16,0" FontAttributes="Bold" FontSize="12"/>
+                    </HorizontalStackLayout>
+                </ScrollView>
+
+            </VerticalStackLayout>
+        </Border>
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Servicios}" Margin="12,4,12,12">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="10" VerticalItemSpacing="12" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Stroke="#E2E8F0" StrokeThickness="1" BackgroundColor="#FFFFFF">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16" />
+                        </Border.StrokeShape>
+
+                        <Border.Shadow>
+                            <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.04" />
+                        </Border.Shadow>
+
+                        <Grid RowDefinitions="120, Auto">
+                            <Grid Grid.Row="0" BackgroundColor="#F1F5F9">
+                                <Image Source="{Binding Foto}" Aspect="AspectFill" />
+
+                                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
+                                    <Label Text="&#xE3F4;" FontFamily="MaterialIcons" FontSize="32" TextColor="#CBD5E1" HorizontalOptions="Center" IsVisible="{Binding NoTieneFoto}"/>
+                                </VerticalStackLayout>
+
+                                <Border HorizontalOptions="Start" VerticalOptions="Start" Margin="8" Padding="6,2" BackgroundColor="#CC0F172A" StrokeThickness="0">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="8" />
+                                    </Border.StrokeShape>
+                                    <Label Text="{Binding ModalidadTexto}" 
+                                           FontSize="9" TextColor="#FFFFFF" FontAttributes="Bold" VerticalOptions="Center" />
+                                </Border>
+
+                                <Border HorizontalOptions="End" VerticalOptions="Start" Margin="8" Padding="8,4" BackgroundColor="#CC0F172A" StrokeThickness="0">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="12" />
+                                    </Border.StrokeShape>
+                                    <HorizontalStackLayout Spacing="4">
+                                        <Label Text="&#xE192;" FontFamily="MaterialIcons" FontSize="11" TextColor="#FFFFFF" VerticalOptions="Center" />
+                                        <Label Text="{Binding DuracionMinutos, StringFormat='{0} min'}" FontSize="10" TextColor="#FFFFFF" FontAttributes="Bold" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </Grid>
+
+                            <VerticalStackLayout Grid.Row="1" Padding="12" Spacing="8">
+                                <VerticalStackLayout Spacing="2">
+                                    <Label Text="{Binding Nombre}" FontSize="14" FontAttributes="Bold" TextColor="#0F172A" MaxLines="1" LineBreakMode="TailTruncation" />
+                                    <Label Text="{Binding Categoria}" FontSize="11" TextColor="#64748B" MaxLines="1" LineBreakMode="TailTruncation" />
+                                </VerticalStackLayout>
+
+                                <Grid ColumnDefinitions="*, Auto" Margin="0,4,0,0">
+                                    <Label Grid.Column="0" Text="{Binding Precio, StringFormat='${0:F2}'}" FontSize="15" FontAttributes="Bold" TextColor="#2563EB" VerticalOptions="Center" />
+                                    <Button Grid.Column="1" Text="Agendar" BackgroundColor="#2563EB" TextColor="White" FontSize="11" FontAttributes="Bold" CornerRadius="8" Padding="10,0" HeightRequest="32" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AgendarCommand}" 
+                                            CommandParameter="{Binding .}" />
+                                </Grid>
                             </VerticalStackLayout>
                         </Grid>
-                        <VerticalStackLayout Padding="12" Spacing="5">
-                            <Label Text="Barba Premium" FontSize="14" FontAttributes="Bold" TextColor="#1F2937" />
-                            <Label Text="45 min" FontSize="12" TextColor="#6B7280" />
-                            <Grid ColumnDefinitions="*, Auto" Margin="0,5,0,0" VerticalOptions="End">
-                                <Label Grid.Column="0" Text="$40" FontSize="16" FontAttributes="Bold" TextColor="#2563EB" VerticalOptions="Center"/>
-                                <Button Grid.Column="1" Text="Agendar" BackgroundColor="#2563EB" TextColor="White" FontSize="11" CornerRadius="8" Padding="10,0" HeightRequest="30"/>
-                            </Grid>
-                        </VerticalStackLayout>
-                    </VerticalStackLayout>
-                </Border>
-            </Grid>
-        </ScrollView>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
     </Grid>
 </ContentPage>

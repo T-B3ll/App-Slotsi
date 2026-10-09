@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="slotsi_citas.Pages.DueñosNegociosPage"
+             Title="Dueños de Negocio"
+             BackgroundColor="#F3F4F6"
+             Shell.NavBarIsVisible="True"
+             Shell.FlyoutBehavior="Flyout">
+    
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="True" /> 
+    </Shell.BackButtonBehavior>
+    
+    <Grid RowDefinitions="Auto, *, Auto">
+
+            <Frame Grid.Row="0" BackgroundColor="White" BorderColor="Transparent" CornerRadius="0" Padding="24,20,24,16" HasShadow="False">
+                <VerticalStackLayout Spacing="16">
+
+                    <VerticalStackLayout Spacing="4">
+                    <Label Text="Dueños de Negocio" FontSize="26" FontAttributes="Bold" TextColor="#111827"/>
+                </VerticalStackLayout>
+
+                    <Frame BackgroundColor="#F9FAFB" BorderColor="#E5E7EB" CornerRadius="12" Padding="16,0" HeightRequest="48" HasShadow="False">
+                        <Grid ColumnDefinitions="Auto, *, Auto">
+                            <Label Grid.Column="0" Text="🔍" FontSize="16" VerticalOptions="Center" Margin="0,0,10,0"/>
+
+                            <Entry x:Name="EntryBusqueda" Grid.Column="1" Placeholder="Buscar por nombre o negocio..." PlaceholderColor="#9CA3AF" TextColor="#111827" FontSize="14" BackgroundColor="Transparent" 
+                               VerticalOptions="Center" TextChanged="OnSearchTextChanged"/>
+
+                            <Button x:Name="BtnLimpiarBusqueda" Grid.Column="2" Text="✕" FontSize="16" TextColor="#6B7280" BackgroundColor="Transparent" WidthRequest="36" HeightRequest="36"
+                                Padding="0" IsVisible="False" Clicked="OnClearSearchClicked" VerticalOptions="Center"/>
+                        </Grid>
+                    </Frame>
+
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <HorizontalStackLayout Spacing="10">
+                            <Button x:Name="BtnTodos" Text="Todos" BackgroundColor="#2563EB" TextColor="White" CornerRadius="20" HeightRequest="38" Padding="20,0" FontSize="13" 
+                                    FontAttributes="Bold" Clicked="OnFilterClicked"/>
+
+                            <Button x:Name="BtnSalones" Text="Salones" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="38" Padding="20,0" 
+                                FontSize="13" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnFilterClicked"/>
+
+                            <Button x:Name="BtnBarberia" 
+                                Text="Barbería" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="38" Padding="20,0" 
+                                FontSize="13" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnFilterClicked"/>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <CollectionView Grid.Row="1" ItemsSource="{Binding ListaDueños}" SelectionMode="Single" SelectionChanged="OnNegocioSeleccionado" Margin="16,12,16,12" VerticalScrollBarVisibility="Never">
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Border BackgroundColor="White" Stroke="#E5E7EB" StrokeThickness="1" Padding="16">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="16"/>
+                            </Border.StrokeShape>
+
+                            <Grid ColumnDefinitions="56, *, Auto" ColumnSpacing="14">
+                                <Border Grid.Column="0" StrokeShape="RoundRectangle 28" BackgroundColor="#EFF6FF" HeightRequest="56" WidthRequest="56" StrokeThickness="0">
+                                    <Grid>
+                                        <Image Source="{Binding UrlFotoPerfil}" Aspect="AspectFill" />
+                                        <Label Text="{Binding Nombre}" TextColor="#2563EB" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Border>
+
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
+                                    <Label Text="{Binding NombreNegocio}" FontSize="16" FontAttributes="Bold" TextColor="#111827"/>
+                                    <Label Text="{Binding DireccionNegocio}" FontSize="13" TextColor="#6B7280"/>
+                                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                        <Label Text="{Binding Categoria}" FontSize="12" TextColor="#6B7280" VerticalOptions="Center"/>
+                                        <Label Text="✔ Verificado" FontSize="11" FontAttributes="Bold" TextColor="#10B981" VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+
+                                <Label Grid.Column="2" Text="›" FontSize="28" TextColor="#D1D5DB" VerticalOptions="Center" FontAttributes="Bold"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*" BackgroundColor="White" HeightRequest="65" Padding="0,6,0,0">
+            <BoxView Grid.ColumnSpan="4" HeightRequest="1" Color="#F3F4F6" VerticalOptions="Start"/>
+            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
+                <Image Source="home.png" HeightRequest="22" WidthRequest="22"/>
+                <Label Text="Inicio" FontSize="10" TextColor="#2563EB" FontAttributes="Bold"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
+                <Image Source="calendar.png" HeightRequest="22" WidthRequest="22"/>
+                <Label Text="Citas" FontSize="10" TextColor="#9CA3AF"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
+                <Image Source="location.png" HeightRequest="22" WidthRequest="22"/>
+                <Label Text="Sucursal" FontSize="10" TextColor="#9CA3AF"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
+                <Image Source="profile.png" HeightRequest="22" WidthRequest="22"/>
+                <Label Text="Perfil" FontSize="10" TextColor="#9CA3AF"/>
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+    </ContentPage>
