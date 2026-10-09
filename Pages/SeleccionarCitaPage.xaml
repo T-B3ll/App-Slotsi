@@ -11,7 +11,7 @@
 
     <Grid RowDefinitions="Auto, *, Auto, Auto">
 
-        <!-- ROW 0: Header Azul -->
+    
         <Grid Grid.Row="0"
               Padding="20,44,20,16"
               ColumnDefinitions="Auto, *"
@@ -34,11 +34,10 @@
                    VerticalOptions="Center"/>
         </Grid>
 
-        <!-- ROW 1: Contenido scrollable -->
         <ScrollView Grid.Row="1" Padding="20,16">
             <VerticalStackLayout Spacing="20">
 
-                <!-- Usuario Perfil -->
+        
                 <Grid ColumnDefinitions="Auto, *" ColumnSpacing="15">
                     <Border Grid.Column="0"
                             WidthRequest="48"
@@ -54,24 +53,24 @@
                     </VerticalStackLayout>
                 </Grid>
 
-                <!-- Servicios -->
+          
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Servicios disponibles" FontSize="15" FontAttributes="Bold" TextColor="#111827"/>
 
                     <CollectionView ItemsSource="{Binding ServiciosTarjetas}"
-                ItemsLayout="HorizontalList"
-                HeightRequest="260"
-                HorizontalScrollBarVisibility="Never">
+                                    ItemsLayout="HorizontalList"
+                                    HeightRequest="260"
+                                    HorizontalScrollBarVisibility="Never">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:Servicios">
                                 <Border WidthRequest="210"
-                    HeightRequest="250"
-                    BackgroundColor="#FFFFFF"
-                    StrokeThickness="2"
-                    Stroke="#E5E7EB"
-                    StrokeShape="RoundRectangle 12"
-                    Margin="0,0,12,0"
-                    Padding="0">
+                                        HeightRequest="250"
+                                        BackgroundColor="#FFFFFF"
+                                        StrokeThickness="2"
+                                        Stroke="#E5E7EB"
+                                        StrokeShape="RoundRectangle 12"
+                                        Margin="0,0,12,0"
+                                        Padding="0">
 
                                     <Grid RowDefinitions="100, *">
                                         <Grid Grid.Row="0" BackgroundColor="#F3F4F6">
@@ -87,26 +86,26 @@
                                                 <Label Grid.Column="1" Text="{Binding Precio, StringFormat='C$ {0:N2}'}" FontSize="12" FontAttributes="Bold" TextColor="#2563EB"/>
                                             </Grid>
 
-                                            <!-- BOTÓN CON TEXTO Y COLOR FIJO PARA QUE SE VEA -->
+                                 
                                             <Border Stroke="#2563EB"
-                                StrokeThickness="1"
-                                StrokeShape="RoundRectangle 8"
-                                Padding="0,6"
-                                Margin="0,6,0,0"
-                                BackgroundColor="Transparent">
+                                                    StrokeThickness="1"
+                                                    StrokeShape="RoundRectangle 8"
+                                                    Padding="0,6"
+                                                    Margin="0,6,0,0"
+                                                    BackgroundColor="Transparent">
 
                                                 <Border.GestureRecognizers>
                                                     <TapGestureRecognizer Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.ToggleServicioCommand}"
                                                       CommandParameter="{Binding .}"/>
                                                 </Border.GestureRecognizers>
 
-                                                <!-- TEXTO FIJO "AGREGAR +" EN LUGAR DE BINDING ROTO -->
+
                                                 <Label Text="Agregar +"
-                                   TextColor="#2563EB"
-                                   FontSize="11"
-                                   FontAttributes="Bold"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center"/>
+                                                       TextColor="#2563EB"
+                                                       FontSize="11"
+                                                       FontAttributes="Bold"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"/>
                                             </Border>
                                         </VerticalStackLayout>
                                     </Grid>
@@ -116,7 +115,7 @@
                     </CollectionView>
                 </VerticalStackLayout>
 
-                <!-- Resumen -->
+                
                 <VerticalStackLayout Spacing="12" Margin="0,10,0,20">
                     <Label Text="Resumen de tu cita" FontSize="15" FontAttributes="Bold" TextColor="#111827"/>
 
@@ -153,7 +152,7 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- ROW 2: Botón CONFIRMAR -->
+
         <Button Grid.Row="2"
                 Text="Confirmar cita"
                 Command="{Binding ConfirmarCitaCommand}"
@@ -166,7 +165,7 @@
                 HeightRequest="50"
                 Margin="20,10,20,10"/>
 
-        <!-- ROW 3: Barra Inferior -->
+     
         <Grid Grid.Row="3" ColumnDefinitions="*, *, *, *" BackgroundColor="#FFFFFF" HeightRequest="60" Padding="0,6">
             <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
                 <Image Source="home.png" HeightRequest="22" WidthRequest="22"/>
