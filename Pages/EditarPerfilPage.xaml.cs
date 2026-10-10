@@ -8,7 +8,6 @@ public partial class EditarPerfilPage : ContentPage
 {
     private readonly EditarPerfilViewModel _viewModel;
 
-
     private bool _isUpdatingTelefono = false;
     private bool _isUpdatingCedula = false;
     private bool _isUpdatingRuc = false;
@@ -19,17 +18,17 @@ public partial class EditarPerfilPage : ContentPage
         _viewModel = viewModel;
         BindingContext = viewModel;
 
-   
+        // Asignación de gestos para las modalidades de atención
         FrameSede.GestureRecognizers.Add(new TapGestureRecognizer
         { Command = new Command(() => SeleccionarModalidad("Sede")) });
+
         FrameDomicilio.GestureRecognizers.Add(new TapGestureRecognizer
         { Command = new Command(() => SeleccionarModalidad("Domicilio")) });
+
         FrameMixta.GestureRecognizers.Add(new TapGestureRecognizer
         { Command = new Command(() => SeleccionarModalidad("Mixta")) });
 
-     
-        FrameFotoPerfil.GestureRecognizers.Add(new TapGestureRecognizer
-        { Command = viewModel.SeleccionarFotoCommand });
+        // ✅ ELIMINADA LA LÍNEA DE FrameFotoPerfil PORQUE YA SE ASIGNA EN EL XAML
     }
 
     private void SeleccionarModalidad(string modalidad)
@@ -42,14 +41,15 @@ public partial class EditarPerfilPage : ContentPage
         FrameMixta.Stroke = modalidad == "Mixta" ? colorActivo : colorInactivo;
     }
 
-    
     private void OnTelefonoChanged(object sender, TextChangedEventArgs e)
     {
+    
+        if (_viewModel.Usuario == null || string.IsNullOrEmpty(e.NewTextValue)) return;
+
         if (_isUpdatingTelefono || sender is not Entry entry) return;
 
         string digits = new string(e.NewTextValue.Where(char.IsDigit).ToArray());
         if (digits.Length > 8) digits = digits.Substring(0, 8);
-
         string formatted = digits.Length > 4 ? digits.Insert(4, "-") : digits;
 
         Device.BeginInvokeOnMainThread(() =>
@@ -57,22 +57,20 @@ public partial class EditarPerfilPage : ContentPage
             _isUpdatingTelefono = true;
             entry.Text = formatted;
             entry.CursorPosition = formatted.Length;
-
-            
-            if (_viewModel.Usuario != null)
-                _viewModel.Usuario.Telefono = digits;
-
+            _viewModel.Usuario.Telefono = digits;
             _isUpdatingTelefono = false;
         });
     }
 
     private void OnCedulaChanged(object sender, TextChangedEventArgs e)
     {
+      
+        if (_viewModel.Usuario == null || string.IsNullOrEmpty(e.NewTextValue)) return;
+
         if (_isUpdatingCedula || sender is not Entry entry) return;
 
         string clean = new string(e.NewTextValue.Where(char.IsLetterOrDigit).ToArray()).ToUpper();
         if (clean.Length > 13) clean = clean.Substring(0, 13);
-
         string formatted = clean;
         if (clean.Length > 4) formatted = formatted.Insert(4, "-");
         if (clean.Length > 8) formatted = formatted.Insert(9, "-");
@@ -82,15 +80,10 @@ public partial class EditarPerfilPage : ContentPage
             _isUpdatingCedula = true;
             entry.Text = formatted;
             entry.CursorPosition = formatted.Length;
-
-            if (_viewModel.Usuario != null)
-                _viewModel.Usuario.Cedula = clean;
-
+            _viewModel.Usuario.Cedula = clean;
             _isUpdatingCedula = false;
         });
     }
-
-    
     private void OnRucChanged(object sender, TextChangedEventArgs e)
     {
         if (_isUpdatingRuc || sender is not Entry entry) return;

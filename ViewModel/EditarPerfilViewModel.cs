@@ -24,14 +24,14 @@ namespace slotsi_citas.ViewModel
         private bool _isBusy;
         private Negocio _negocioActual;
 
-        // --- DATOS PERSONALES ---
+        
         public Usuario Usuario
         {
             get => _usuario;
             set { _usuario = value; OnPropertyChanged(); }
         }
 
-        // --- DATOS DEL NEGOCIO (Propiedades individuales para Binding directo) ---
+ 
         private string _nombreNegocio;
         public string NombreNegocio
         {
@@ -53,11 +53,37 @@ namespace slotsi_citas.ViewModel
             set { _ruc = value; OnPropertyChanged(); }
         }
 
-        // --- HORARIOS ---
+        private string _nuevaPassword;
+        public string NuevaPassword
+        {
+            get => _nuevaPassword;
+            set { _nuevaPassword = value; OnPropertyChanged(); }
+        }
+
+
+
+
+        public string UrlFotoPerfil
+        {
+            get => _negocioActual?.UrlFotoPerfil;
+            set
+            {
+                if (_negocioActual != null && _negocioActual.UrlFotoPerfil != value)
+                {
+                    _negocioActual.UrlFotoPerfil = value;
+                    OnPropertyChanged(); 
+                }
+            }
+        }
+
+     
         public ObservableCollection<HorarioTrabajoVm> ListaHorarios { get; set; }
             = new ObservableCollection<HorarioTrabajoVm>();
 
-        // --- CONTROLADORES UI ---
+
+        public ObservableCollection<string> DocumentosSubidos { get; set; } = new ObservableCollection<string>();
+        public bool HayDocumentos => DocumentosSubidos.Count > 0;
+
         public bool EsDuenoNegocio => _esDueno;
         public bool PuedeEditar => true;
 
@@ -69,7 +95,7 @@ namespace slotsi_citas.ViewModel
 
         public string TituloPagina => _esDueno ? "Editar Perfil de Negocio" : "Mi Perfil";
 
-        // --- COMANDOS ---
+
         public Command GuardarCambiosCommand { get; }
         public Command SeleccionarFotoCommand { get; }
         public Command SubirPdfCommand { get; }
@@ -97,12 +123,16 @@ namespace slotsi_citas.ViewModel
 
                 if (!string.IsNullOrEmpty(idUsuario))
                 {
-                    // 1. CARGAR USUARIO
+                 
                     var usuarios = await _usuarioService.ObtenerTodosAsync();
                     var usuarioEncontrado = usuarios.FirstOrDefault(u => u.Id == idUsuario);
-                    if (usuarioEncontrado != null) Usuario = usuarioEncontrado;
 
-                    // 2. CARGAR NEGOCIO Y HORARIOS
+                    if (usuarioEncontrado != null)
+                    {
+                        Usuario = usuarioEncontrado;
+                    }
+
+
                     if (_esDueno)
                     {
                         var todosLosNegocios = await _negocioService.ObtenerTodosAsync();
@@ -110,20 +140,17 @@ namespace slotsi_citas.ViewModel
 
                         if (_negocioActual != null)
                         {
-                            // Asignar valores a las propiedades individuales
                             NombreNegocio = _negocioActual.NombreNegocio;
                             Direccion = _negocioActual.DireccionNegocio;
                             Ruc = _negocioActual.NumeroRuc;
 
-                            // Cargar horarios desde el modelo
+                            OnPropertyChanged(nameof(UrlFotoPerfil));
                             CargarHorariosDesdeModelo(_negocioActual);
                         }
                     }
 
-                    // Notificar cambios a la UI
                     OnPropertyChanged(nameof(EsDuenoNegocio));
                     OnPropertyChanged(nameof(TituloPagina));
-                    // Las propiedades NombreNegocio, Direccion, Ruc ya notifican en su setter
                 }
             }
             catch (Exception ex)
@@ -135,8 +162,6 @@ namespace slotsi_citas.ViewModel
                 IsBusy = false;
             }
         }
-
-        // ✅ MÉTODO DE GUARDADO CORREGIDO
         private async Task GuardarCambiosAsync()
         {
             if (IsBusy || _usuario == null) return;
@@ -144,17 +169,26 @@ namespace slotsi_citas.ViewModel
 
             try
             {
-                // 1. Actualizar datos básicos del usuario
+                if (!string.IsNullOrEmpty(NuevaPassword))
+                {
+                    if (NuevaPassword.Length < 6)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Error", "La contraseña debe tener al menos 6 caracteres.", "OK");
+                        return;
+                    }
+
+                    
+                    _usuario.Contrasena = NuevaPassword;
+                }
+
                 await _usuarioService.ActualizarAsync(_usuario);
 
-                // 2. Actualizar negocio y reconstruir horarios si es dueño
                 if (_esDueno && _negocioActual != null)
                 {
                     _negocioActual.NombreNegocio = NombreNegocio;
                     _negocioActual.DireccionNegocio = Direccion;
                     _negocioActual.NumeroRuc = Ruc;
 
-                    // Reconstruir diccionario de horarios desde la lista editable
                     _negocioActual.Horarios = new Dictionary<string, Negocio.HorarioDia>();
                     _negocioActual.DiasCerrados = new List<string>();
 
@@ -170,7 +204,6 @@ namespace slotsi_citas.ViewModel
                         {
                             if (item.EsLaboral)
                             {
-                                // Guardar horario (sin pausas por ahora)
                                 _negocioActual.Horarios[clave] = new Negocio.HorarioDia
                                 {
                                     Apertura = item.HoraInicio.ToString(@"hh\:mm"),
@@ -180,7 +213,6 @@ namespace slotsi_citas.ViewModel
                             }
                             else
                             {
-                                // Si NO está marcado, va a la lista de cerrados
                                 _negocioActual.DiasCerrados.Add(clave);
                             }
                         }
@@ -201,8 +233,6 @@ namespace slotsi_citas.ViewModel
                 IsBusy = false;
             }
         }
-
-        // --- LÓGICA DE ARCHIVOS (SUPABASE) ---
         private async Task SeleccionarFotoAsync()
         {
             try
@@ -216,8 +246,10 @@ namespace slotsi_citas.ViewModel
                     string fileName = $"perfil_{_usuario.Id}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
                     string url = await _storageService.SubirArchivoAsync(stream, "perfiles", fileName);
 
-                    _negocioActual.UrlFotoPerfil = url;
-                    await Application.Current.MainPage.DisplayAlert("Éxito", "Foto subida.", "OK");
+                 
+                    UrlFotoPerfil = url;
+
+                    await Application.Current.MainPage.DisplayAlert("Éxito", "Foto actualizada.", "OK");
                 }
             }
             catch (Exception ex) { await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK"); }
@@ -243,13 +275,16 @@ namespace slotsi_citas.ViewModel
                     string url = await _storageService.SubirArchivoAsync(stream, "documentos", fileName);
 
                     _negocioActual.UrlDocumentoTitulo = url;
+
+                    DocumentosSubidos.Add(file.FileName);
+                    OnPropertyChanged(nameof(HayDocumentos));
+
                     await Application.Current.MainPage.DisplayAlert("Éxito", "Documento subido.", "OK");
                 }
             }
             catch (Exception ex) { await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK"); }
         }
 
-        // ✅ TU MÉTODO DE CARGA DE HORARIOS (INTACTO Y CORREGIDO)
         private void CargarHorariosDesdeModelo(Negocio negocio)
         {
             ListaHorarios.Clear();
