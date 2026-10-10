@@ -18,7 +18,6 @@ public partial class EditarPerfilPage : ContentPage
         _viewModel = viewModel;
         BindingContext = viewModel;
 
-        // Asignación de gestos para las modalidades de atención
         FrameSede.GestureRecognizers.Add(new TapGestureRecognizer
         { Command = new Command(() => SeleccionarModalidad("Sede")) });
 

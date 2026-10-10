@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
@@ -161,6 +163,20 @@ namespace slotsi_citas.ViewModel
             {
                 _usuarioData.TipoUsuario = true;
                 _usuarioData.EstaActivo = true;
+
+               
+                using (var sha256 = SHA256.Create())
+                {
+                    byte[] bytes = Encoding.UTF8.GetBytes(Contrasena);
+                    byte[] hash = sha256.ComputeHash(bytes);
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < hash.Length; i++)
+                    {
+                        sb.Append(hash[i].ToString("x2"));
+                    }
+                    _usuarioData.Contrasena = sb.ToString();
+                }
+
                 await _usuarioService.CrearAsync(_usuarioData);
 
                 if (string.IsNullOrEmpty(_usuarioData.Id))
@@ -178,10 +194,10 @@ namespace slotsi_citas.ViewModel
                 _negocioData.DiasCerrados = new List<string>();
 
                 var mapDias = new Dictionary<string, string>
-        {
-            {"Lunes","Lun"}, {"Martes","Mar"}, {"Miércoles","Mie"},
-            {"Jueves","Jue"}, {"Viernes","Vie"}, {"Sábado","Sab"}, {"Domingo","Dom"}
-        };
+                {
+                    {"Lunes","Lun"}, {"Martes","Mar"}, {"Miércoles","Mie"},
+                    {"Jueves","Jue"}, {"Viernes","Vie"}, {"Sábado","Sab"}, {"Domingo","Dom"}
+                };
 
                 foreach (var diaUI in ListaDiasHorario)
                 {
@@ -193,8 +209,8 @@ namespace slotsi_citas.ViewModel
                     {
                         var pausas = diaUI.TienePausa
                             ? new List<string> {
-                        diaUI.PausaInicio.ToString("hh\\:mm"),
-                        diaUI.PausaFin.ToString("hh\\:mm")
+                                diaUI.PausaInicio.ToString("hh\\:mm"),
+                                diaUI.PausaFin.ToString("hh\\:mm")
                               }
                             : new List<string>();
 

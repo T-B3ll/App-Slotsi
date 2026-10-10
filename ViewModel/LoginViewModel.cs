@@ -6,6 +6,8 @@ using slotsi_citas.Services;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Storage;
@@ -72,18 +74,54 @@ namespace slotsi_citas.ViewModel
             }
         }
 
+
+        private string EncriptarPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(password);
+                byte[] hash = sha256.ComputeHash(bytes);
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < hash.Length; i++)
+                {
+                    sb.Append(hash[i].ToString("x2"));
+                }
+                return sb.ToString();
+            }
+        }
         private async Task ValidarYEntrarAsync(string identificador, string password)
         {
-            var usuario = await _usuarioService.ObtenerPorIdentificadorAsync(identificador);
+            Usuario usuario = null;
+            var textoLimpio = identificador.Trim().ToLower();
 
-            if (usuario == null || usuario.Contrasena != password)
+        
+            usuario = await _usuarioService.ObtenerPorCorreoAsync(textoLimpio);
+
+            if (usuario == null)
+            {
+                usuario = await _usuarioService.ObtenerPorIdentificadorAsync(identificador);
+            }
+
+            if (usuario == null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "Usuario/Correo o contraseña incorrectos", "OK");
+                return;
+            }
+
+            string passwordEncriptada = EncriptarPassword(password);
+
+            System.Diagnostics.Debug.WriteLine($"🔐 Hash generado: {passwordEncriptada}");
+            System.Diagnostics.Debug.WriteLine($"💾 Hash en BD:      {usuario.Contrasena}");
+            System.Diagnostics.Debug.WriteLine($"👤 Usuario encontrado: {usuario.NombreCompleto} ({usuario.Correo})");
+
+            if (usuario.Contrasena != passwordEncriptada)
             {
                 await Application.Current.MainPage.DisplayAlert("Error", "Usuario/Correo o contraseña incorrectos", "OK");
                 return;
             }
 
             string idUsuarioString = usuario.Id.ToString();
-
             Preferences.Set("UsuarioId", idUsuarioString);
             Preferences.Set("UsuarioIdSesion", idUsuarioString);
             Preferences.Set("EsDuenoNegocio", usuario.TipoUsuario);
@@ -92,15 +130,10 @@ namespace slotsi_citas.ViewModel
             Application.Current.MainPage = new AppShell();
 
             if (!usuario.TipoUsuario)
-            {
                 await Shell.Current.GoToAsync("//dueñosnegocios");
-            }
             else
-            {
                 await Shell.Current.GoToAsync("//ListaTrabajadores");
-            }
         }
-
         protected void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
