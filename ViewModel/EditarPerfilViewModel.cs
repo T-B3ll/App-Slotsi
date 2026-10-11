@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
@@ -60,7 +62,12 @@ namespace slotsi_citas.ViewModel
             set { _nuevaPassword = value; OnPropertyChanged(); }
         }
 
-
+        private string _modalidadActual;
+        public string ModalidadActual
+        {
+            get => _modalidadActual;
+            set { _modalidadActual = value; OnPropertyChanged(); }
+        }
 
 
         public string UrlFotoPerfil
@@ -113,6 +120,22 @@ namespace slotsi_citas.ViewModel
             CargarDatosAsync();
         }
 
+        private string EncriptarPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(password);
+                byte[] hash = sha256.ComputeHash(bytes);
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < hash.Length; i++)
+                {
+                    sb.Append(hash[i].ToString("x2"));
+                }
+                return sb.ToString();
+            }
+        }
+
         private async void CargarDatosAsync()
         {
             IsBusy = true;
@@ -143,6 +166,7 @@ namespace slotsi_citas.ViewModel
                             NombreNegocio = _negocioActual.NombreNegocio;
                             Direccion = _negocioActual.DireccionNegocio;
                             Ruc = _negocioActual.NumeroRuc;
+                            ModalidadActual = _negocioActual.TipoServicio;
 
                             OnPropertyChanged(nameof(UrlFotoPerfil));
                             CargarHorariosDesdeModelo(_negocioActual);
@@ -171,20 +195,22 @@ namespace slotsi_citas.ViewModel
             {
                 if (!string.IsNullOrEmpty(NuevaPassword))
                 {
-                    if (NuevaPassword.Length < 6)
+                    if (NuevaPassword.Length < 8)
                     {
-                        await Application.Current.MainPage.DisplayAlert("Error", "La contraseña debe tener al menos 6 caracteres.", "OK");
+                        await Application.Current.MainPage.DisplayAlert("Error", "La contraseña debe tener al menos 8 caracteres.", "OK");
                         return;
                     }
 
-                    
-                    _usuario.Contrasena = NuevaPassword;
+                    _usuario.Contrasena = EncriptarPassword(NuevaPassword);
                 }
 
                 await _usuarioService.ActualizarAsync(_usuario);
 
                 if (_esDueno && _negocioActual != null)
                 {
+                    
+                    _negocioActual.TipoServicio = ModalidadActual;
+
                     _negocioActual.NombreNegocio = NombreNegocio;
                     _negocioActual.DireccionNegocio = Direccion;
                     _negocioActual.NumeroRuc = Ruc;
@@ -233,6 +259,8 @@ namespace slotsi_citas.ViewModel
                 IsBusy = false;
             }
         }
+
+
         private async Task SeleccionarFotoAsync()
         {
             try

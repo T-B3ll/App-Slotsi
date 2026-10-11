@@ -1,6 +1,7 @@
 ﻿using Microsoft.Maui.Controls;
 using slotsi_citas.ViewModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace slotsi_citas.Pages;
 
@@ -27,7 +28,36 @@ public partial class EditarPerfilPage : ContentPage
         FrameMixta.GestureRecognizers.Add(new TapGestureRecognizer
         { Command = new Command(() => SeleccionarModalidad("Mixta")) });
 
-        // ✅ ELIMINADA LA LÍNEA DE FrameFotoPerfil PORQUE YA SE ASIGNA EN EL XAML
+
+        FrameSede.GestureRecognizers.Add(new TapGestureRecognizer
+        {
+            Command = new Command(() => _viewModel.ModalidadActual = "Sede")
+        });
+
+        FrameDomicilio.GestureRecognizers.Add(new TapGestureRecognizer
+        {
+            Command = new Command(() => _viewModel.ModalidadActual = "Domicilio")
+        });
+
+        FrameMixta.GestureRecognizers.Add(new TapGestureRecognizer
+        {
+            Command = new Command(() => _viewModel.ModalidadActual = "Mixta")
+        });
+
+        _viewModel.PropertyChanged += (s, e) =>
+        {
+            if (e.PropertyName == nameof(EditarPerfilViewModel.ModalidadActual))
+            {
+                ActualizarVisualizacionModalidad();
+            }
+        };
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        await Task.Delay(500); 
+        ActualizarVisualizacionModalidad();
     }
 
     private void SeleccionarModalidad(string modalidad)
@@ -101,6 +131,33 @@ public partial class EditarPerfilPage : ContentPage
             _isUpdatingRuc = false;
         });
     }
+
+    private void ActualizarVisualizacionModalidad()
+    {
+        var colorActivo = Color.FromArgb("#2563EB");
+        var colorInactivo = Color.FromArgb("#E5E7EB");
+
+        // Resetea todos a gris primero
+        FrameSede.Stroke = colorInactivo;
+        FrameDomicilio.Stroke = colorInactivo;
+        FrameMixta.Stroke = colorInactivo;
+
+        // Pinta de azul solo el que coincide con la BD
+        switch (_viewModel.ModalidadActual?.Trim().ToLower())
+        {
+            case "sede":
+                FrameSede.Stroke = colorActivo;
+                break;
+            case "domicilio":
+            case "a domicilio":
+                FrameDomicilio.Stroke = colorActivo;
+                break;
+            case "mixta":
+                FrameMixta.Stroke = colorActivo;
+                break;
+        }
+    }
+    
 
     private async void OnCancelarClicked(object sender, EventArgs e)
     {
