@@ -10,7 +10,7 @@ namespace slotsi_citas
 
             // Rutas internas para la navegación GoToAsync
             Routing.RegisterRoute(nameof(SeleccionarCitaPage), typeof(SeleccionarCitaPage));
-            Routing.RegisterRoute(nameof(Cita_ClientePage), typeof(Cita_ClientePage));
+        
             Routing.RegisterRoute(nameof(Cita_UsuarioPage), typeof(Cita_UsuarioPage));
 
             // Rutas para el flujo de login y registro

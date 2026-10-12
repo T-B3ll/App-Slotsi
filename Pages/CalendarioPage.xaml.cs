@@ -1,33 +1,129 @@
-using slotsi_citas.ViewModel;
+using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Storage;
+using slotsi_citas.Models;
 using slotsi_citas.Services;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
-namespace slotsi_citas.Pages;
-
-public partial class CalendarioPage : ContentPage
+namespace slotsi_citas.ViewModel
 {
-    public CalendarioPage()
+    public class CitasClienteViewModel : BindableObject
     {
-        InitializeComponent();
-    }
+        private readonly MongoService _mongoService;
+        private DateTime _fechaSeleccionada;
 
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-
-        // Refrescar los estados de los bloques de hora al volver a la pantalla
-        if (BindingContext is CalendarioViewModel vm)
+        public DateTime FechaSeleccionada
         {
-            if (vm.RangosHorarios != null)
+            get => _fechaSeleccionada;
+            set
             {
-                foreach (var rango in vm.RangosHorarios)
+                if (_fechaSeleccionada != value)
                 {
-                    if (CitaRepository.CitasRegistradas.TryGetValue(rango.HoraDisplay, out var cita))
-                    {
-                        rango.Cita = cita;
-                        rango.EsOcupadoManual = true;
-                    }
+                    _fechaSeleccionada = value;
+                    OnPropertyChanged();
+                    _ = CargarRangosHorariosAsync();
                 }
             }
+        }
+
+        public ObservableCollection<RangoHorario> RangosHorarios { get; } = new ObservableCollection<RangoHorario>();
+
+        public ICommand SemanaAnteriorCommand { get; }
+        public ICommand SemanaSiguienteCommand { get; }
+        public ICommand CambiarAFechaDeHoyCommand { get; }
+        public ICommand AgendarCitaClienteCommand { get; }
+
+        // Constructor con Inyección de Dependencias
+        public CitasClienteViewModel(MongoService mongoService)
+        {
+            _mongoService = mongoService;
+
+            _fechaSeleccionada = DateTime.Today;
+
+            // Navegación por días de la semana
+            SemanaAnteriorCommand = new Command(() => FechaSeleccionada = FechaSeleccionada.AddDays(-1));
+            SemanaSiguienteCommand = new Command(() => FechaSeleccionada = FechaSeleccionada.AddDays(1));
+            CambiarAFechaDeHoyCommand = new Command(() => FechaSeleccionada = DateTime.Today);
+
+            AgendarCitaClienteCommand = new Command<RangoHorario>(async (rango) => await ExecuteAgendarCita(rango));
+
+            _ = CargarRangosHorariosAsync();
+        }
+
+        // Constructor por defecto como respaldo para el generador XAML
+        public CitasClienteViewModel() : this(new MongoService())
+        {
+        }
+
+        public async Task CargarRangosHorariosAsync()
+        {
+            RangosHorarios.Clear();
+
+            // Consulta directa a MongoDB Atlas
+            var citasDelDia = _mongoService != null
+                ? await _mongoService.ObtenerCitasPorFechaAsync(FechaSeleccionada)
+                : new List<Citas>();
+
+            var horaInicioJornada = new TimeSpan(8, 0, 0);
+            var horaFinJornada = new TimeSpan(17, 0, 0);
+
+            for (var hora = horaInicioJornada; hora < horaFinJornada; hora = hora.Add(TimeSpan.FromHours(1)))
+            {
+                var inicioBloque = FechaSeleccionada.Date.Add(hora);
+                var finBloque = inicioBloque.AddHours(1);
+
+                // Evalúa la intersección entre los bloques de la agenda y las citas registradas en la BD
+                var citaOcupada = citasDelDia.FirstOrDefault(c => c.FechaHoraInicio < finBloque && c.FechaHoraFin > inicioBloque);
+
+                bool esHorarioDescanso = (hora.Hours == 13); // 1:00 PM
+                bool esOcupado = citaOcupada != null;
+                bool esNoDisponible = esHorarioDescanso;
+                bool esDisponible = !esOcupado && !esNoDisponible;
+
+                RangosHorarios.Add(new RangoHorario
+                {
+                    HoraDisplay = DateTime.Today.Add(hora).ToString("hh:mm tt"),
+                    HoraInicio = inicioBloque,
+                    HoraFin = finBloque,
+                    EsDisponible = esDisponible,
+                    EsOcupado = esOcupado,
+                    EsNoDisponible = esNoDisponible,
+                    Cita = citaOcupada
+                });
+            }
+        }
+
+        private async Task ExecuteAgendarCita(RangoHorario rango)
+        {
+            if (rango == null || !rango.EsDisponible) return;
+
+            string clienteId = Preferences.Get("UsuarioId", string.Empty);
+
+            if (string.IsNullOrEmpty(clienteId))
+            {
+                if (Application.Current?.MainPage != null)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Sesión Expirada", "Debes iniciar sesión para agendar.", "OK");
+                }
+                return;
+            }
+
+            // Guardar datos en la sesión global antes de cambiar de vista
+            CitaSession.HorarioSeleccionado = rango;
+            CitaSession.FechaSeleccionada = FechaSeleccionada;
+
+            var navigationParameters = new Dictionary<string, object>
+            {
+                { "HorarioSeleccionado", rango },
+                { "FechaSeleccionada", FechaSeleccionada }
+            };
+
+            await Shell.Current.GoToAsync("SeleccionarCitaPage", navigationParameters);
         }
     }
 }

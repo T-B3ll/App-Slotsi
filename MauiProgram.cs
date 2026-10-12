@@ -2,7 +2,7 @@
 using slotsi_citas.Pages;
 using slotsi_citas.Services;
 using slotsi_citas.ViewModel;
-using slotsi_citas.ViewModels;
+using slotsi_citas.ViewModel;
 using Supabase;
 using Syncfusion.Maui.Toolkit.Hosting;
 
@@ -54,18 +54,18 @@ public static class MauiProgram
         // ============================================
         // VIEWMODELS
         // ============================================
-        builder.Services.AddTransient<Cita_UsuarioViewModel>();
+      
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<UsuarioBasicoViewModel>();
         builder.Services.AddTransient<RegistroUsuariosViewModel>();
-        builder.Services.AddTransient<Cita_clienteViewModel>();
+
         builder.Services.AddTransient<SeleccionarCitaViewModel>();
         builder.Services.AddTransient<RecuperarContrasenaViewModel>();
 
         // ============================================
         // PAGES
         // ============================================
-        builder.Services.AddTransient<Cita_ClientePage>();
+
         builder.Services.AddTransient<Cita_UsuarioPage>();
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<RegistroUsuarioBasico>();

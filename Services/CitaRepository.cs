@@ -5,7 +5,7 @@ namespace slotsi_citas.Services
 {
     public static class CitaRepository
     {
-        public static Dictionary<string, Cita_cliente> CitasRegistradas { get; } = new Dictionary<string, Cita_cliente>();
+        public static Dictionary<string, Citas> CitasRegistradas { get; } = new Dictionary<string, Citas>();
 
         // Método para vaciar el caché local
         public static void LimpiarCache()

@@ -7,9 +7,6 @@
              Title="Calendario"
              BackgroundColor="White">
 
-    <ContentPage.BindingContext>
-        <vm:CalendarioViewModel />
-    </ContentPage.BindingContext>
 
     <Grid RowDefinitions="Auto, Auto, Auto, *, Auto">
 

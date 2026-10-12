@@ -4,14 +4,11 @@
              xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
              xmlns:models="clr-namespace:slotsi_citas.Models"
              x:Class="slotsi_citas.Pages.Cita_UsuarioPage"
-             x:DataType="vm:Cita_UsuarioViewModel"
              BackgroundColor="#FFFFFF"
              NavigationPage.HasNavigationBar="False"
              Title="Calendario">
 
-    <ContentPage.BindingContext>
-        <vm:Cita_UsuarioViewModel />
-    </ContentPage.BindingContext>
+
 
     <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
 

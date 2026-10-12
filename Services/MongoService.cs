@@ -2,6 +2,7 @@
 using slotsi_citas.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq; // Necesario para la función .Any()
 using System.Threading.Tasks;
 
 namespace slotsi_citas.Services
@@ -15,21 +16,16 @@ namespace slotsi_citas.Services
             var client = new MongoClient(MongoDbSettings.ConnectionString);
             _database = client.GetDatabase(MongoDbSettings.DatabaseName);
 
-            // NO hacer ping síncrono aquí — causa bloqueos en Android
-            // El ping se hace en segundo plano sin bloquear
-            _ = Task.Run(async () =>
+            // --- PRUEBA DE DIAGNÓSTICO DE CONEXIÓN A ATLAS ---
+            try
             {
-                try
-                {
-                    await _database.RunCommandAsync<MongoDB.Bson.BsonDocument>(
-                        new MongoDB.Bson.BsonDocument("ping", 1));
-                    System.Diagnostics.Debug.WriteLine(">>> [EXITO] Conexion con MongoDB Atlas establecida correctamente.");
-                }
-                catch (Exception ex)
-                {
-                    System.Diagnostics.Debug.WriteLine($">>> [ERROR CONEXION ATLAS]: {ex.Message}");
-                }
-            });
+                _database.RunCommand<MongoDB.Bson.BsonDocument>(new MongoDB.Bson.BsonDocument("ping", 1));
+                System.Diagnostics.Debug.WriteLine(">>> [EXITO] Conexion con MongoDB Atlas establecida correctamente.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($">>> [ERROR FATAL DE CONEXION ATLAS]: {ex.Message}");
+            }
         }
 
         // --- MÉTODOS DE USUARIOS ---
@@ -59,7 +55,7 @@ namespace slotsi_citas.Services
                 var collection = _database.GetCollection<Servicios>("Servicios");
                 var lista = await collection.Find(_ => true).ToListAsync();
 
-                if (lista == null || lista.Count == 0)
+                if (lista == null || !lista.Any())
                 {
                     var collectionMin = _database.GetCollection<Servicios>("servicios");
                     lista = await collectionMin.Find(_ => true).ToListAsync();
@@ -75,13 +71,14 @@ namespace slotsi_citas.Services
         }
 
         // --- MÉTODOS DE CITAS ---
-        public async Task<bool> GuardarCitaAsync(Cita_cliente cita)
+        public async Task<bool> GuardarCitaAsync(Citas cita)
         {
             try
             {
-                System.Diagnostics.Debug.WriteLine($"[MONGO] Intentando guardar cita: Fecha={cita.Fecha}, Hora={cita.Hora}, Cliente={cita.NombreCliente}");
+                // Se reemplaza cita.Fecha y cita.Hora por cita.FechaHoraInicio
+                System.Diagnostics.Debug.WriteLine($"[MONGO] Intentando guardar cita: Fecha={cita.FechaHoraInicio:yyyy-MM-dd}, Hora={cita.FechaHoraInicio:HH:mm}, Cliente={cita.Cliente?.Nombre}");
 
-                var collection = _database.GetCollection<Cita_cliente>("Citas");
+                var collection = _database.GetCollection<Citas>("Citas");
                 await collection.InsertOneAsync(cita);
 
                 System.Diagnostics.Debug.WriteLine($"[MONGO] ✅ Cita guardada con ID: {cita.Id}");
@@ -95,17 +92,38 @@ namespace slotsi_citas.Services
             }
         }
 
-        public async Task<List<Cita_cliente>> ObtenerCitasAsync()
+        public async Task<List<Citas>> ObtenerCitasAsync()
         {
             try
             {
-                var collection = _database.GetCollection<Cita_cliente>("Citas");
+                var collection = _database.GetCollection<Citas>("Citas");
                 return await collection.Find(_ => true).ToListAsync();
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[ERROR MONGODB CITAS]: {ex.Message}");
-                return new List<Cita_cliente>();
+                return new List<Citas>();
+            }
+        }
+
+        // --- CONSULTA DE CITAS FILTRADAS POR FECHA PARA EL CALENDARIO ---
+        public async Task<List<Citas>> ObtenerCitasPorFechaAsync(DateTime fecha)
+        {
+            try
+            {
+                var collection = _database.GetCollection<Citas>("Citas");
+                var inicioDia = fecha.Date;
+                var finDia = fecha.Date.AddDays(1).AddTicks(-1);
+
+                var filter = Builders<Citas>.Filter.Gte(c => c.FechaHoraInicio, inicioDia) &
+                             Builders<Citas>.Filter.Lte(c => c.FechaHoraInicio, finDia);
+
+                return await collection.Find(filter).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ERROR MONGODB CITAS POR FECHA]: {ex.Message}");
+                return new List<Citas>();
             }
         }
     }
