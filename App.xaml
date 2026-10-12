@@ -1,15 +1,13 @@
-﻿<?xml version="1.0" encoding="UTF-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:converters="clr-namespace:slotsi_citas.Converters"
+             xmlns:services="clr-namespace:slotsi_citas.Services"
              x:Class="slotsi_citas.App">
+
     <Application.Resources>
         <ResourceDictionary>
-            <!-- Converters para Cita_Usuario -->
-            <converters:NullToBoolConverter x:Key="NullToBoolConverter"/>
-            <converters:StringToBoolConverter x:Key="StringToBoolConverter"/>
-            <converters:InverseBoolConverter x:Key="InverseBoolConverter"/>
 
+<<<<<<< HEAD
             <!-- Colores globalizados -->
             <Color x:Key="PrimaryColor">#2563EB</Color>
             <Color x:Key="SecondaryColor">#F97316</Color>
@@ -25,7 +23,23 @@
                 <Setter Property="BorderWidth" Value="1.5"/>
                 <Setter Property="CornerRadius" Value="8"/>
                 <Setter Property="FontAttributes" Value="Bold"/>
+=======
+            <!-- Estilo global para Border -->
+            <Style TargetType="Border">
+                <Setter Property="InputTransparent" Value="False" />
+                <Style.Behaviors>
+                    <services:TouchEffectBehavior />
+                </Style.Behaviors>
+>>>>>>> catalogos
             </Style>
+
+            <!-- Estilo global para Button -->
+            <Style TargetType="Button">
+                <Style.Behaviors>
+                    <services:TouchEffectBehavior />
+                </Style.Behaviors>
+            </Style>
+
         </ResourceDictionary>
     </Application.Resources>
 </Application>

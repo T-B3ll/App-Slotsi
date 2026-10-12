@@ -11,8 +11,17 @@ namespace slotsi_citas
         {
             InitializeComponent();
             _serviceProvider = serviceProvider;
+<<<<<<< HEAD
             var loginPage = serviceProvider.GetRequiredService<Pages.LoginPage>();
             MainPage = new NavigationPage(loginPage);
+=======
+        }
+
+        protected override Window CreateWindow(IActivationState? activationState)
+        {
+            var shell = _serviceProvider.GetRequiredService<AppShell>();
+            return new Window(shell);
+>>>>>>> catalogos
         }
     }
 }

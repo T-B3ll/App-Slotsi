@@ -1,19 +1,23 @@
-﻿namespace slotsi_citas.Models
+﻿using System;
+using Microsoft.Maui.Controls;
+
+namespace slotsi_citas.Models
 {
-    public class RangoHorario
+    public class RangoHorario : BindableObject
     {
-        public TimeSpan Hora { get; set; }
-        public TimeSpan HoraInicio { get; set; }
-        public TimeSpan HoraFin { get; set; }
+        public string HoraDisplay { get; set; } // Ejemplo: "08:00 AM"
+        public DateTime HoraInicio { get; set; }
+        public DateTime HoraFin { get; set; }
 
-        private string? _horaDisplay;
-        public string HoraDisplay
-        {
-            get => _horaDisplay ?? DateTime.Today.Add(Hora != default ? Hora : HoraInicio).ToString("h:mm tt");
-            set => _horaDisplay = value;
-        }
+        public bool EsDisponible { get; set; }
+        public bool EsOcupado { get; set; }
+        public bool EsNoDisponible { get; set; }
 
+<<<<<<< HEAD
        
         public dynamic? Cita { get; set; }
+=======
+        public Citas Cita { get; set; }
+>>>>>>> catalogos
     }
 }

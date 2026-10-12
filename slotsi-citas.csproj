@@ -82,9 +82,6 @@
 	  <MauiXaml Update="Pages\CalendarioPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Pages\Cita_ClientePage.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	  <MauiXaml Update="Pages\Cita_UsuarioPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
