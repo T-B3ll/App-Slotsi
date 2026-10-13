@@ -17,9 +17,6 @@
 
             <!-- Estilo global para Button -->
             <Style TargetType="Button">
-                <Style.Behaviors>
-                    <services:TouchEffectBehavior />
-                </Style.Behaviors>
             </Style>
 
         </ResourceDictionary>

@@ -9,7 +9,9 @@ namespace slotsi_citas
         {
             InitializeComponent();
             Routing.RegisterRoute(nameof(NuevoTrabajador), typeof(NuevoTrabajador));
+            Routing.RegisterRoute(nameof(CatalogoCliente), typeof(CatalogoCliente));
             Routing.RegisterRoute(nameof(DueñosNegociosPage), typeof(DueñosNegociosPage));
+            Routing.RegisterRoute(nameof(SeleccionarCitaPage), typeof(SeleccionarCitaPage));
         }
 
         private async void OnCerrarSesionClicked(object sender, EventArgs e)

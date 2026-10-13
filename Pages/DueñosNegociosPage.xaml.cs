@@ -97,27 +97,6 @@ public partial class DueñosNegociosPage : ContentPage
         ActualizarLista(resultados.ToList());
     }
 
-    private async void OnNegocioSeleccionado(object sender, SelectionChangedEventArgs e)
-    {
-        if (e.CurrentSelection.FirstOrDefault() is Negocio negocioSeleccionado)
-        {
-            if (sender is CollectionView collectionView)
-            {
-                collectionView.SelectedItem = null;
-            }
-
-            if (string.IsNullOrEmpty(negocioSeleccionado.Id))
-            {
-                await DisplayAlert("Aviso", $"El negocio '{negocioSeleccionado.NombreNegocio}' no tiene un ID registrado.", "OK");
-                return;
-            }
-
-            Preferences.Set("NegocioSeleccionadoId", negocioSeleccionado.Id);
-
-            await Shell.Current.GoToAsync("//catalogocliente");
-        }
-    }
-
     private string NormalizarTexto(string texto)
     {
         if (string.IsNullOrEmpty(texto)) return "";
@@ -156,6 +135,45 @@ public partial class DueñosNegociosPage : ContentPage
         if (_viewModel != null)
         {
             _todosLosNegocios = _viewModel.ListaDueños.ToList();
+        }
+    }
+    private async void OnNegocioTapped(object sender, EventArgs e)
+    {
+        try
+        {
+            Negocio? negocioSeleccionado = null;
+
+            if (e is TappedEventArgs tappedArgs)
+            {
+                negocioSeleccionado = tappedArgs.Parameter as Negocio;
+            }
+
+            if (negocioSeleccionado == null && sender is BindableObject bindable)
+            {
+                negocioSeleccionado = bindable.BindingContext as Negocio;
+            }
+
+            if (negocioSeleccionado == null) return;
+
+            string idValido = negocioSeleccionado.Id;
+
+            if (string.IsNullOrEmpty(idValido))
+            {
+                await DisplayAlert("Aviso", $"El negocio '{negocioSeleccionado.NombreNegocio ?? negocioSeleccionado.Nombre}' no posee un ID de MongoDB registrado.", "OK");
+                return;
+            }
+
+            Preferences.Set("NegocioSeleccionadoId", idValido);
+
+            if (Shell.Current != null)
+            {
+                await Shell.Current.GoToAsync("CatalogoCliente");
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[ERROR NAVEGACION]: {ex.Message}");
+            await DisplayAlert("Error", $"No se pudo abrir el catálogo: {ex.Message}", "OK");
         }
     }
 }

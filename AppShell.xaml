@@ -55,13 +55,6 @@
         <ShellContent ContentTemplate="{DataTemplate pages:catalogoservicios}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Catálogo de Clientes" Route="catalogocliente">
-        <FlyoutItem.Icon>
-            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7EF;" Color="#2563EB" Size="22" />
-        </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:CatalogoCliente}" />
-    </FlyoutItem>
-
     <FlyoutItem Title="Registro de Usuarios" Route="RegistroUsuariosPage">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FE;" Color="#2563EB" Size="22" />

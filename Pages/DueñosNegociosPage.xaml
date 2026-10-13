@@ -17,7 +17,7 @@
                 <VerticalStackLayout Spacing="16">
 
                     <VerticalStackLayout Spacing="4">
-                    <Label Text="Dueños de Negocio" FontSize="26" FontAttributes="Bold" TextColor="#111827"/>
+                    <Label Text="Negocio Disponibles" FontSize="26" FontAttributes="Bold" TextColor="#111827"/>
                 </VerticalStackLayout>
 
                     <Frame BackgroundColor="#F9FAFB" BorderColor="#E5E7EB" CornerRadius="12" Padding="16,0" HeightRequest="48" HasShadow="False">
@@ -49,42 +49,47 @@
                 </VerticalStackLayout>
             </Frame>
 
-            <CollectionView Grid.Row="1" ItemsSource="{Binding ListaDueños}" SelectionMode="Single" SelectionChanged="OnNegocioSeleccionado" Margin="16,12,16,12" VerticalScrollBarVisibility="Never">
+        <!-- CollectionView sin SelectionChanged para evitar bloqueos de toque -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding ListaDueños}" Margin="16,12,16,12" VerticalScrollBarVisibility="Never">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
+            </CollectionView.ItemsLayout>
 
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
-                </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <!-- Gestor de toque agregado directamente al Border -->
+                    <Border BackgroundColor="White" Stroke="#E5E7EB" StrokeThickness="1" Padding="16">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnNegocioTapped" CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Border BackgroundColor="White" Stroke="#E5E7EB" StrokeThickness="1" Padding="16">
-                            <Border.StrokeShape>
-                                <RoundRectangle CornerRadius="16"/>
-                            </Border.StrokeShape>
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16"/>
+                        </Border.StrokeShape>
 
-                            <Grid ColumnDefinitions="56, *, Auto" ColumnSpacing="14">
-                                <Border Grid.Column="0" StrokeShape="RoundRectangle 28" BackgroundColor="#EFF6FF" HeightRequest="56" WidthRequest="56" StrokeThickness="0">
-                                    <Grid>
-                                        <Image Source="{Binding UrlFotoPerfil}" Aspect="AspectFill" />
-                                        <Label Text="{Binding Nombre}" TextColor="#2563EB" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                    </Grid>
-                                </Border>
+                        <Grid ColumnDefinitions="56, *, Auto" ColumnSpacing="14">
+                            <Border Grid.Column="0" StrokeShape="RoundRectangle 28" BackgroundColor="#EFF6FF" HeightRequest="56" WidthRequest="56" StrokeThickness="0">
+                                <Grid>
+                                    <Image Source="{Binding UrlFotoPerfil}" Aspect="AspectFill" />
+                                    <Label Text="{Binding Nombre}" TextColor="#2563EB" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                </Grid>
+                            </Border>
 
-                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
-                                    <Label Text="{Binding NombreNegocio}" FontSize="16" FontAttributes="Bold" TextColor="#111827"/>
-                                    <Label Text="{Binding DireccionNegocio}" FontSize="13" TextColor="#6B7280"/>
-                                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                                        <Label Text="{Binding Categoria}" FontSize="12" TextColor="#6B7280" VerticalOptions="Center"/>
-                                        <Label Text="✔ Verificado" FontSize="11" FontAttributes="Bold" TextColor="#10B981" VerticalOptions="Center"/>
-                                    </HorizontalStackLayout>
-                                </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
+                                <Label Text="{Binding NombreNegocio}" FontSize="16" FontAttributes="Bold" TextColor="#111827"/>
+                                <Label Text="{Binding DireccionNegocio}" FontSize="13" TextColor="#6B7280"/>
+                                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                    <Label Text="{Binding Categoria}" FontSize="12" TextColor="#6B7280" VerticalOptions="Center"/>
+                                    <Label Text="✔ Verificado" FontSize="11" FontAttributes="Bold" TextColor="#10B981" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
 
-                                <Label Grid.Column="2" Text="›" FontSize="28" TextColor="#D1D5DB" VerticalOptions="Center" FontAttributes="Bold"/>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                            <Label Grid.Column="2" Text="›" FontSize="28" TextColor="#D1D5DB" VerticalOptions="Center" FontAttributes="Bold"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
         <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*" BackgroundColor="White" HeightRequest="65" Padding="0,6,0,0">
             <BoxView Grid.ColumnSpan="4" HeightRequest="1" Color="#F3F4F6" VerticalOptions="Start"/>

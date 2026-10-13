@@ -8,11 +8,7 @@ public partial class LoginPage : ContentPage
 {
 
     private readonly IServiceProvider _serviceProvider;
-    public LoginPage(LoginViewModel viewModel)
-    {
-        InitializeComponent();
-        BindingContext = viewModel;
-    }
+
     public LoginPage(LoginViewModel viewModel, IServiceProvider serviceProvider)
     {
         InitializeComponent();
