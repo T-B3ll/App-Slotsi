@@ -11,10 +11,9 @@
         <BackButtonBehavior IsVisible="True" />
     </Shell.BackButtonBehavior>
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, *, Auto">
 
-        <Image Source="{Binding Foto}" Aspect="AspectFill" />
-
+        <!-- ROW 0: Encabezado y Filtros -->
         <Border Grid.Row="0" StrokeThickness="0" BackgroundColor="#FFFFFF" Margin="0,0,0,8">
             <Border.Shadow>
                 <Shadow Brush="#000000" Offset="0,2" Radius="6" Opacity="0.05" />
@@ -66,6 +65,7 @@
             </VerticalStackLayout>
         </Border>
 
+        <!-- ROW 1: Catálogo de Servicios -->
         <CollectionView Grid.Row="1" ItemsSource="{Binding Servicios}" Margin="12,4,12,12">
             <CollectionView.ItemsLayout>
                 <GridItemsLayout Orientation="Vertical" Span="2" HorizontalItemSpacing="10" VerticalItemSpacing="12" />
@@ -116,9 +116,19 @@
                                 </VerticalStackLayout>
 
                                 <Grid ColumnDefinitions="*, Auto" Margin="0,4,0,0">
-                                    <Label Grid.Column="0" Text="{Binding Precio, StringFormat='${0:F2}'}" FontSize="15" FontAttributes="Bold" TextColor="#2563EB" VerticalOptions="Center" />
-                                    <Button Grid.Column="1" Text="Agendar" BackgroundColor="#2563EB" TextColor="White" FontSize="11" FontAttributes="Bold" CornerRadius="8" Padding="10,0" HeightRequest="32" 
-                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.AgendarCommand}" 
+                                    <Label Grid.Column="0" Text="{Binding Precio, StringFormat='C$ {0:N2}'}" FontSize="14" FontAttributes="Bold" TextColor="#2563EB" VerticalOptions="Center" />
+
+                                    <!-- Botón dinámico Agregar/Quitar -->
+                                    <Button Grid.Column="1" 
+                                            Text="{Binding TextoBoton}" 
+                                            BackgroundColor="{Binding ColorFondoBoton}" 
+                                            TextColor="{Binding ColorTextoBoton}" 
+                                            FontSize="11" 
+                                            FontAttributes="Bold" 
+                                            CornerRadius="8" 
+                                            Padding="10,0" 
+                                            HeightRequest="32" 
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type ContentPage}}, Path=BindingContext.ToggleSeleccionServicioCommand}" 
                                             CommandParameter="{Binding .}" />
                                 </Grid>
                             </VerticalStackLayout>
@@ -127,5 +137,35 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+
+        <!-- ROW 2: Barra Inferior Flotante de Selección y Confirmación -->
+        <Border Grid.Row="2" 
+                IsVisible="{Binding TieneServiciosSeleccionados}" 
+                BackgroundColor="#FFFFFF" 
+                Padding="16,12" 
+                StrokeThickness="0">
+            <Border.Shadow>
+                <Shadow Brush="#000000" Offset="0,-2" Radius="10" Opacity="0.08" />
+            </Border.Shadow>
+
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12">
+                <VerticalStackLayout Grid.Column="0" VerticalOptions="Center">
+                    <Label Text="{Binding TextoResumenSeleccion}" FontSize="12" TextColor="#64748B" FontAttributes="Bold"/>
+                    <Label Text="{Binding TextoTotalPrecio}" FontSize="16" TextColor="#0F172A" FontAttributes="Bold"/>
+                </VerticalStackLayout>
+
+                <Button Grid.Column="1" 
+                        Text="Continuar →" 
+                        Command="{Binding ContinuarAgendarCommand}" 
+                        BackgroundColor="#2563EB" 
+                        TextColor="White" 
+                        FontAttributes="Bold" 
+                        FontSize="14" 
+                        CornerRadius="12" 
+                        Padding="20,0" 
+                        HeightRequest="46" />
+            </Grid>
+        </Border>
+
     </Grid>
 </ContentPage>

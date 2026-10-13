@@ -215,6 +215,7 @@
                 HeightRequest="50" 
                 Margin="16,8,16,8"/>
 
+
         <!-- ROW 3: Barra Inferior de Navegación -->
         <Grid Grid.Row="3" ColumnDefinitions="*, *, *, *" BackgroundColor="#FFFFFF" HeightRequest="60" Padding="0,6">
             <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">

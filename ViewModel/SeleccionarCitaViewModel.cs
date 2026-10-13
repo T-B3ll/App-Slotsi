@@ -243,7 +243,6 @@ namespace slotsi_citas.ViewModel
         {
             if (trabajador == null) return;
 
-            // Buscamos a qué servicio pertenece este trabajador y actualizamos su selección
             foreach (var servicio in ServiciosTarjetas)
             {
                 if (servicio.ColaboradoresDelServicio.Any(c => c.Id == trabajador.Id))

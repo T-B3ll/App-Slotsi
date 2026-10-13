@@ -26,10 +26,10 @@ namespace slotsi_citas.Models
             public string IdUsuarioCliente { get; set; } = string.Empty;
 
             [BsonElement("rango_calificacion")]
-            public int RangoCalificacion { get; set; }
+            public int RangoCalificacion { get; set; } = 5;
 
             [BsonElement("negocio_calificado")]
-            public bool NegocioCalificado { get; set; }
+            public bool NegocioCalificado { get; set; } = false;
 
             [BsonElement("nombre_negocio")]
             public string NombreNegocio { get; set; } = string.Empty;

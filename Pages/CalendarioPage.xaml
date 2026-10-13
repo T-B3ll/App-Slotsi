@@ -129,7 +129,6 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <!-- 5. Barra de Navegación Inferior (Bottom Bar) -->
         <Grid Grid.Row="4" ColumnDefinitions="*, *, *, *" BackgroundColor="#F9F9F9" Padding="0,10,0,15">
             <BoxView Grid.ColumnSpan="4" HeightRequest="1" BackgroundColor="#E5E5EA" VerticalOptions="Start" />
 

@@ -7,37 +7,10 @@
     <Application.Resources>
         <ResourceDictionary>
 
-<<<<<<< HEAD
-            <!-- Colores globalizados -->
-            <Color x:Key="PrimaryColor">#2563EB</Color>
-            <Color x:Key="SecondaryColor">#F97316</Color>
-            <Color x:Key="BackgroundColor">#F5F5F5</Color>
-            <Color x:Key="CardBackgroundColor">#FFFFFF</Color>
-            <Color x:Key="OccupiedColor">#FFFBEB</Color>
-            <Color x:Key="UnavailableColor">#F3F4F6</Color>
-
-            <Style x:Key="ButtonAgendarCita" TargetType="Button">
-                <Setter Property="BackgroundColor" Value="Transparent"/>
-                <Setter Property="TextColor" Value="{StaticResource PrimaryColor}"/>
-                <Setter Property="BorderColor" Value="{StaticResource PrimaryColor}"/>
-                <Setter Property="BorderWidth" Value="1.5"/>
-                <Setter Property="CornerRadius" Value="8"/>
-                <Setter Property="FontAttributes" Value="Bold"/>
-=======
-            <!-- Estilo global para Border -->
             <Style TargetType="Border">
-                <Setter Property="InputTransparent" Value="False" />
-                <Style.Behaviors>
-                    <services:TouchEffectBehavior />
-                </Style.Behaviors>
->>>>>>> catalogos
             </Style>
 
-            <!-- Estilo global para Button -->
             <Style TargetType="Button">
-                <Style.Behaviors>
-                    <services:TouchEffectBehavior />
-                </Style.Behaviors>
             </Style>
 
         </ResourceDictionary>
