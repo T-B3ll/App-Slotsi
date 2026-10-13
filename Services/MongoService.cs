@@ -15,16 +15,21 @@ namespace slotsi_citas.Services
             var client = new MongoClient(MongoDbSettings.ConnectionString);
             _database = client.GetDatabase(MongoDbSettings.DatabaseName);
 
-            // --- PRUEBA DE DIAGNÓSTICO DE CONEXIÓN A ATLAS ---
-            try
+            // NO hacer ping síncrono aquí — causa bloqueos en Android
+            // El ping se hace en segundo plano sin bloquear
+            _ = Task.Run(async () =>
             {
-                _database.RunCommand<MongoDB.Bson.BsonDocument>(new MongoDB.Bson.BsonDocument("ping", 1));
-                System.Diagnostics.Debug.WriteLine(">>> [EXITO] Conexion con MongoDB Atlas establecida correctamente.");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($">>> [ERROR FATAL DE CONEXION ATLAS]: {ex.Message}");
-            }
+                try
+                {
+                    await _database.RunCommandAsync<MongoDB.Bson.BsonDocument>(
+                        new MongoDB.Bson.BsonDocument("ping", 1));
+                    System.Diagnostics.Debug.WriteLine(">>> [EXITO] Conexion con MongoDB Atlas establecida correctamente.");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($">>> [ERROR CONEXION ATLAS]: {ex.Message}");
+                }
+            });
         }
 
         // --- MÉTODOS DE USUARIOS ---
@@ -46,16 +51,15 @@ namespace slotsi_citas.Services
             return result.ModifiedCount > 0;
         }
 
-        // --- MÉTODOS DE SERVICIOS (UN SOLO MÉTODO) ---
+        // --- MÉTODOS DE SERVICIOS ---
         public async Task<List<Servicios>> ObtenerServiciosAsync()
         {
             try
             {
-                // Busca primero en "Servicios" y si está vacía busca en "servicios"
                 var collection = _database.GetCollection<Servicios>("Servicios");
                 var lista = await collection.Find(_ => true).ToListAsync();
 
-                if (lista == null || !lista.Any())
+                if (lista == null || lista.Count == 0)
                 {
                     var collectionMin = _database.GetCollection<Servicios>("servicios");
                     lista = await collectionMin.Find(_ => true).ToListAsync();

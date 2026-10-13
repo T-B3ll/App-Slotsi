@@ -21,6 +21,7 @@ public static class MauiProgram
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                fonts.AddFont("MauiMaterialAssets.ttf", "MaterialIcons");
                 fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialIcons");
             });
 
@@ -28,12 +29,24 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
+        // ============================================
+        // APPSHELL - REGISTRO
+        // ============================================
+        builder.Services.AddSingleton<AppShell>();
+
+        // ============================================
+        // SUPABASE (SIN BLOQUEAR)
+        // ============================================
         var supabaseUrl = "https://vnasklmkkamytgwymzih.supabase.co";
         var supabaseKey = "sb_publishable_z8qlsYsGV7mYU4iJGGu8NA_fljnaFtq";
 
         var options = new SupabaseOptions();
         var client = new Client(supabaseUrl, supabaseKey, options);
 
+        // NO usar .Wait() — dejamos que se inicialice en segundo plano
+        _ = client.InitializeAsync();
+
+        builder.Services.AddSingleton(client);
         Task.Run(async () => await client.InitializeAsync());
 
         builder.Services.AddSingleton(client);
@@ -52,35 +65,50 @@ public static class MauiProgram
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<UsuarioService>();
         builder.Services.AddSingleton<RecuperacionService>();
+        builder.Services.AddSingleton<EmailJSService>();
+        builder.Services.AddSingleton<RecuperacionService>();
         builder.Services.AddSingleton<NegocioService>();
         builder.Services.AddSingleton<SuscripcionService>();
         builder.Services.AddSingleton<EmailJSService>();
 
+        // ============================================
+        // VIEWMODELS
+        // ============================================
+        builder.Services.AddTransient<Cita_UsuarioViewModel>();
         // --- VIEW MODELS ---
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<CitasClienteViewModel>();
         builder.Services.AddTransient<UsuarioBasicoViewModel>();
+        builder.Services.AddTransient<RegistroUsuariosViewModel>();
+        builder.Services.AddTransient<Cita_clienteViewModel>();
+        builder.Services.AddTransient<SeleccionarCitaViewModel>();
+        builder.Services.AddTransient<RecuperarContrasenaViewModel>();
         builder.Services.AddTransient<ListaTrabjadoresViewModel>();
         builder.Services.AddTransient<NuevoTrabajadorViewModel>();
         builder.Services.AddTransient<EditarPerfilViewModel>();
         builder.Services.AddTransient<PagoSuscripcionViewModel>();
         builder.Services.AddTransient<RecuperarContrasenaViewModel>();
 
+        // ============================================
+        // PAGES
+        // ============================================
         // --- PÁGINAS ---
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<Cita_ClientePage>();
+        builder.Services.AddTransient<Cita_UsuarioPage>();
+        builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<RegistroUsuarioBasico>();
+        builder.Services.AddTransient<RegistroUsuariosPage>();
         builder.Services.AddTransient<NuevoTrabajador>();
         builder.Services.AddTransient<ListaTrabajadores>();
         builder.Services.AddTransient<RecuperarContra>();
         builder.Services.AddTransient<NuevaContra>();
         builder.Services.AddTransient<CalendarioPage>();
         builder.Services.AddTransient<catalogoservicios>();
+        builder.Services.AddTransient<CatalogoCliente>();
         builder.Services.AddTransient<DueñosNegociosPage>();
         builder.Services.AddTransient<PagoSuscripcionPage>();
         builder.Services.AddTransient<SeleccionarCitaPage>();
-        builder.Services.AddTransient<EditarPerfilPage>();
-        builder.Services.AddTransient<CatalogoCliente>();
 
         return builder.Build();
     }
