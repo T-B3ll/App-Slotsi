@@ -58,6 +58,41 @@ namespace slotsi_citas.Models
         [BsonElement("horario_trabajo")]
         public List<HorarioTrabajo> HorarioTrabajo { get; set; }
 
+        // --- PROPIEDADES AUXILIARES DE UI PARA SELECCIÓN ---
+        private bool _esSeleccionado;
+
+        [BsonIgnore]
+        public bool EsSeleccionado
+        {
+            get => _esSeleccionado;
+            set
+            {
+                if (_esSeleccionado != value)
+                {
+                    _esSeleccionado = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(ColorBorde));
+                    OnPropertyChanged(nameof(ColorFondo));
+                    OnPropertyChanged(nameof(ColorTexto));
+                }
+            }
+        }
+
+        [BsonIgnore]
+        public bool TieneFoto => !string.IsNullOrEmpty(Foto);
+
+        [BsonIgnore]
+        public bool NoTieneFoto => string.IsNullOrEmpty(Foto);
+
+        [BsonIgnore]
+        public string ColorBorde => EsSeleccionado ? "#2563EB" : "#E2E8F0";
+
+        [BsonIgnore]
+        public string ColorFondo => EsSeleccionado ? "#EFF6FF" : "#FFFFFF";
+
+        [BsonIgnore]
+        public string ColorTexto => EsSeleccionado ? "#2563EB" : "#0F172A";
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

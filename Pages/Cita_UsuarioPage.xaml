@@ -4,14 +4,11 @@
              xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
              xmlns:models="clr-namespace:slotsi_citas.Models"
              x:Class="slotsi_citas.Pages.Cita_UsuarioPage"
-             x:DataType="vm:Cita_UsuarioViewModel"
              BackgroundColor="#FFFFFF"
              NavigationPage.HasNavigationBar="False"
              Title="Calendario">
 
-    <ContentPage.BindingContext>
-        <vm:Cita_UsuarioViewModel />
-    </ContentPage.BindingContext>
+
 
     <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
 
@@ -47,7 +44,7 @@
                         HeightRequest="40"
                         Padding="0"/>
 
-                <!-- Botón Azul de Fecha Exacta con DatePicker transparente encima -->
+
                 <Grid VerticalOptions="Center">
                     <Border StrokeShape="RoundRectangle 10"
                             BackgroundColor="#2563EB"
@@ -97,7 +94,7 @@
                     VerticalOptions="Center"/>
         </Grid>
 
-        <!-- 3. Filtrado Rápido de Días de la Semana -->
+
         <CollectionView Grid.Row="2"
                         ItemsSource="{Binding FechasSemana}"
                         Margin="12,4,12,8"

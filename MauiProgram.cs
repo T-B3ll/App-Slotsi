@@ -29,21 +29,15 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
-        // ============================================
-        // APPSHELL - REGISTRO
-        // ============================================
         builder.Services.AddSingleton<AppShell>();
 
-        // ============================================
-        // SUPABASE (SIN BLOQUEAR)
-        // ============================================
+
         var supabaseUrl = "https://vnasklmkkamytgwymzih.supabase.co";
         var supabaseKey = "sb_publishable_z8qlsYsGV7mYU4iJGGu8NA_fljnaFtq";
 
         var options = new SupabaseOptions();
         var client = new Client(supabaseUrl, supabaseKey, options);
 
-        // NO usar .Wait() — dejamos que se inicialice en segundo plano
         _ = client.InitializeAsync();
 
         builder.Services.AddSingleton(client);
@@ -51,7 +45,6 @@ public static class MauiProgram
 
         builder.Services.AddSingleton(client);
 
-        // --- REGISTRO DE MONGODB EN EL CONTENEDOR DE DEPENDENCIAS ---
         builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(MongoDbSettings.ConnectionString));
 
         builder.Services.AddSingleton<IMongoDatabase>(sp =>
@@ -60,7 +53,6 @@ public static class MauiProgram
             return mongoClient.GetDatabase(MongoDbSettings.DatabaseName);
         });
 
-        // --- SERVICIOS ---
         builder.Services.AddSingleton<MongoService>();
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<UsuarioService>();
@@ -71,32 +63,26 @@ public static class MauiProgram
         builder.Services.AddSingleton<SuscripcionService>();
         builder.Services.AddSingleton<EmailJSService>();
 
-        // ============================================
-        // VIEWMODELS
-        // ============================================
-        builder.Services.AddTransient<Cita_UsuarioViewModel>();
-        // --- VIEW MODELS ---
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<CitasClienteViewModel>();
         builder.Services.AddTransient<UsuarioBasicoViewModel>();
         builder.Services.AddTransient<RegistroUsuariosViewModel>();
-        builder.Services.AddTransient<Cita_clienteViewModel>();
         builder.Services.AddTransient<SeleccionarCitaViewModel>();
         builder.Services.AddTransient<RecuperarContrasenaViewModel>();
         builder.Services.AddTransient<ListaTrabjadoresViewModel>();
         builder.Services.AddTransient<NuevoTrabajadorViewModel>();
         builder.Services.AddTransient<EditarPerfilViewModel>();
         builder.Services.AddTransient<PagoSuscripcionViewModel>();
+        builder.Services.AddTransient<CrearResenaViewModel>();
+        builder.Services.AddTransient<CentroReseñasViewModel>();
         builder.Services.AddTransient<RecuperarContrasenaViewModel>();
 
-        // ============================================
-        // PAGES
-        // ============================================
-        // --- PÁGINAS ---
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<Cita_ClientePage>();
         builder.Services.AddTransient<Cita_UsuarioPage>();
+        builder.Services.AddTransient<CentroCalificaciones>();
         builder.Services.AddTransient<LoginPage>();
+        builder.Services.AddTransient<CrearResena>();
         builder.Services.AddTransient<RegistroUsuarioBasico>();
         builder.Services.AddTransient<RegistroUsuariosPage>();
         builder.Services.AddTransient<NuevoTrabajador>();

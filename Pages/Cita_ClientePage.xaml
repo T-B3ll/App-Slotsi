@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:slotsi_citas.ViewModels"
+             xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
              xmlns:models="clr-namespace:slotsi_citas.Models"
              x:Class="slotsi_citas.Pages.Cita_ClientePage"
-             x:DataType="vm:Cita_clienteViewModel"
+             x:DataType="vm:CitasClienteViewModel"
              BackgroundColor="#FFFFFF"
              NavigationPage.HasNavigationBar="False"
              Title="Citas de Clientes">
 
-    <ContentPage.BindingContext>
-        <vm:Cita_clienteViewModel />
-    </ContentPage.BindingContext>
 
     <Grid RowDefinitions="Auto,*,Auto">
 
-        <!-- Encabezado Azul Moderno -->
+    
         <VerticalStackLayout Grid.Row="0" 
                            BackgroundColor="#2563EB" 
                            Padding="16,20,16,16" 
@@ -102,8 +99,8 @@
                                     Padding="15,12"
                                     IsVisible="{Binding EsDisponible}">
                                 <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:Cita_clienteViewModel}}, Path=AgendarCitaClienteCommand}" 
-                                                          CommandParameter="{Binding .}"/>
+                                    <TapGestureRecognizer Command= "{Binding Source={RelativeSource AncestorType={x:Type vm:CitasClienteViewModel}}, Path=AgendarCitaClienteCommand}" 
+                                                          CommandParameter= "{Binding}"/>
                                 </Border.GestureRecognizers>
                                 <Label Text="Agendar cita" 
                                        TextColor="#2563EB" 

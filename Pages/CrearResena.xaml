@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
+             x:Class="slotsi_citas.Pages.CrearResena"
+             Title="Escribir Reseña"
+             BackgroundColor="#F8FAFC">
+
+    <ScrollView Padding="16">
+        <VerticalStackLayout Spacing="16">
+
+            <Label Text="Selecciona la cita que deseas calificar" FontAttributes="Bold" FontSize="15" TextColor="#1F2937"/>
+
+            <CollectionView ItemsSource="{Binding CitasElegibles}" HeightRequest="130">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="10"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="vm:CitaElegibleModel">
+                        <Border Stroke="{Binding ColorBordeCard}" 
+                                StrokeThickness="{Binding GrosorBorde}" 
+                                BackgroundColor="#FFFFFF" 
+                                Padding="12" 
+                                WidthRequest="220">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CrearResenaViewModel}}, Path=SeleccionarCitaCommand}"
+                                                      CommandParameter="{Binding .}"/>
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout Spacing="4" VerticalOptions="Center">
+                                <Label Text="{Binding NombreNegocio}" FontAttributes="Bold" FontSize="13" TextColor="#0F172A"/>
+                                <Label Text="{Binding ServicioNombre}" FontSize="12" TextColor="#2563EB" FontAttributes="Bold"/>
+                                <Label Text="{Binding FechaTexto}" FontSize="11" TextColor="#64748B"/>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+                <CollectionView.EmptyView>
+                    <Label Text="No tienes citas finalizadas en el último mes disponibles para reseñar." TextColor="#9CA3AF" FontSize="12" HorizontalOptions="Center"/>
+                </CollectionView.EmptyView>
+            </CollectionView>
+
+            <Border BackgroundColor="#FFFFFF" Stroke="#E2E8F0" StrokeThickness="1" Padding="14" IsVisible="{Binding TieneCitaSeleccionada}">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Evaluando atención en:" FontSize="11" TextColor="#64748B"/>
+                    <Label Text="{Binding CitaSeleccionada.NombreNegocio}" FontAttributes="Bold" FontSize="16" TextColor="#1E3A8A"/>
+                    <Label Text="{Binding CitaSeleccionada.ServicioNombre, StringFormat='Servicio: {0}'}" FontSize="13" TextColor="#334155"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Margin="0,10">
+                <Label Text="¿Cómo fue tu experiencia?" FontSize="14" FontAttributes="Bold" TextColor="#1E293B" HorizontalOptions="Center"/>
+                <Label Text="{Binding EstrellasSeleccionadas}" FontSize="32" TextColor="#FFB300" HorizontalOptions="Center"/>
+
+                <HorizontalStackLayout Spacing="8" HorizontalOptions="Center">
+                    <Button Text="1" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#EFF6FF" TextColor="#2563EB" Command="{Binding CambiarPuntuacionCommand}" CommandParameter="1"/>
+                    <Button Text="2" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#EFF6FF" TextColor="#2563EB" Command="{Binding CambiarPuntuacionCommand}" CommandParameter="2"/>
+                    <Button Text="3" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#EFF6FF" TextColor="#2563EB" Command="{Binding CambiarPuntuacionCommand}" CommandParameter="3"/>
+                    <Button Text="4" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#EFF6FF" TextColor="#2563EB" Command="{Binding CambiarPuntuacionCommand}" CommandParameter="4"/>
+                    <Button Text="5" WidthRequest="40" HeightRequest="40" CornerRadius="20" BackgroundColor="#EFF6FF" TextColor="#2563EB" Command="{Binding CambiarPuntuacionCommand}" CommandParameter="5"/>
+                </HorizontalStackLayout>
+            </VerticalStackLayout>
+
+            <Editor Placeholder="Deja un comentario sobre tu experiencia.." PlaceholderColor="#9CA3AF" 
+                    Text="{Binding Comentario}" 
+                    HeightRequest="100" BackgroundColor="White" TextColor="#0F172A"/>
+
+            <Button Text="Guardar Reseña"
+                    Command="{Binding GuardarResenaCommand}"
+                    BackgroundColor="#2563EB" TextColor="White" FontAttributes="Bold" CornerRadius="10" HeightRequest="50"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

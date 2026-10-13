@@ -38,14 +38,12 @@ namespace slotsi_citas.ViewModel
         public ICommand CambiarAFechaDeHoyCommand { get; }
         public ICommand AgendarCitaClienteCommand { get; }
 
-        // Constructor con Inyección de Dependencias
         public CitasClienteViewModel(MongoService mongoService)
         {
             _mongoService = mongoService;
 
             _fechaSeleccionada = DateTime.Today;
 
-            // Navegación por días de la semana
             SemanaAnteriorCommand = new Command(() => FechaSeleccionada = FechaSeleccionada.AddDays(-1));
             SemanaSiguienteCommand = new Command(() => FechaSeleccionada = FechaSeleccionada.AddDays(1));
             CambiarAFechaDeHoyCommand = new Command(() => FechaSeleccionada = DateTime.Today);
@@ -55,7 +53,6 @@ namespace slotsi_citas.ViewModel
             _ = CargarRangosHorariosAsync();
         }
 
-        // Constructor por defecto como respaldo para el generador XAML
         public CitasClienteViewModel() : this(new MongoService())
         {
         }
@@ -64,7 +61,6 @@ namespace slotsi_citas.ViewModel
         {
             RangosHorarios.Clear();
 
-            // Consulta directa a MongoDB Atlas
             var citasDelDia = _mongoService != null
                 ? await _mongoService.ObtenerCitasPorFechaAsync(FechaSeleccionada)
                 : new List<Citas>();
@@ -77,7 +73,6 @@ namespace slotsi_citas.ViewModel
                 var inicioBloque = FechaSeleccionada.Date.Add(hora);
                 var finBloque = inicioBloque.AddHours(1);
 
-                // Evalúa la intersección entre los bloques de la agenda y las citas registradas en la BD
                 var citaOcupada = citasDelDia.FirstOrDefault(c => c.FechaHoraInicio < finBloque && c.FechaHoraFin > inicioBloque);
 
                 bool esHorarioDescanso = (hora.Hours == 13); // 1:00 PM
@@ -113,7 +108,6 @@ namespace slotsi_citas.ViewModel
                 return;
             }
 
-            // Guardar datos en la sesión global antes de cambiar de vista
             CitaSession.HorarioSeleccionado = rango;
             CitaSession.FechaSeleccionada = FechaSeleccionada;
 

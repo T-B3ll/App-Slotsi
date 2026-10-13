@@ -7,14 +7,14 @@ namespace slotsi_citas.Pages;
 
 public partial class Cita_UsuarioPage : ContentPage
 {
-    private Cita_UsuarioViewModel? ViewModel => BindingContext as Cita_UsuarioViewModel;
+    private CitasClienteViewModel? ViewModel => BindingContext as CitasClienteViewModel ;
 
     public Cita_UsuarioPage()
     {
         InitializeComponent();
     }
 
-    public Cita_UsuarioPage(Cita_UsuarioViewModel viewModel) : this()
+    public Cita_UsuarioPage(CitasClienteViewModel viewModel) : this()
     {
         BindingContext = viewModel;
     }
@@ -22,7 +22,7 @@ public partial class Cita_UsuarioPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        ViewModel?.CargarCitasUsuario();
+       
     }
 
     private void OnSemanaAnteriorClicked(object sender, EventArgs e)
