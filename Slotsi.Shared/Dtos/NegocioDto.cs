@@ -13,6 +13,7 @@ public class NegocioDto
     [Required]
     [StringLength(150)]
     public string NombreNegocio { get; set; } = string.Empty;
+    public string UrlDocumentoTitulo { get; set; } = string.Empty;
 
     [Required]
     public string UsuarioId { get; set; } = string.Empty;
