@@ -5,10 +5,6 @@ VisualStudioVersion = 17.14.37628.2 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "slotsi-citas", "slotsi-citas.csproj", "{F546C7D8-4901-7716-C51E-58BFF5FD3A77}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slotsi.Api", "Slotsi.Api\Slotsi.Api.csproj", "{5CC2FC7E-16E9-447C-8092-F6E6FA3C092C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slotsi.Shared", "Slotsi.Shared\Slotsi.Shared.csproj", "{AAA1C3AA-7F56-4F1C-BBB5-DE3145F8AF01}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,19 +16,11 @@ Global
 		{F546C7D8-4901-7716-C51E-58BFF5FD3A77}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{F546C7D8-4901-7716-C51E-58BFF5FD3A77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F546C7D8-4901-7716-C51E-58BFF5FD3A77}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5CC2FC7E-16E9-447C-8092-F6E6FA3C092C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5CC2FC7E-16E9-447C-8092-F6E6FA3C092C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5CC2FC7E-16E9-447C-8092-F6E6FA3C092C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5CC2FC7E-16E9-447C-8092-F6E6FA3C092C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AAA1C3AA-7F56-4F1C-BBB5-DE3145F8AF01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AAA1C3AA-7F56-4F1C-BBB5-DE3145F8AF01}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AAA1C3AA-7F56-4F1C-BBB5-DE3145F8AF01}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AAA1C3AA-7F56-4F1C-BBB5-DE3145F8AF01}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {47682D92-ED2F-47F2-A1A2-D08D65FC1590}
+		SolutionGuid = {99AACAA6-E338-4A36-9C1E-271AF0810207}
 	EndGlobalSection
 EndGlobal

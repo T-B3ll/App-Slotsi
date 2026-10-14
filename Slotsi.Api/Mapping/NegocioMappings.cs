@@ -17,7 +17,6 @@ public static class NegocioMappings
         UrlFotoPerfil = entity.UrlFotoPerfil,
         Categoria = entity.Categoria,
         FechaRegistro = entity.FechaRegistro,
-    
         Horarios = entity.Horarios.ToDictionary(
             h => h.Key,
             h => new HorarioDiaDto { Apertura = h.Value.Apertura, Cierre = h.Value.Cierre, Pausas = h.Value.Pausas }

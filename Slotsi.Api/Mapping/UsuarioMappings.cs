@@ -5,7 +5,6 @@ namespace Slotsi.Api.Mapping;
 
 public static class UsuarioMappings
 {
-
     public static UsuarioDto ToDto(this UsuarioEntity entity) => new()
     {
         Id = entity.Id,
@@ -15,10 +14,8 @@ public static class UsuarioMappings
         Cedula = entity.Cedula,
         TipoUsuario = entity.TipoUsuario,
         EstaActivo = entity.EstaActivo
-      
     };
 
-   
     public static UsuarioEntity ToEntity(this UsuarioDto dto, string? id = null) => new()
     {
         Id = id,

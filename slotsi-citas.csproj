@@ -61,6 +61,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <AndroidResource Remove="Slotsi.Api\**" />
+	  <AndroidResource Remove="Slotsi.Shared\**" />
+	  <Compile Remove="Slotsi.Api\**" />
+	  <Compile Remove="Slotsi.Shared\**" />
+	  <EmbeddedResource Remove="Slotsi.Api\**" />
+	  <EmbeddedResource Remove="Slotsi.Shared\**" />
+	  <MauiCss Remove="Slotsi.Api\**" />
+	  <MauiCss Remove="Slotsi.Shared\**" />
+	  <MauiXaml Remove="Slotsi.Api\**" />
+	  <MauiXaml Remove="Slotsi.Shared\**" />
+	  <None Remove="Slotsi.Api\**" />
+	  <None Remove="Slotsi.Shared\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.Maui.Controls" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="9.0.0" />
 		<PackageReference Include="MongoDB.Bson" Version="3.11.1" />
