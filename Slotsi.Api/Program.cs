@@ -12,7 +12,6 @@ builder.Services.AddOptions<MongoDbSettings>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
-// 2. CLIENTE MONGODB SINGLETON
 builder.Services.AddSingleton<IMongoClient>(sp =>
 {
     var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
