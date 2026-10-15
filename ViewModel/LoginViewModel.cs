@@ -94,10 +94,10 @@ namespace slotsi_citas.ViewModel
 
             try
             {
-                // 1. Intento por correo exacto
+       
                 usuario = await _usuarioService.ObtenerPorCorreoAsync(textoLimpio);
 
-                // 2. Si falla, intento por nombre/identificador
+               
                 if (usuario == null)
                 {
                     System.Diagnostics.Debug.WriteLine($"⚠️ [LOGIN] No por correo. Buscando por nombre...");
@@ -120,7 +120,7 @@ namespace slotsi_citas.ViewModel
 
             System.Diagnostics.Debug.WriteLine($"✅ [LOGIN] Encontrado: {usuario.NombreCompleto} (Tipo: {usuario.TipoUsuario})");
 
-            // Validación de contraseña
+           
             string passwordEncriptada = EncriptarPassword(password);
             System.Diagnostics.Debug.WriteLine($"🔐 [LOGIN] Hash App: '{passwordEncriptada}'");
             System.Diagnostics.Debug.WriteLine($"💾 [LOGIN] Hash BD:   '{usuario.Contrasena}'");
@@ -137,7 +137,7 @@ namespace slotsi_citas.ViewModel
 
             System.Diagnostics.Debug.WriteLine($"🎉 [LOGIN] ¡ÉXITO! Guardando sesión...");
 
-            // Guardar preferencias
+           
             string idUsuarioString = usuario.Id?.ToString() ?? "";
             Preferences.Set("UsuarioId", idUsuarioString);
             Preferences.Set("UsuarioIdSesion", idUsuarioString);

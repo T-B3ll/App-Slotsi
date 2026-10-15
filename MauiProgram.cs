@@ -39,7 +39,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<SupabaseStorageService>();
 
-        // --- SERVICIOS HTTP (API) - ¡SOLO ESTOS DOS! ---
+        // --- SERVICIOS HTTP (API)
         builder.Services.AddHttpClient<UsuarioService>(c =>
             c.BaseAddress = ApiConfiguracion.UrlBase);
 
