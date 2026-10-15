@@ -1,4 +1,6 @@
-﻿using Slotsi.Shared.Dtos;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using Slotsi.Shared.Dtos;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -19,7 +21,6 @@ public class ObjectIdToStringConverter : JsonConverter<string>
         return reader.GetString() ?? string.Empty;
     }
 
-
     public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
     {
         writer.WriteStringValue(value);
@@ -28,7 +29,8 @@ public class ObjectIdToStringConverter : JsonConverter<string>
 
 public class Negocio
 {
-    
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
     [JsonConverter(typeof(ObjectIdToStringConverter))]
     public string Id { get; set; } = string.Empty;
 
@@ -41,6 +43,7 @@ public class Negocio
     public string NombreNegocio { get; set; } = string.Empty;
 
     [Required]
+    [BsonRepresentation(BsonType.ObjectId)]
     public string UsuarioId { get; set; } = string.Empty;
 
     [StringLength(20)]
@@ -63,8 +66,14 @@ public class Negocio
 
     public class HorarioDia
     {
+        
+        [BsonElement("a")]
         public string Apertura { get; set; } = "";
+
+        [BsonElement("c")]
         public string Cierre { get; set; } = "";
+
+        [BsonElement("p")]
         public List<string> Pausas { get; set; } = new();
     }
 

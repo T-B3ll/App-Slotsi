@@ -24,11 +24,11 @@ public class NegociosController : ControllerBase
     {
         var entidades = await _negocios.ObtenerTodosAsync(ct);
 
-        // MAPEO EXPLÍCITO INLINE PARA GARANTIZAR .ToString()
+       
         var dtos = entidades.Select(e => new NegocioDto
         {
-            Id = e.Id?.ToString(),            
-            UsuarioId = e.UsuarioId?.ToString(), 
+            Id = e.Id.ToString(),
+            UsuarioId = e.UsuarioId.ToString(),
             Nombre = e.Nombre,
             NombreNegocio = e.NombreNegocio,
             UrlDocumentoTitulo = e.UrlDocumentoTitulo ?? string.Empty,

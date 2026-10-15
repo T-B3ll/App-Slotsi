@@ -1,11 +1,17 @@
-﻿using Slotsi.Shared.Dtos;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using Slotsi.Shared.Dtos;
 using System.ComponentModel.DataAnnotations;
 
 namespace slotsi_citas.Models;
 
 public class Usuario
 {
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; }
+
+
 
     [Required]
     [StringLength(150)]
