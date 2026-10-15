@@ -94,7 +94,6 @@ namespace slotsi_citas.ViewModel
             Preferences.Set("EsDuenoNegocio", usuario.TipoUsuario);
             Preferences.Set("UsuarioCorreo", usuario.Correo);
 
-            // CAMBIO SEGURO DE PÁGINA PRINCIPAL EN EL HILO DE INTERFAZ (UI THREAD)
             MainThread.BeginInvokeOnMainThread(async () =>
             {
                 Application.Current.MainPage = new AppShell();

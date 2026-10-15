@@ -30,7 +30,8 @@
                                                       CommandParameter="{Binding .}"/>
                             </Border.GestureRecognizers>
                             <VerticalStackLayout Spacing="4" VerticalOptions="Center">
-                                <Label Text="{Binding NombreNegocio}" FontAttributes="Bold" FontSize="13" TextColor="#0F172A"/>
+                                
+                                <Label Text="{Binding TituloCard}" FontAttributes="Bold" FontSize="13" TextColor="#0F172A"/>
                                 <Label Text="{Binding ServicioNombre}" FontSize="12" TextColor="#2563EB" FontAttributes="Bold"/>
                                 <Label Text="{Binding FechaTexto}" FontSize="11" TextColor="#64748B"/>
                             </VerticalStackLayout>
@@ -41,14 +42,13 @@
                     <Label Text="No tienes citas finalizadas en el último mes disponibles para reseñar." TextColor="#9CA3AF" FontSize="12" HorizontalOptions="Center"/>
                 </CollectionView.EmptyView>
             </CollectionView>
-
             <Border BackgroundColor="#FFFFFF" Stroke="#E2E8F0" StrokeThickness="1" Padding="14" IsVisible="{Binding TieneCitaSeleccionada}">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="12"/>
                 </Border.StrokeShape>
                 <VerticalStackLayout Spacing="6">
-                    <Label Text="Evaluando atención en:" FontSize="11" TextColor="#64748B"/>
-                    <Label Text="{Binding CitaSeleccionada.NombreNegocio}" FontAttributes="Bold" FontSize="16" TextColor="#1E3A8A"/>
+                    <Label Text="{Binding CitaSeleccionada.TextoEvaluacionResumen}" FontSize="11" TextColor="#64748B"/>
+                    <Label Text="{Binding CitaSeleccionada.NombreEvaluadoResumen}" FontAttributes="Bold" FontSize="16" TextColor="#1E3A8A"/>
                     <Label Text="{Binding CitaSeleccionada.ServicioNombre, StringFormat='Servicio: {0}'}" FontSize="13" TextColor="#334155"/>
                 </VerticalStackLayout>
             </Border>
