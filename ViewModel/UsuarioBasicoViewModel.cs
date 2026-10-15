@@ -103,25 +103,31 @@ namespace slotsi_citas.ViewModel
                         return;
                     }
 
-                
                     string passwordEncriptada = EncriptarPassword(Contrasena);
 
-                    await _usuarioService.CrearAsync(new Usuario
+                    System.Diagnostics.Debug.WriteLine($"[REGISTRO] Hash generado: {passwordEncriptada}");
+
+                    var nuevoUsuario = new Usuario
                     {
                         NombreCompleto = NombreCompleto.Trim(),
                         Correo = Correo.Trim().ToLower(),
                         Telefono = Telefono.Trim(),
                         Cedula = Cedula.Trim(),
-                        Contrasena = passwordEncriptada, 
+                        Contrasena = passwordEncriptada,
                         TipoUsuario = false,
                         EstaActivo = true
-                    });
+                    };
+
+                    System.Diagnostics.Debug.WriteLine($"[REGISTRO] Objeto Usuario.Contrasena antes de enviar: {nuevoUsuario.Contrasena}");
+
+                    await _usuarioService.CrearAsync(nuevoUsuario);
 
                     await Application.Current.MainPage.DisplayAlert("Éxito", "Usuario creado correctamente.", "OK");
                     await Application.Current.MainPage.Navigation.PopAsync();
                 }
                 catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.WriteLine($"[REGISTRO] Error: {ex.Message}");
                     await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
                 }
                 finally

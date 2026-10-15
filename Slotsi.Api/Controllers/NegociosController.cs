@@ -23,13 +23,42 @@ public class NegociosController : ControllerBase
     public async Task<ActionResult<List<NegocioDto>>> Listar(CancellationToken ct)
     {
         var entidades = await _negocios.ObtenerTodosAsync(ct);
-        return Ok(entidades.Select(e => e.ToDto()).ToList());
+
+        // MAPEO EXPLÍCITO INLINE PARA GARANTIZAR .ToString()
+        var dtos = entidades.Select(e => new NegocioDto
+        {
+            Id = e.Id?.ToString(),            
+            UsuarioId = e.UsuarioId?.ToString(), 
+            Nombre = e.Nombre,
+            NombreNegocio = e.NombreNegocio,
+            UrlDocumentoTitulo = e.UrlDocumentoTitulo ?? string.Empty,
+            NumeroRuc = e.NumeroRuc,
+            DireccionNegocio = e.DireccionNegocio,
+            TipoServicio = e.TipoServicio,
+            UrlFotoPerfil = e.UrlFotoPerfil,
+            Categoria = e.Categoria,
+            FechaRegistro = e.FechaRegistro,
+            Horarios = e.Horarios?.ToDictionary(
+                h => h.Key,
+                h => new HorarioDiaDto
+                {
+                    Apertura = h.Value.Apertura,
+                    Cierre = h.Value.Cierre,
+                    Pausas = h.Value.Pausas
+                }
+            ) ?? new Dictionary<string, HorarioDiaDto>(),
+            DiasCerrados = e.DiasCerrados ?? new List<string>()
+        }).ToList();
+
+        return Ok(dtos);
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(NegocioDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+
+
     public async Task<ActionResult<NegocioDto>> ObtenerPorId(string id, CancellationToken ct)
     {
         if (!IdValidator.EsValido(id)) return IdInvalido();

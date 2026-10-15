@@ -86,6 +86,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="Slotsi.Shared\Slotsi.Shared.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <Compile Update="Pages\catalogocliente.xaml.cs">
 	    <DependentUpon>CatalogoCliente.xaml</DependentUpon>
 	  </Compile>
@@ -143,11 +147,6 @@
 	 <MauiXaml Update="Pages\Servicios a domicilio.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="Slotsi.Api\Slotsi.Api.csproj" />
-	  <ProjectReference Include="Slotsi.Shared\Slotsi.Shared.csproj" />
 	</ItemGroup>
 		
 

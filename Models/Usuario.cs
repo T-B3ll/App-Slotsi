@@ -40,6 +40,7 @@ public class Usuario
         Correo = dto.Correo,
         Telefono = dto.Telefono,
         Cedula = dto.Cedula,
+        Contrasena = dto.Contrasena,
         TipoUsuario = dto.TipoUsuario,
         EstaActivo = dto.EstaActivo
       
@@ -53,6 +54,7 @@ public class Usuario
         Correo = Correo,
         Telefono = Telefono,
         Cedula = Cedula,
+        Contrasena = Contrasena,
         TipoUsuario = TipoUsuario,
         EstaActivo = EstaActivo
         

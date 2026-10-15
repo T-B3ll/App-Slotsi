@@ -2,7 +2,7 @@
 using Slotsi.Api.Infrastructure;
 using Slotsi.Api.Mapping;
 using Slotsi.Api.Repositories;
-using Slotsi.Shared.Dtos; 
+using Slotsi.Shared.Dtos;
 
 namespace Slotsi.Api.Controllers;
 
@@ -26,6 +26,32 @@ public class UsuariosController : ControllerBase
         return Ok(entidades.Select(e => e.ToDto()).ToList());
     }
 
+
+    [HttpGet("correo/{correo}")]
+    [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<UsuarioDto>> ObtenerPorCorreo(string correo, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(correo))
+            return BadRequest(new ProblemDetails { Detail = "El correo no puede estar vacío." });
+
+        var entidad = await _usuarios.ObtenerPorCorreoAsync(correo.ToLower().Trim(), ct);
+        return entidad is null ? NotFound() : Ok(entidad.ToDto());
+    }
+
+    [HttpGet("buscar/{identificador}")]
+    [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<UsuarioDto>> BuscarPorIdentificador(string identificador, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(identificador))
+            return BadRequest(new ProblemDetails { Detail = "El identificador no puede estar vacío." });
+
+        var entidad = await _usuarios.BuscarPorTextoAsync(identificador.Trim(), ct);
+        return entidad is null ? NotFound() : Ok(entidad.ToDto());
+    }
+
+   
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -43,12 +69,19 @@ public class UsuariosController : ControllerBase
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UsuarioDto>> Crear(UsuarioDto dto, CancellationToken ct)
     {
-        var entidad = dto.ToEntity(); 
+        System.Diagnostics.Debug.WriteLine($"[API-CREAR] DTO recibido - Contrasena: '{dto.Contrasena}'");
+        System.Diagnostics.Debug.WriteLine($"[API-CREAR] DTO recibido - Nombre: '{dto.NombreCompleto}'");
+
+        var entidad = dto.ToEntity();
+
+        System.Diagnostics.Debug.WriteLine($"[API-CREAR] Entity después de mapeo - Contrasena: '{entidad.Contrasena}'");
+
         await _usuarios.CrearAsync(entidad, ct);
 
         var creada = entidad.ToDto();
         return CreatedAtAction(nameof(ObtenerPorId), new { id = creada.Id }, creada);
     }
+
 
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -62,6 +95,7 @@ public class UsuariosController : ControllerBase
         return existe ? NoContent() : NotFound();
     }
 
+   
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]

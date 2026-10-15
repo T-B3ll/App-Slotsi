@@ -32,6 +32,9 @@ public class NegocioEntity
     [BsonElement("UrlFotoPerfil")]
     public string UrlFotoPerfil { get; set; } = string.Empty;
 
+    [BsonElement("UrlDocumentoTitulo")]
+    public string UrlDocumentoTitulo { get; set; } = string.Empty;
+
     [BsonElement("Categoria")]
     public string Categoria { get; set; } = string.Empty;
 

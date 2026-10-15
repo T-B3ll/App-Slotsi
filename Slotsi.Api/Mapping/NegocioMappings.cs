@@ -7,22 +7,36 @@ public static class NegocioMappings
 {
     public static NegocioDto ToDto(this NegocioEntity entity) => new()
     {
-        Id = entity.Id,
+      
+        Id = entity.Id?.ToString(),
+
         Nombre = entity.Nombre,
         NombreNegocio = entity.NombreNegocio,
-        UsuarioId = entity.UsuarioId,
+
+       
+        UsuarioId = entity.UsuarioId?.ToString(),
+
         NumeroRuc = entity.NumeroRuc,
         DireccionNegocio = entity.DireccionNegocio,
         TipoServicio = entity.TipoServicio,
         UrlFotoPerfil = entity.UrlFotoPerfil,
+        UrlDocumentoTitulo = entity.UrlDocumentoTitulo,
         Categoria = entity.Categoria,
         FechaRegistro = entity.FechaRegistro,
-        Horarios = entity.Horarios.ToDictionary(
-            h => h.Key,
-            h => new HorarioDiaDto { Apertura = h.Value.Apertura, Cierre = h.Value.Cierre, Pausas = h.Value.Pausas }
-        ),
-        DiasCerrados = entity.DiasCerrados
+
+        Horarios = entity.Horarios?.ToDictionary(
+              h => h.Key,
+              h => new HorarioDiaDto
+              {
+                  Apertura = h.Value.Apertura,
+                  Cierre = h.Value.Cierre,
+                  Pausas = h.Value.Pausas
+              }
+          ) ?? new Dictionary<string, HorarioDiaDto>(),
+
+        DiasCerrados = entity.DiasCerrados ?? new List<string>()
     };
+
 
     public static NegocioEntity ToEntity(this NegocioDto dto, string? id = null) => new()
     {

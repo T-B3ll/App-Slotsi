@@ -95,8 +95,7 @@ public partial class NuevaContra : ContentPage
 
         try
         {
-            var usuarioService = new UsuarioService();
-            var recuperacionService = new RecuperacionService();
+            var usuarioService = Application.Current.Handler.MauiContext.Services.GetRequiredService<UsuarioService>(); var recuperacionService = new RecuperacionService();
 
             var usuario = await usuarioService.ObtenerPorCorreoAsync(_correoUsuario);
 

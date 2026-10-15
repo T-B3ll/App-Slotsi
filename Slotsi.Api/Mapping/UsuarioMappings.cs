@@ -12,6 +12,7 @@ public static class UsuarioMappings
         Correo = entity.Correo,
         Telefono = entity.Telefono,
         Cedula = entity.Cedula,
+        Contrasena = entity.Contrasena,
         TipoUsuario = entity.TipoUsuario,
         EstaActivo = entity.EstaActivo
     };
@@ -23,7 +24,7 @@ public static class UsuarioMappings
         Correo = dto.Correo.Trim().ToLower(),
         Telefono = dto.Telefono.Trim(),
         Cedula = dto.Cedula.Trim(),
-        Contrasena = "",
+        Contrasena = dto.Contrasena,
         TipoUsuario = dto.TipoUsuario,
         EstaActivo = dto.EstaActivo
     };

@@ -21,8 +21,10 @@ public class UsuarioDto
 
     [StringLength(20)]
     public string Cedula { get; set; } = string.Empty;
+    [StringLength(100)]
+    public string Contrasena { get; set; } = string.Empty;
 
-   
+
     public bool TipoUsuario { get; set; } = false;
     public bool EstaActivo { get; set; } = true;
 }   

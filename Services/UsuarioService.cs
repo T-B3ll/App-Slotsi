@@ -1,106 +1,90 @@
-﻿using MongoDB.Driver;
+﻿using Slotsi.Shared.Dtos;
 using slotsi_citas.Models;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using slotsi_citas.Services.Api;
+using Slotsi.Shared.Dtos;
+using System.Net;
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace slotsi_citas.Services
+namespace slotsi_citas.Services;
+
+public class UsuarioService : ApiServiceBase
 {
-    public class UsuarioService
-    {
 
- 
-        private readonly IMongoCollection<Usuario> _usuarios;
-
-
+    public UsuarioService(HttpClient http) : base(http) { }
 
    
-      public UsuarioService()
+    public async Task<Usuario?> ObtenerPorIdentificadorAsync(string identificador)
+    {
+        try
         {
-            var cadena = MongoDbSettings.ConnectionString;
-
-            System.Diagnostics.Debug.WriteLine($"=== DEBUG INICIO ===");
-            System.Diagnostics.Debug.WriteLine($"Cadena leída: '{cadena}'");
-            System.Diagnostics.Debug.WriteLine($"Es nula o vacía: {string.IsNullOrEmpty(cadena)}");
-            System.Diagnostics.Debug.WriteLine($"Longitud: {cadena?.Length ?? 0}");
-            System.Diagnostics.Debug.WriteLine($"=== DEBUG FIN ===");
-
-
-            if (string.IsNullOrWhiteSpace(cadena))
-            {
-                throw new InvalidOperationException(
-                    "ERROR CRÍTICO: La cadena de conexión está VACÍA. " +
-                    "Revisa MongoDbSettings.cs y asegúrate de que ConnectionString tenga valor.");
-            }
-
-
-            try
-            {
-                var client = new MongoClient(cadena);
-                var database = client.GetDatabase(MongoDbSettings.DatabaseName);
-                _usuarios = database.GetCollection<Usuario>("Usuarios");
-
-                System.Diagnostics.Debug.WriteLine("✅ Cliente MongoDB creado exitosamente");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($" Error al crear cliente: {ex.Message}");
-                throw;
-            }
+            var dto = await GetOrNullAsync<UsuarioDto>($"/api/usuarios/buscar/{Uri.EscapeDataString(identificador)}");
+            return dto != null ? Usuario.FromDto(dto) : null;
         }
-
-
-
-        public async Task<Usuario?> ObtenerPorIdentificadorAsync(string identificador)
+        catch (ApiException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
         {
-
-            var textoLimpio = identificador.Trim();
-            var patron = $".*{textoLimpio}.*";
-
-            var filtro = Builders<Usuario>.Filter.Or(
-                        Builders<Usuario>.Filter.Regex(u => u.Correo, new MongoDB.Bson.BsonRegularExpression(patron, "i")),
-                        Builders<Usuario>.Filter.Regex(u => u.NombreCompleto, new MongoDB.Bson.BsonRegularExpression(patron, "i"))
-                                  );
-
-            return await _usuarios.Find(filtro).FirstOrDefaultAsync();
+            return null;
         }
-
-        public async Task CrearAsync(Usuario usuario) =>
-            await _usuarios.InsertOneAsync(usuario);
+    }
 
 
-        public async Task<Usuario?> ObtenerPorCorreoAsync(string correo) =>
-            await _usuarios.Find(u => u.Correo == correo).FirstOrDefaultAsync();
+    public async Task CrearAsync(Usuario usuario)
+    {
+      
+        await PostAsync<UsuarioDto>("/api/usuarios", usuario.ToDto());
+    }
 
-        public async Task<List<Usuario>> ObtenerTodosAsync() =>
-            await _usuarios.Find(_ => true).ToListAsync();
 
-     
-        public async Task ActualizarAsync(Usuario usuario) =>
-            await _usuarios.ReplaceOneAsync(u => u.Id == usuario.Id, usuario);
-
-        public async Task CambiarEstadoAsync(string id, bool estaActivo)
+    public async Task<Usuario?> ObtenerPorCorreoAsync(string correo)
+    {
+        try
         {
-            var filtro = Builders<Usuario>.Filter.Eq(u => u.Id, id);
-            var actualizacion = Builders<Usuario>.Update.Set(u => u.EstaActivo, estaActivo);
-            await _usuarios.UpdateOneAsync(filtro, actualizacion);
+            var dto = await GetOrNullAsync<UsuarioDto>($"/api/usuarios/correo/{Uri.EscapeDataString(correo)}");
+            return dto != null ? Usuario.FromDto(dto) : null;
         }
-
-        public async Task ActualizarContrasenaAsync(string correo, string nuevaContrasena)
+        catch (ApiException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
         {
-            var filtro = Builders<Usuario>.Filter.Eq(u => u.Correo, correo.ToLower().Trim());
-            var update = Builders<Usuario>.Update.Set(u => u.Contrasena, nuevaContrasena);
-            await _usuarios.UpdateOneAsync(filtro, update);
+            return null;
         }
+    }
 
-        public async Task<Usuario?> ObtenerPorIdAsync(string id)
+  
+    public async Task<List<Usuario>> ObtenerTodosAsync()
+    {
+        var dtos = await GetAsync<List<UsuarioDto>>("/api/usuarios");
+        return dtos.Select(d => Usuario.FromDto(d)).ToList();
+    }
+
+   
+    public async Task ActualizarAsync(Usuario usuario)
+    {
+        await PutAsync($"/api/usuarios/{usuario.Id}", usuario.ToDto());
+    }
+
+  
+    public async Task CambiarEstadoAsync(string id, bool estaActivo)
+    {
+        await PatchAsync($"/api/usuarios/{id}/estado", new { EstaActivo = estaActivo });
+    }
+
+    
+    public async Task ActualizarContrasenaAsync(string correo, string nuevaContrasenaHash)
+    {
+        await PatchAsync($"/api/usuarios/password", new { Correo = correo, Contrasena = nuevaContrasenaHash });
+    }
+
+
+    public async Task<Usuario?> ObtenerPorIdAsync(string id)
+    {
+        try
         {
-            var filtro = Builders<Usuario>.Filter.Eq(u => u.Id, id);
-            return await _usuarios.Find(filtro).FirstOrDefaultAsync();
+            var dto = await GetOrNullAsync<UsuarioDto>($"/api/usuarios/{id}");
+            return dto != null ? Usuario.FromDto(dto) : null;
         }
-
+        catch (ApiException ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
     }
 }

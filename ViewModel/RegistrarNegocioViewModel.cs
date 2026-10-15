@@ -24,7 +24,7 @@ namespace slotsi_citas.ViewModel
         private Usuario _usuarioData = new Usuario();
         private Negocio _negocioData = new Negocio();
 
-        // ✅ NUEVA PROPIEDAD PARA LA LISTA ACUMULATIVA DE DOCUMENTOS
+  
         private ObservableCollection<string> _listaDocumentos = new ObservableCollection<string>();
         public ObservableCollection<string> ListaDocumentos
         {
@@ -32,7 +32,7 @@ namespace slotsi_citas.ViewModel
             set { _listaDocumentos = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasDocumentos)); }
         }
 
-        // ✅ PROPIEDAD AUXILIAR PARA MOSTRAR/OCULTAR MENSAJES EN EL XAML
+       
         public bool HasDocumentos => ListaDocumentos.Count > 0;
 
         public ObservableCollection<DiaHorarioUI> ListaDiasHorario { get; set; } = new ObservableCollection<DiaHorarioUI>();
@@ -41,23 +41,29 @@ namespace slotsi_citas.ViewModel
         public Command SeleccionarDocumentoCommand { get; }
         public Command RegistrarCommand { get; }
 
-        public RegistrarNegocioViewModel()
+    
+        public RegistrarNegocioViewModel(
+            SupabaseStorageService storageService,
+            NegocioService negocioService,
+            UsuarioService usuarioService)
         {
-            _storageService = new SupabaseStorageService();
-            _negocioService = new NegocioService();
-            _usuarioService = new UsuarioService();
+      
+            _storageService = storageService;
+            _negocioService = negocioService;
+            _usuarioService = usuarioService;
 
+         
             SeleccionarFotoCommand = new Command(async () => await SeleccionarFotoAsync());
             SeleccionarDocumentoCommand = new Command(async () => await SeleccionarDocumentoAsync());
             RegistrarCommand = new Command(async () => await RegistrarNegocioAsync());
 
+           
             var dias = new[] { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" };
             foreach (var dia in dias)
             {
                 ListaDiasHorario.Add(new DiaHorarioUI { NombreDia = dia });
             }
         }
-
         public string Nombre
         {
             get => _usuarioData.NombreCompleto;
@@ -133,10 +139,10 @@ namespace slotsi_citas.ViewModel
 
         private async Task RegistrarNegocioAsync()
         {
+            // Validaciones existentes...
             if (!string.IsNullOrWhiteSpace(Correo))
             {
                 var usuarioExistente = await _usuarioService.ObtenerPorCorreoAsync(Correo);
-
                 if (usuarioExistente != null)
                 {
                     await Application.Current.MainPage.DisplayAlert(
@@ -161,27 +167,38 @@ namespace slotsi_citas.ViewModel
 
             try
             {
+                System.Diagnostics.Debug.WriteLine($"🔐 [REGISTRO] Contraseña original: '{Contrasena}'");
+
                 _usuarioData.TipoUsuario = true;
                 _usuarioData.EstaActivo = true;
 
-               
+                // ✅ GENERAR HASH SHA256 DE LA CONTRASEÑA
+                string passwordHash;
                 using (var sha256 = SHA256.Create())
                 {
                     byte[] bytes = Encoding.UTF8.GetBytes(Contrasena);
                     byte[] hash = sha256.ComputeHash(bytes);
                     StringBuilder sb = new StringBuilder();
-                    for (int i = 0; i < hash.Length; i++)
+                    foreach (byte b in hash)
                     {
-                        sb.Append(hash[i].ToString("x2"));
+                        sb.Append(b.ToString("x2")); // x2 = minúsculas consistentes
                     }
-                    _usuarioData.Contrasena = sb.ToString();
+                    passwordHash = sb.ToString();
                 }
+
+                System.Diagnostics.Debug.WriteLine($"🔐 [REGISTRO] Hash generado: '{passwordHash}'");
+
+                // ✅ ASIGNAR EL HASH DIRECTAMENTE AL MODELO ANTES DE ENVIAR
+                _usuarioData.Contrasena = passwordHash;
+
+                System.Diagnostics.Debug.WriteLine($"💾 [REGISTRO] Enviando usuario con contraseña hash: '{_usuarioData.Contrasena}'");
 
                 await _usuarioService.CrearAsync(_usuarioData);
 
                 if (string.IsNullOrEmpty(_usuarioData.Id))
                     throw new Exception("Error al generar ID de usuario.");
 
+                // ... resto del código del negocio igual ...
                 _negocioData.UsuarioId = _usuarioData.Id;
                 _negocioData.FechaRegistro = DateTime.UtcNow;
 
@@ -194,10 +211,10 @@ namespace slotsi_citas.ViewModel
                 _negocioData.DiasCerrados = new List<string>();
 
                 var mapDias = new Dictionary<string, string>
-                {
-                    {"Lunes","Lun"}, {"Martes","Mar"}, {"Miércoles","Mie"},
-                    {"Jueves","Jue"}, {"Viernes","Vie"}, {"Sábado","Sab"}, {"Domingo","Dom"}
-                };
+        {
+            {"Lunes","Lun"}, {"Martes","Mar"}, {"Miércoles","Mie"},
+            {"Jueves","Jue"}, {"Viernes","Vie"}, {"Sábado","Sab"}, {"Domingo","Dom"}
+        };
 
                 foreach (var diaUI in ListaDiasHorario)
                 {
@@ -209,8 +226,8 @@ namespace slotsi_citas.ViewModel
                     {
                         var pausas = diaUI.TienePausa
                             ? new List<string> {
-                                diaUI.PausaInicio.ToString("hh\\:mm"),
-                                diaUI.PausaFin.ToString("hh\\:mm")
+                        diaUI.PausaInicio.ToString("hh\\:mm"),
+                        diaUI.PausaFin.ToString("hh\\:mm")
                               }
                             : new List<string>();
 
@@ -229,11 +246,13 @@ namespace slotsi_citas.ViewModel
 
                 await _negocioService.CrearAsync(_negocioData);
 
+                System.Diagnostics.Debug.WriteLine($"✅ [REGISTRO] Usuario y negocio creados exitosamente");
                 await Application.Current.MainPage.DisplayAlert("Éxito", "Cuenta creada correctamente", "OK");
                 await Application.Current.MainPage.Navigation.PopToRootAsync();
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"❌ [REGISTRO] Error: {ex.Message}\n{ex.StackTrace}");
                 await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
             }
         }

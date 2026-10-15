@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using Slotsi.Api.Configuration;
 using Slotsi.Api.Entities;
@@ -17,6 +18,7 @@ public class UsuarioRepository : IUsuarioRepository
             .GetCollection<UsuarioEntity>(settings.UsuariosCollection);
     }
 
+  
     public Task<List<UsuarioEntity>> ObtenerTodosAsync(CancellationToken ct = default) =>
         _usuarios.Find(_ => true).ToListAsync(ct);
 
@@ -36,5 +38,27 @@ public class UsuarioRepository : IUsuarioRepository
     {
         var resultado = await _usuarios.DeleteOneAsync(u => u.Id == id, ct);
         return resultado.DeletedCount > 0;
+    }
+
+
+    public async Task<UsuarioEntity?> ObtenerPorCorreoAsync(string correo, CancellationToken ct = default)
+    {
+       
+        var filtro = Builders<UsuarioEntity>.Filter.Eq(u => u.Correo, correo.ToLower().Trim());
+        return await _usuarios.Find(filtro).FirstOrDefaultAsync(ct);
+    }
+
+    public async Task<UsuarioEntity?> BuscarPorTextoAsync(string texto, CancellationToken ct = default)
+    {
+      
+        var patron = $".*{texto.Trim()}.*";
+        var regex = new BsonRegularExpression(patron, "i"); 
+
+        var filtro = Builders<UsuarioEntity>.Filter.Or(
+            Builders<UsuarioEntity>.Filter.Regex(u => u.Correo, regex),
+            Builders<UsuarioEntity>.Filter.Regex(u => u.NombreCompleto, regex)
+        );
+
+        return await _usuarios.Find(filtro).FirstOrDefaultAsync(ct);
     }
 }
