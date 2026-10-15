@@ -58,8 +58,6 @@ namespace slotsi_citas.Models
         [BsonElement("horario_trabajo")]
         public List<HorarioTrabajo> HorarioTrabajo { get; set; }
 
-<<<<<<< HEAD
-=======
         // --- PROPIEDADES AUXILIARES DE UI PARA SELECCIÓN ---
         private bool _esSeleccionado;
 
@@ -95,7 +93,6 @@ namespace slotsi_citas.Models
         [BsonIgnore]
         public string ColorTexto => EsSeleccionado ? "#2563EB" : "#0F172A";
 
->>>>>>> catalogos
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

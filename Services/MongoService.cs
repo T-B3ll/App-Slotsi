@@ -2,7 +2,7 @@
 using slotsi_citas.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq; // Necesario para la función .Any()
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace slotsi_citas.Services
@@ -16,19 +16,22 @@ namespace slotsi_citas.Services
             var client = new MongoClient(MongoDbSettings.ConnectionString);
             _database = client.GetDatabase(MongoDbSettings.DatabaseName);
 
-            // --- PRUEBA DE DIAGNÓSTICO DE CONEXIÓN A ATLAS ---
-            try
+            _ = Task.Run(async () =>
             {
-                _database.RunCommand<MongoDB.Bson.BsonDocument>(new MongoDB.Bson.BsonDocument("ping", 1));
-                System.Diagnostics.Debug.WriteLine(">>> [EXITO] Conexion con MongoDB Atlas establecida correctamente.");
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($">>> [ERROR FATAL DE CONEXION ATLAS]: {ex.Message}");
-            }
+                try
+                {
+                    await _database.RunCommandAsync<MongoDB.Bson.BsonDocument>(
+                        new MongoDB.Bson.BsonDocument("ping", 1));
+                    System.Diagnostics.Debug.WriteLine(">>> [EXITO] Conexion con MongoDB Atlas establecida correctamente.");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($">>> [ERROR CONEXION ATLAS]: {ex.Message}");
+                }
+            });
         }
 
-        // --- MÉTODOS DE USUARIOS ---
+
         public async Task<List<Usuario>> ObtenerUsuariosAsync()
         {
             var collection = _database.GetCollection<Usuario>("Usuarios");
@@ -47,7 +50,6 @@ namespace slotsi_citas.Services
             return result.ModifiedCount > 0;
         }
 
-        // --- MÉTODOS DE SERVICIOS ---
         public async Task<List<Servicios>> ObtenerServiciosAsync()
         {
             try
@@ -70,12 +72,11 @@ namespace slotsi_citas.Services
             }
         }
 
-        // --- MÉTODOS DE CITAS ---
+    
         public async Task<bool> GuardarCitaAsync(Citas cita)
         {
             try
             {
-                // Se reemplaza cita.Fecha y cita.Hora por cita.FechaHoraInicio
                 System.Diagnostics.Debug.WriteLine($"[MONGO] Intentando guardar cita: Fecha={cita.FechaHoraInicio:yyyy-MM-dd}, Hora={cita.FechaHoraInicio:HH:mm}, Cliente={cita.Cliente?.Nombre}");
 
                 var collection = _database.GetCollection<Citas>("Citas");
@@ -106,7 +107,6 @@ namespace slotsi_citas.Services
             }
         }
 
-        // --- CONSULTA DE CITAS FILTRADAS POR FECHA PARA EL CALENDARIO ---
         public async Task<List<Citas>> ObtenerCitasPorFechaAsync(DateTime fecha)
         {
             try

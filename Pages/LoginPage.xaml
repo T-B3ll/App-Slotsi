@@ -121,6 +121,7 @@
                  WidthRequest="134"
                  HeightRequest="4"
                  HorizontalOptions="Center"
-                 Margin="0,8,0,8"/>
+                 Margin="0,8,0,8"
+                 InputTransparent="True"/>
     </Grid>
 </ContentPage>

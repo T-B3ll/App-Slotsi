@@ -4,6 +4,7 @@ using Microsoft.Maui.Storage;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using slotsi_citas.Models;
+using slotsi_citas.Pages;
 using slotsi_citas.Services;
 using System;
 using System.Collections.Generic;
@@ -30,6 +31,9 @@ namespace slotsi_citas.ViewModel
         public ObservableCollection<CalificacionModel> ListaCalificaciones { get; set; } = new();
 
         private TipoRolUsuario _rolActual = TipoRolUsuario.Cliente;
+
+        public bool MostrarBotonCrearResena => !MostrarRecibidas;
+        public ICommand IrACrearResenaCommand { get; }
         private bool _mostrarRecibidas = true;
 
         public bool MostrarRecibidas
@@ -43,6 +47,7 @@ namespace slotsi_citas.ViewModel
                 OnPropertyChanged(nameof(ColorBotonRealizadas));
                 OnPropertyChanged(nameof(TextoBotonRecibidas));
                 OnPropertyChanged(nameof(TextoBotonRealizadas));
+                OnPropertyChanged(nameof(MostrarBotonCrearResena));
                 _ = CargarCalificacionesAsync();
             }
         }
@@ -75,13 +80,17 @@ namespace slotsi_citas.ViewModel
 
             _coleccionCalificaciones = database.GetCollection<CalificacionModel>("Calificaciones");
             _coleccionNegociosBson = database.GetCollection<BsonDocument>("Negocios");
-
+            IrACrearResenaCommand = new Command(async () => await NavegarACrearResena());
             SeleccionarPestanaCommand = new Microsoft.Maui.Controls.Command<string>((pestana) =>
             {
                 MostrarRecibidas = (pestana == "Recibidas");
             });
         }
 
+        private async Task NavegarACrearResena()
+        {
+            await Shell.Current.GoToAsync(nameof(CrearResena));
+        }
         public async Task CargarCalificacionesAsync()
         {
             try

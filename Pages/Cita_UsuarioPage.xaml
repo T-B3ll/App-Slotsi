@@ -44,7 +44,7 @@
                         HeightRequest="40"
                         Padding="0"/>
 
-                <!-- Botón Azul de Fecha Exacta con DatePicker transparente encima -->
+
                 <Grid VerticalOptions="Center">
                     <Border StrokeShape="RoundRectangle 10"
                             BackgroundColor="#2563EB"
@@ -94,7 +94,7 @@
                     VerticalOptions="Center"/>
         </Grid>
 
-        <!-- 3. Filtrado Rápido de Días de la Semana -->
+
         <CollectionView Grid.Row="2"
                         ItemsSource="{Binding FechasSemana}"
                         Margin="12,4,12,8"

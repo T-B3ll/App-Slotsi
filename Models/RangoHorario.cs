@@ -5,7 +5,7 @@ namespace slotsi_citas.Models
 {
     public class RangoHorario : BindableObject
     {
-        public string HoraDisplay { get; set; } // Ejemplo: "08:00 AM"
+        public string HoraDisplay { get; set; }
         public DateTime HoraInicio { get; set; }
         public DateTime HoraFin { get; set; }
 
@@ -13,11 +13,6 @@ namespace slotsi_citas.Models
         public bool EsOcupado { get; set; }
         public bool EsNoDisponible { get; set; }
 
-<<<<<<< HEAD
-       
-        public dynamic? Cita { get; set; }
-=======
         public Citas Cita { get; set; }
->>>>>>> catalogos
     }
 }

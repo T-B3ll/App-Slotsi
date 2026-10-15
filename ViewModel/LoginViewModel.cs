@@ -16,11 +16,11 @@ namespace slotsi_citas.ViewModel
     {
         private readonly UsuarioService _usuarioService;
         private readonly IServiceProvider _serviceProvider;
-        private string _email;
-        private string _password;
+        private string _email = string.Empty;
+        private string _password = string.Empty;
         private bool _isBusy;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public string Email
         {
@@ -40,17 +40,22 @@ namespace slotsi_citas.ViewModel
             set { _isBusy = value; OnPropertyChanged(); }
         }
 
+        // COMANDO DE INICIO DE SESIÓN
         public ICommand LoginCommand { get; }
 
         public LoginViewModel(UsuarioService usuarioService, IServiceProvider serviceProvider)
         {
             _usuarioService = usuarioService;
             _serviceProvider = serviceProvider;
+
+            // INICIALIZACIÓN OBLIGATORIA DEL COMANDO
             LoginCommand = new Command(async () => await ExecuteLogin());
         }
 
         private async Task ExecuteLogin()
         {
+            if (IsBusy) return;
+
             if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
             {
                 await Application.Current.MainPage.DisplayAlert("Error", "Ingresa correo y contraseña", "OK");
@@ -60,7 +65,7 @@ namespace slotsi_citas.ViewModel
             IsBusy = true;
             try
             {
-                await ValidarYEntrarAsync(Email, Password);
+                await ValidarYEntrarAsync(Email.Trim(), Password);
             }
             catch (Exception ex)
             {
@@ -89,19 +94,24 @@ namespace slotsi_citas.ViewModel
             Preferences.Set("EsDuenoNegocio", usuario.TipoUsuario);
             Preferences.Set("UsuarioCorreo", usuario.Correo);
 
-            Application.Current.MainPage = new AppShell();
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                Application.Current.MainPage = new AppShell();
 
-            if (!usuario.TipoUsuario)
-            {
-                await Shell.Current.GoToAsync("//dueñosnegocios");
-            }
-            else
-            {
-                await Shell.Current.GoToAsync("//ListaTrabajadores");
-            }
+                await Task.Delay(100);
+
+                if (!usuario.TipoUsuario)
+                {
+                    await Shell.Current.GoToAsync("//dueñosnegocios");
+                }
+                else
+                {
+                    await Shell.Current.GoToAsync("//ListaTrabajadores");
+                }
+            });
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        protected void OnPropertyChanged([CallerMemberName] string? name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

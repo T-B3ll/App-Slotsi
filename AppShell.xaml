@@ -9,7 +9,6 @@
     BackgroundColor="#2563EB"
     FlyoutBackgroundColor="White">
 
-<<<<<<< HEAD
     <Shell.ItemTemplate>
         <DataTemplate>
             <Grid ColumnDefinitions="44, *" HeightRequest="50" Padding="16,0">
@@ -41,57 +40,6 @@
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:Cita_ClientePage}" />
     </FlyoutItem>
-=======
-    <TabBar>
-        <!-- Pestaña 1: Registro de Usuario (AHORA ES LA PRIMERA) -->
-        <Tab Title="Registro" Icon="profile.png">
-            <ShellContent
-                Title="Registro de Usuario"
-                ContentTemplate="{DataTemplate pages:RegistroUsuariosPage}"
-                Route="RegistroUsuariosPage" />
-        </Tab>
-
-        <!-- Pestaña 2: Vista Cliente (Login primero) -->
-        <Tab Title="Vista Cliente" Icon="calendar.png">
-            <ShellContent
-                Title="Iniciar Sesión"
-                ContentTemplate="{DataTemplate pages:LoginPage}"
-                Route="LoginPage" />
-        </Tab>
-
-        <!-- Pestaña 3: Vista Barbero -->
-        <Tab Title="Vista Barbero" Icon="profile.png">
-            <ShellContent
-                Title="Citas Barbero"
-                ContentTemplate="{DataTemplate pages:Cita_UsuarioPage}"
-                Route="Cita_UsuarioPage" />
-        </Tab>
-
-        <!-- Pestaña 4: Catalogo de servicios -->
-        <Tab Title="Catalogo de servicios" Icon="profile.png">
-            <ShellContent
-                Title="Servicios disponibles"
-                ContentTemplate="{DataTemplate pages:catalogoservicios}"
-                Route="cataloservicios" />
-        </Tab>
-
-        <!-- Pestaña 5: Catalogo de cliente -->
-        <Tab Title="Catalogo de cliente" Icon="profile.png">
-            <ShellContent
-                Title="Clientes"
-                ContentTemplate="{DataTemplate pages:CatalogoCliente}"
-                Route="catalogocliente" />
-        </Tab>
-
-        <!-- Pestaña 6: Calendario Citas -->
-        <Tab Title="Calendario" Icon="calendar.png">
-            <ShellContent
-                Title="Calendario"
-                ContentTemplate="{DataTemplate pages:CalendarioPage}"
-                Route="CalendarioPage" />
-        </Tab>
-    </TabBar>
->>>>>>> catalogos
 
     <FlyoutItem Title="Citas Barbero" Route="Cita_UsuarioPage">
         <FlyoutItem.Icon>
@@ -105,13 +53,6 @@
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8EF;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:catalogoservicios}" />
-    </FlyoutItem>
-
-    <FlyoutItem Title="Catálogo de Clientes" Route="catalogocliente">
-        <FlyoutItem.Icon>
-            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7EF;" Color="#2563EB" Size="22" />
-        </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:CatalogoCliente}" />
     </FlyoutItem>
 
     <FlyoutItem Title="Registro de Usuarios" Route="RegistroUsuariosPage">

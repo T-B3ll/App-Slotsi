@@ -1,10 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System.Collections.Generic;
-<<<<<<< HEAD
-=======
 using System.Collections.ObjectModel;
->>>>>>> catalogos
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -58,8 +55,6 @@ namespace slotsi_citas.Models
             }
         }
 
-<<<<<<< HEAD
-=======
         [BsonIgnore]
         public ObservableCollection<Trabajador> ColaboradoresDelServicio { get; set; } = new();
 
@@ -82,7 +77,6 @@ namespace slotsi_citas.Models
         [BsonIgnore]
         public string ColaboradorSeleccionadoNombre => ColaboradorSeleccionado != null ? ColaboradorSeleccionado.Nombre : "Seleccionar especialista";
 
->>>>>>> catalogos
         [BsonElement("foto")]
         public string Foto { get; set; } = string.Empty;
 
@@ -95,8 +89,6 @@ namespace slotsi_citas.Models
         [BsonIgnore]
         public string ModalidadTexto => DisponibleDomicilio ? "🏠 A Domicilio" : "💈 En Local";
 
-<<<<<<< HEAD
-=======
         private bool _esSeleccionado;
 
         [BsonIgnore]
@@ -135,7 +127,6 @@ namespace slotsi_citas.Models
         [BsonIgnore]
         public string PrecioTexto => $"C$ {Precio:N2}";
 
->>>>>>> catalogos
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
