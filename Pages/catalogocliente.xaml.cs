@@ -5,6 +5,7 @@ namespace slotsi_citas.Pages;
 public partial class CatalogoCliente : ContentPage
 {
     private readonly CatalogoServiciosViewModel _vm;
+    private bool _isLoading = false;
     public CatalogoCliente()
 	{
 		InitializeComponent();

@@ -114,7 +114,7 @@ public partial class DueñosNegociosPage : ContentPage
 
             Preferences.Set("NegocioSeleccionadoId", negocioSeleccionado.Id);
 
-            await Shell.Current.GoToAsync("//catalogocliente");
+            await Shell.Current.GoToAsync(nameof(CatalogoCliente));
         }
     }
 

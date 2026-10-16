@@ -146,12 +146,12 @@ namespace slotsi_citas.ViewModel
 
             
             Application.Current.MainPage = new AppShell();
-            await Task.Delay(100); 
+   
 
-            
-            string ruta = usuario.TipoUsuario ? "//ListaTrabajadores" : "//dueñosnegocios";
 
-            System.Diagnostics.Debug.WriteLine($"🧭 [LOGIN] Navegando a: {ruta}");
+            string ruta = usuario.TipoUsuario ? "//dueñosnegocios" : "//Cita_ClientePage";
+
+            System.Diagnostics.Debug.WriteLine($" [LOGIN] Navegando a: {ruta}");
 
             try
             {
