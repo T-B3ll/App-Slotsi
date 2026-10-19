@@ -2,7 +2,7 @@
 using Slotsi.Api.Infrastructure;
 using Slotsi.Api.Mapping;
 using Slotsi.Api.Repositories;
-using Slotsi.Shared.Dtos; 
+using Slotsi.Shared.Dtos;
 
 namespace Slotsi.Api.Controllers;
 
@@ -22,43 +22,61 @@ public class NegociosController : ControllerBase
     [ProducesResponseType(typeof(List<NegocioDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<NegocioDto>>> Listar(CancellationToken ct)
     {
-        var entidades = await _negocios.ObtenerTodosAsync(ct);
-
-       
-        var dtos = entidades.Select(e => new NegocioDto
+        try
         {
-            Id = e.Id.ToString(),
-            UsuarioId = e.UsuarioId.ToString(),
-            Nombre = e.Nombre,
-            NombreNegocio = e.NombreNegocio,
-            UrlDocumentoTitulo = e.UrlDocumentoTitulo ?? string.Empty,
-            NumeroRuc = e.NumeroRuc,
-            DireccionNegocio = e.DireccionNegocio,
-            TipoServicio = e.TipoServicio,
-            UrlFotoPerfil = e.UrlFotoPerfil,
-            Categoria = e.Categoria,
-            FechaRegistro = e.FechaRegistro,
-            Horarios = e.Horarios?.ToDictionary(
-                h => h.Key,
-                h => new HorarioDiaDto
-                {
-                    Apertura = h.Value.Apertura,
-                    Cierre = h.Value.Cierre,
-                    Pausas = h.Value.Pausas
-                }
-            ) ?? new Dictionary<string, HorarioDiaDto>(),
-            DiasCerrados = e.DiasCerrados ?? new List<string>()
-        }).ToList();
+            var entidades = await _negocios.ObtenerTodosAsync(ct);
+            var dtos = entidades.Select(e => new NegocioDto
+            {
+                Id = e.Id.ToString(),
+                UsuarioId = e.UsuarioId?.ToString() ?? string.Empty,
+                Nombre = e.Nombre ?? string.Empty,
+                NombreNegocio = e.NombreNegocio ?? string.Empty,
+                UrlDocumentoTitulo = e.UrlDocumentoTitulo ?? string.Empty,
+                NumeroRuc = e.NumeroRuc ?? string.Empty,
+                DireccionNegocio = e.DireccionNegocio ?? string.Empty,
+                TipoServicio = e.TipoServicio ?? string.Empty,
+                UrlFotoPerfil = e.UrlFotoPerfil ?? string.Empty,
+                Categoria = e.Categoria ?? string.Empty,
+                FechaRegistro = e.FechaRegistro,
+                Horarios = e.Horarios?.ToDictionary(
+                    h => h.Key,
+                    h => new HorarioDiaDto
+                    {
+                        Apertura = h.Value?.Apertura ?? "",
+                        Cierre = h.Value?.Cierre ?? "",
+                        Pausas = h.Value?.Pausas ?? new List<string>()
+                    }
+                ) ?? new Dictionary<string, HorarioDiaDto>(),
+                DiasCerrados = e.DiasCerrados ?? new List<string>()
+            }).ToList();
 
-        return Ok(dtos);
+            return Ok(dtos);
+        }
+        catch (Exception ex)
+        {
+           
+            return StatusCode(500, new { error = "Error interno al leer los negocios en la base de datos." });
+        }
+    }
+    [HttpGet("usuario/{usuarioId}")]
+    [ProducesResponseType(typeof(NegocioDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<NegocioDto>> ObtenerPorUsuario(string usuarioId, CancellationToken ct)
+    {
+ 
+        usuarioId = usuarioId?.Trim();
+
+        if (!IdValidator.EsValido(usuarioId)) return BadRequest("ID de usuario inválido");
+
+        var entidad = await _negocios.ObtenerPorUsuarioIdAsync(usuarioId, ct);
+
+        return entidad is null ? NotFound() : Ok(entidad.ToDto());
     }
 
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(NegocioDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-
-
     public async Task<ActionResult<NegocioDto>> ObtenerPorId(string id, CancellationToken ct)
     {
         if (!IdValidator.EsValido(id)) return IdInvalido();

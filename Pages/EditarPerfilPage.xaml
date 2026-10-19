@@ -84,13 +84,10 @@
                 <VerticalStackLayout Spacing="14">
                     <Label Text="💼 Configuración del Negocio" FontSize="17" FontAttributes="Bold" TextColor="#2563EB"/>
 
-                    <!-- ✅ NUEVO DISEÑO CIRCULAR CON BOTÓN FLOTANTE -->
                     <Label Text="Foto de perfil" TextColor="#111827" FontSize="14" FontAttributes="Bold" Margin="0,10,0,0"/>
                     <Label Text="Toca el círculo para subir tu foto o logo" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,15"/>
 
                     <AbsoluteLayout HorizontalOptions="Center" WidthRequest="130" HeightRequest="130" Margin="0,0,0,20">
-
-                   
                         <Border 
                             AbsoluteLayout.LayoutBounds="0,0,130,130"
                             StrokeShape="RoundRectangle 65" 
@@ -109,7 +106,6 @@
                             </Border.GestureRecognizers>
                         </Border>
 
-                      
                         <Border 
                             AbsoluteLayout.LayoutBounds="90,90,40,40"
                             StrokeShape="RoundRectangle 20" 
@@ -126,7 +122,6 @@
                                 <TapGestureRecognizer Command="{Binding SeleccionarFotoCommand}"/>
                             </Border.GestureRecognizers>
                         </Border>
-
                     </AbsoluteLayout>
 
                     <Label Text="Modalidad de atención" TextColor="#111827" FontSize="14" FontAttributes="Bold" Margin="0,10,0,0"/>
@@ -184,7 +179,7 @@
 
                                             <Border Grid.Column="3" BackgroundColor="#4B5563" StrokeShape="RoundRectangle 16" 
                                                     Padding="4,3" VerticalOptions="Center">
-                                                <Switch IsToggled="False" OnColor="#3B82F6" ThumbColor="#FFFFFF" Scale="0.95"/>
+                                                <Switch IsToggled="{Binding TienePausa}" OnColor="#3B82F6" ThumbColor="#FFFFFF" Scale="0.95"/>
                                             </Border>
 
                                             <Label Grid.Column="4" Text="Pausa" FontSize="12" TextColor="#6B7280" 
@@ -199,6 +194,18 @@
 
                                             <TimePicker Format="HH:mm" FontSize="14" BackgroundColor="#F9FAFB" TextColor="#1F2937" 
                                                         Time="{Binding HoraFin}" HeightRequest="44" HorizontalOptions="FillAndExpand"/>
+                                        </HorizontalStackLayout>
+
+                                        <HorizontalStackLayout Spacing="8" IsVisible="{Binding TienePausa}">
+                                            <Label Text="Pausa:" VerticalOptions="Center" TextColor="#6B7280" FontSize="12"/>
+
+                                            <TimePicker Format="HH:mm" FontSize="14" BackgroundColor="#F3F4F6" TextColor="#4B5563" 
+                                                        Time="{Binding PausaInicio}" HeightRequest="38" HorizontalOptions="FillAndExpand"/>
+
+                                            <Label Text="a" VerticalOptions="Center" TextColor="#9CA3AF" FontSize="13" FontAttributes="Bold"/>
+
+                                            <TimePicker Format="HH:mm" FontSize="14" BackgroundColor="#F3F4F6" TextColor="#4B5563" 
+                                                        Time="{Binding PausaFin}" HeightRequest="38" HorizontalOptions="FillAndExpand"/>
                                         </HorizontalStackLayout>
 
                                         <BoxView HeightRequest="1" Color="#F3F4F6" Margin="0,5,0,0"/>
@@ -222,7 +229,7 @@
                             <DataTemplate x:DataType="x:String">
                                 <Border Stroke="#E5E7EB" StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="12" Margin="0,0,0,8">
                                     <HorizontalStackLayout Spacing="12" VerticalOptions="Center">
-                                        <Label Text="" FontSize="16"/>
+                                        <Label Text="📄" FontSize="16"/>
                                         <Label Text="{Binding .}" FontSize="13" TextColor="#111827" VerticalOptions="Center" HorizontalOptions="FillAndExpand"/>
                                         <Label Text="✓" FontSize="14" TextColor="#10B981" FontAttributes="Bold"/>
                                     </HorizontalStackLayout>

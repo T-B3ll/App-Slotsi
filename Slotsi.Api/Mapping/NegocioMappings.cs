@@ -11,7 +11,10 @@ public static class NegocioMappings
         Id = entity.Id.ToString(),
         Nombre = entity.Nombre,
         NombreNegocio = entity.NombreNegocio,
-        UsuarioId = entity.UsuarioId.ToString(),
+
+        
+        UsuarioId = entity.UsuarioId?.ToString() ?? string.Empty,
+
         NumeroRuc = entity.NumeroRuc,
         DireccionNegocio = entity.DireccionNegocio,
         TipoServicio = entity.TipoServicio,
@@ -20,38 +23,50 @@ public static class NegocioMappings
         Categoria = entity.Categoria,
         FechaRegistro = entity.FechaRegistro,
         Horarios = entity.Horarios?.ToDictionary(
-              h => h.Key,
-              h => new HorarioDiaDto
-              {
-                  Apertura = h.Value.Apertura,
-                  Cierre = h.Value.Cierre,
-                  Pausas = h.Value.Pausas
-              }
-          ) ?? new Dictionary<string, HorarioDiaDto>(),
+            h => h.Key,
+            h => new HorarioDiaDto
+            {
+                Apertura = h.Value.Apertura,
+                Cierre = h.Value.Cierre,
+                Pausas = h.Value.Pausas
+            }
+        ) ?? new Dictionary<string, HorarioDiaDto>(),
         DiasCerrados = entity.DiasCerrados ?? new List<string>()
     };
 
-    public static NegocioEntity ToEntity(this NegocioDto dto, string? id = null) => new()
+    public static NegocioEntity ToEntity(this NegocioDto dto, string? id = null)
     {
-        Id = !string.IsNullOrEmpty(id) ? ObjectId.Parse(id) : ObjectId.GenerateNewId(),
-        Nombre = dto.Nombre.Trim(),
-        NombreNegocio = dto.NombreNegocio.Trim(),
+        
+        ObjectId? usuarioId = null;
+        if (!string.IsNullOrWhiteSpace(dto.UsuarioId) &&
+            ObjectId.TryParse(dto.UsuarioId, out var parsed))
+        {
+            usuarioId = parsed;
+        }
 
-
-        UsuarioId = !string.IsNullOrEmpty(dto.UsuarioId) ? ObjectId.Parse(dto.UsuarioId).ToString() : string.Empty,
-
-        NumeroRuc = dto.NumeroRuc.Trim(),
-        DireccionNegocio = dto.DireccionNegocio.Trim(),
-        TipoServicio = dto.TipoServicio,
-        UrlFotoPerfil = dto.UrlFotoPerfil,
-        UrlDocumentoTitulo = dto.UrlDocumentoTitulo,
-        Categoria = dto.Categoria.Trim(),
-        FechaRegistro = dto.FechaRegistro,
-        Horarios = dto.Horarios?.ToDictionary(
-             h => h.Key,
-             h => new NegocioEntity.HorarioDiaEntity { Apertura = h.Value.Apertura, Cierre = h.Value.Cierre, Pausas = h.Value.Pausas }
-         ) ?? new Dictionary<string, NegocioEntity.HorarioDiaEntity>(),
-        DiasCerrados = dto.DiasCerrados ?? new List<string>()
-    };
-
+        return new NegocioEntity
+        {
+            Id = !string.IsNullOrEmpty(id) ? ObjectId.Parse(id) : ObjectId.GenerateNewId(),
+            Nombre = (dto.Nombre ?? "").Trim(),
+            NombreNegocio = (dto.NombreNegocio ?? "").Trim(),
+            UsuarioId = usuarioId,
+            NumeroRuc = (dto.NumeroRuc ?? "").Trim(),
+            DireccionNegocio = (dto.DireccionNegocio ?? "").Trim(),
+            TipoServicio = dto.TipoServicio,
+            UrlFotoPerfil = dto.UrlFotoPerfil,
+            UrlDocumentoTitulo = dto.UrlDocumentoTitulo,
+            Categoria = (dto.Categoria ?? "").Trim(),
+            FechaRegistro = dto.FechaRegistro,
+            Horarios = dto.Horarios?.ToDictionary(
+                h => h.Key,
+                h => new NegocioEntity.HorarioDiaEntity
+                {
+                    Apertura = h.Value.Apertura,
+                    Cierre = h.Value.Cierre,
+                    Pausas = h.Value.Pausas
+                }
+            ) ?? new Dictionary<string, NegocioEntity.HorarioDiaEntity>(),
+            DiasCerrados = dto.DiasCerrados ?? new List<string>()
+        };
+    }
 }

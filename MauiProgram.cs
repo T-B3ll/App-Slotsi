@@ -82,6 +82,7 @@ public static class MauiProgram
         builder.Services.AddTransient<DueñosNegociosViewModel>();
         builder.Services.AddTransient<DueñosNegociosPage>();
 
+
         return builder.Build();
     }
 }

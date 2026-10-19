@@ -26,14 +26,12 @@ namespace slotsi_citas.ViewModel
         private bool _isBusy;
         private Negocio _negocioActual;
 
-        
         public Usuario Usuario
         {
             get => _usuario;
             set { _usuario = value; OnPropertyChanged(); }
         }
 
- 
         private string _nombreNegocio;
         public string NombreNegocio
         {
@@ -69,7 +67,6 @@ namespace slotsi_citas.ViewModel
             set { _modalidadActual = value; OnPropertyChanged(); }
         }
 
-
         public string UrlFotoPerfil
         {
             get => _negocioActual?.UrlFotoPerfil;
@@ -78,15 +75,13 @@ namespace slotsi_citas.ViewModel
                 if (_negocioActual != null && _negocioActual.UrlFotoPerfil != value)
                 {
                     _negocioActual.UrlFotoPerfil = value;
-                    OnPropertyChanged(); 
+                    OnPropertyChanged();
                 }
             }
         }
 
-     
         public ObservableCollection<HorarioTrabajoVm> ListaHorarios { get; set; }
             = new ObservableCollection<HorarioTrabajoVm>();
-
 
         public ObservableCollection<string> DocumentosSubidos { get; set; } = new ObservableCollection<string>();
         public bool HayDocumentos => DocumentosSubidos.Count > 0;
@@ -101,7 +96,6 @@ namespace slotsi_citas.ViewModel
         }
 
         public string TituloPagina => _esDueno ? "Editar Perfil de Negocio" : "Mi Perfil";
-
 
         public Command GuardarCambiosCommand { get; }
         public Command SeleccionarFotoCommand { get; }
@@ -126,7 +120,6 @@ namespace slotsi_citas.ViewModel
             {
                 byte[] bytes = Encoding.UTF8.GetBytes(password);
                 byte[] hash = sha256.ComputeHash(bytes);
-
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < hash.Length; i++)
                 {
@@ -141,25 +134,26 @@ namespace slotsi_citas.ViewModel
             IsBusy = true;
             try
             {
-                var idUsuario = Preferences.Get("UsuarioId", string.Empty);
+                var idUsuario = Preferences.Get("UsuarioId", string.Empty).Trim();
                 _esDueno = Preferences.Get("EsDuenoNegocio", false);
 
                 if (!string.IsNullOrEmpty(idUsuario))
                 {
-                 
                     var usuarios = await _usuarioService.ObtenerTodosAsync();
-                    var usuarioEncontrado = usuarios.FirstOrDefault(u => u.Id == idUsuario);
+                    var usuarioEncontrado = usuarios.FirstOrDefault(u => u.Id.Trim() == idUsuario);
 
                     if (usuarioEncontrado != null)
                     {
                         Usuario = usuarioEncontrado;
                     }
 
-
                     if (_esDueno)
                     {
                         var todosLosNegocios = await _negocioService.ObtenerTodosAsync();
-                        _negocioActual = todosLosNegocios.FirstOrDefault(n => n.UsuarioId == idUsuario);
+
+                        _negocioActual = todosLosNegocios.FirstOrDefault(n =>
+                            !string.IsNullOrEmpty(n.UsuarioId) &&
+                            n.UsuarioId.Trim().ToLower() == idUsuario.ToLower());
 
                         if (_negocioActual != null)
                         {
@@ -171,6 +165,12 @@ namespace slotsi_citas.ViewModel
                             OnPropertyChanged(nameof(UrlFotoPerfil));
                             CargarHorariosDesdeModelo(_negocioActual);
                         }
+                        else
+                        {
+                            // Si la App no encuentra el negocio, nos avisa con el ID exacto
+                            await Application.Current.MainPage.DisplayAlert("Aviso", $"No se encontró el negocio.\nApp busca el ID: {idUsuario}\nRevisa que en Compass el UsuarioId sea idéntico.", "OK");
+                            CargarHorariosDesdeModelo(new Negocio());
+                        }
                     }
 
                     OnPropertyChanged(nameof(EsDuenoNegocio));
@@ -179,13 +179,14 @@ namespace slotsi_citas.ViewModel
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
+                await Application.Current.MainPage.DisplayAlert("Error al cargar", ex.Message, "OK");
             }
             finally
             {
                 IsBusy = false;
             }
         }
+
         private async Task GuardarCambiosAsync()
         {
             if (IsBusy || _usuario == null) return;
@@ -208,12 +209,11 @@ namespace slotsi_citas.ViewModel
 
                 if (_esDueno && _negocioActual != null)
                 {
-                    
                     _negocioActual.TipoServicio = ModalidadActual;
-
                     _negocioActual.NombreNegocio = NombreNegocio;
                     _negocioActual.DireccionNegocio = Direccion;
                     _negocioActual.NumeroRuc = Ruc;
+                    _negocioActual.UsuarioId = _usuario.Id;
 
                     _negocioActual.Horarios = new Dictionary<string, Negocio.HorarioDia>();
                     _negocioActual.DiasCerrados = new List<string>();
@@ -234,7 +234,9 @@ namespace slotsi_citas.ViewModel
                                 {
                                     Apertura = item.HoraInicio.ToString(@"hh\:mm"),
                                     Cierre = item.HoraFin.ToString(@"hh\:mm"),
-                                    Pausas = new List<string>()
+                                    Pausas = item.TienePausa
+                                        ? new List<string> { item.PausaInicio.ToString(@"hh\:mm"), item.PausaFin.ToString(@"hh\:mm") }
+                                        : new List<string>()
                                 };
                             }
                             else
@@ -244,7 +246,14 @@ namespace slotsi_citas.ViewModel
                         }
                     }
 
-                    await _negocioService.ActualizarAsync(_negocioActual);
+                    if (string.IsNullOrEmpty(_negocioActual.Id))
+                    {
+                        await _negocioService.CrearAsync(_negocioActual);
+                    }
+                    else
+                    {
+                        await _negocioService.ActualizarAsync(_negocioActual);
+                    }
                 }
 
                 await Application.Current.MainPage.DisplayAlert("Éxito", "Cambios guardados correctamente", "OK");
@@ -260,7 +269,6 @@ namespace slotsi_citas.ViewModel
             }
         }
 
-
         private async Task SeleccionarFotoAsync()
         {
             try
@@ -268,15 +276,15 @@ namespace slotsi_citas.ViewModel
                 var file = await FilePicker.PickAsync(new PickOptions
                 { PickerTitle = "Seleccionar foto", FileTypes = FilePickerFileType.Images });
 
-                if (file != null && _negocioActual != null)
+                if (file != null)
                 {
+                    if (_negocioActual == null) _negocioActual = new Negocio();
+
                     using var stream = await file.OpenReadAsync();
                     string fileName = $"perfil_{_usuario.Id}_{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
                     string url = await _storageService.SubirArchivoAsync(stream, "perfiles", fileName);
 
-                 
                     UrlFotoPerfil = url;
-
                     await Application.Current.MainPage.DisplayAlert("Éxito", "Foto actualizada.", "OK");
                 }
             }
@@ -296,8 +304,10 @@ namespace slotsi_citas.ViewModel
                 var file = await FilePicker.PickAsync(new PickOptions
                 { PickerTitle = "Seleccionar PDF", FileTypes = customFileType });
 
-                if (file != null && _negocioActual != null)
+                if (file != null)
                 {
+                    if (_negocioActual == null) _negocioActual = new Negocio();
+
                     using var stream = await file.OpenReadAsync();
                     string fileName = $"doc_{_usuario.Id}_{Guid.NewGuid()}.pdf";
                     string url = await _storageService.SubirArchivoAsync(stream, "documentos", fileName);
@@ -327,7 +337,7 @@ namespace slotsi_citas.ViewModel
             {
                 var vm = new HorarioTrabajoVm { Dia = nombrePantalla };
 
-                if (negocio.Horarios != null && negocio.Horarios.ContainsKey(claveDb))
+                if (negocio != null && negocio.Horarios != null && negocio.Horarios.ContainsKey(claveDb))
                 {
                     var horarioDb = negocio.Horarios[claveDb];
 
@@ -336,6 +346,19 @@ namespace slotsi_citas.ViewModel
 
                     if (TimeSpan.TryParse(horarioDb.Cierre, out TimeSpan cierre))
                         vm.HoraFin = cierre;
+
+                    if (horarioDb.Pausas != null && horarioDb.Pausas.Count >= 2)
+                    {
+                        vm.TienePausa = true;
+                        TimeSpan.TryParse(horarioDb.Pausas[0], out TimeSpan pInicio);
+                        TimeSpan.TryParse(horarioDb.Pausas[1], out TimeSpan pFin);
+                        vm.PausaInicio = pInicio;
+                        vm.PausaFin = pFin;
+                    }
+                    else
+                    {
+                        vm.TienePausa = false;
+                    }
 
                     bool estaCerrado = negocio.DiasCerrados != null &&
                                        negocio.DiasCerrados.Contains(claveDb);
