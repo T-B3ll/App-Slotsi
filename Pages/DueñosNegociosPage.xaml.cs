@@ -13,7 +13,7 @@ public partial class DueñosNegociosPage : ContentPage
     public DueñosNegociosPage()
     {
         InitializeComponent();
-        _viewModel = new DueñosNegociosViewModel();
+    
         BindingContext = _viewModel;
     }
 

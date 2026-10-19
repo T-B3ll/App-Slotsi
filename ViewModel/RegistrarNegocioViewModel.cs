@@ -24,7 +24,6 @@ namespace slotsi_citas.ViewModel
         private Usuario _usuarioData = new Usuario();
         private Negocio _negocioData = new Negocio();
 
-  
         private ObservableCollection<string> _listaDocumentos = new ObservableCollection<string>();
         public ObservableCollection<string> ListaDocumentos
         {
@@ -32,7 +31,6 @@ namespace slotsi_citas.ViewModel
             set { _listaDocumentos = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasDocumentos)); }
         }
 
-       
         public bool HasDocumentos => ListaDocumentos.Count > 0;
 
         public ObservableCollection<DiaHorarioUI> ListaDiasHorario { get; set; } = new ObservableCollection<DiaHorarioUI>();
@@ -41,29 +39,26 @@ namespace slotsi_citas.ViewModel
         public Command SeleccionarDocumentoCommand { get; }
         public Command RegistrarCommand { get; }
 
-    
         public RegistrarNegocioViewModel(
             SupabaseStorageService storageService,
             NegocioService negocioService,
             UsuarioService usuarioService)
         {
-      
             _storageService = storageService;
             _negocioService = negocioService;
             _usuarioService = usuarioService;
 
-         
             SeleccionarFotoCommand = new Command(async () => await SeleccionarFotoAsync());
             SeleccionarDocumentoCommand = new Command(async () => await SeleccionarDocumentoAsync());
             RegistrarCommand = new Command(async () => await RegistrarNegocioAsync());
 
-           
             var dias = new[] { "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo" };
             foreach (var dia in dias)
             {
                 ListaDiasHorario.Add(new DiaHorarioUI { NombreDia = dia });
             }
         }
+
         public string Nombre
         {
             get => _usuarioData.NombreCompleto;
@@ -111,7 +106,6 @@ namespace slotsi_citas.ViewModel
             set { _negocioData.UrlFotoPerfil = value; OnPropertyChanged(); }
         }
 
-        
         public string UrlDocumentoTitulo
         {
             get => _negocioData.UrlDocumentoTitulo;
@@ -134,12 +128,10 @@ namespace slotsi_citas.ViewModel
             }
         }
 
-
         private List<string> _urlsDocumentosSubidos = new List<string>();
 
         private async Task RegistrarNegocioAsync()
         {
-            // Validaciones existentes...
             if (!string.IsNullOrWhiteSpace(Correo))
             {
                 var usuarioExistente = await _usuarioService.ObtenerPorCorreoAsync(Correo);
@@ -167,12 +159,9 @@ namespace slotsi_citas.ViewModel
 
             try
             {
-                System.Diagnostics.Debug.WriteLine($"🔐 [REGISTRO] Contraseña original: '{Contrasena}'");
-
                 _usuarioData.TipoUsuario = true;
                 _usuarioData.EstaActivo = true;
 
-                // ✅ GENERAR HASH SHA256 DE LA CONTRASEÑA
                 string passwordHash;
                 using (var sha256 = SHA256.Create())
                 {
@@ -181,24 +170,22 @@ namespace slotsi_citas.ViewModel
                     StringBuilder sb = new StringBuilder();
                     foreach (byte b in hash)
                     {
-                        sb.Append(b.ToString("x2")); // x2 = minúsculas consistentes
+                        sb.Append(b.ToString("x2"));
                     }
                     passwordHash = sb.ToString();
                 }
 
-                System.Diagnostics.Debug.WriteLine($"🔐 [REGISTRO] Hash generado: '{passwordHash}'");
-
-                // ✅ ASIGNAR EL HASH DIRECTAMENTE AL MODELO ANTES DE ENVIAR
                 _usuarioData.Contrasena = passwordHash;
-
-                System.Diagnostics.Debug.WriteLine($"💾 [REGISTRO] Enviando usuario con contraseña hash: '{_usuarioData.Contrasena}'");
 
                 await _usuarioService.CrearAsync(_usuarioData);
 
-                if (string.IsNullOrEmpty(_usuarioData.Id))
+                var usuarioCreado = await _usuarioService.ObtenerPorCorreoAsync(_usuarioData.Correo);
+
+                if (usuarioCreado == null || string.IsNullOrEmpty(usuarioCreado.Id))
                     throw new Exception("Error al generar ID de usuario.");
 
-                // ... resto del código del negocio igual ...
+                _usuarioData.Id = usuarioCreado.Id;
+                _negocioData.Nombre = _usuarioData.NombreCompleto;
                 _negocioData.UsuarioId = _usuarioData.Id;
                 _negocioData.FechaRegistro = DateTime.UtcNow;
 
@@ -211,10 +198,10 @@ namespace slotsi_citas.ViewModel
                 _negocioData.DiasCerrados = new List<string>();
 
                 var mapDias = new Dictionary<string, string>
-        {
-            {"Lunes","Lun"}, {"Martes","Mar"}, {"Miércoles","Mie"},
-            {"Jueves","Jue"}, {"Viernes","Vie"}, {"Sábado","Sab"}, {"Domingo","Dom"}
-        };
+                {
+                    {"Lunes","Lun"}, {"Martes","Mar"}, {"Miércoles","Mie"},
+                    {"Jueves","Jue"}, {"Viernes","Vie"}, {"Sábado","Sab"}, {"Domingo","Dom"}
+                };
 
                 foreach (var diaUI in ListaDiasHorario)
                 {
@@ -226,8 +213,8 @@ namespace slotsi_citas.ViewModel
                     {
                         var pausas = diaUI.TienePausa
                             ? new List<string> {
-                        diaUI.PausaInicio.ToString("hh\\:mm"),
-                        diaUI.PausaFin.ToString("hh\\:mm")
+                                diaUI.PausaInicio.ToString("hh\\:mm"),
+                                diaUI.PausaFin.ToString("hh\\:mm")
                               }
                             : new List<string>();
 
@@ -246,13 +233,11 @@ namespace slotsi_citas.ViewModel
 
                 await _negocioService.CrearAsync(_negocioData);
 
-                System.Diagnostics.Debug.WriteLine($"✅ [REGISTRO] Usuario y negocio creados exitosamente");
                 await Application.Current.MainPage.DisplayAlert("Éxito", "Cuenta creada correctamente", "OK");
                 await Application.Current.MainPage.Navigation.PopToRootAsync();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ [REGISTRO] Error: {ex.Message}\n{ex.StackTrace}");
                 await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
             }
         }
@@ -274,7 +259,6 @@ namespace slotsi_citas.ViewModel
             catch (Exception ex) { await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK"); }
         }
 
-
         private async Task SeleccionarDocumentoAsync()
         {
             try
@@ -295,13 +279,8 @@ namespace slotsi_citas.ViewModel
                     string fileName = $"doc_{Guid.NewGuid()}.pdf";
                     string url = await _storageService.SubirArchivoAsync(stream, "documentos", fileName);
 
-                 
                     ListaDocumentos.Add(file.FileName);
-
-                   
                     _urlsDocumentosSubidos.Add(url);
-
-                   
                     OnPropertyChanged(nameof(HasDocumentos));
 
                     await Application.Current.MainPage.DisplayAlert("Éxito", "Documento agregado a la lista.", "OK");

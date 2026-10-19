@@ -21,9 +21,9 @@ namespace slotsi_citas.ViewModel
 
         public Command RefreshCommand { get; }
 
-        public DueñosNegociosViewModel()
+        public DueñosNegociosViewModel(NegocioService negocioService)
         {
-            _negocioService = new NegocioService();
+            _negocioService = negocioService;
             ListaDueños = new ObservableCollection<Negocio>();
             RefreshCommand = new Command(async () => await CargarDatosAsync());
 

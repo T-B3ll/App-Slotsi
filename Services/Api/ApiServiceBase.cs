@@ -79,7 +79,13 @@ public abstract class ApiServiceBase
     {
         try
         {
-            return await respuesta.Content.ReadFromJsonAsync<T>()
+         
+            var options = new System.Text.Json.JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            return await respuesta.Content.ReadFromJsonAsync<T>(options)
                 ?? throw new ApiException("La respuesta del servidor está vacía.", respuesta.StatusCode);
         }
         catch (System.Text.Json.JsonException ex)
@@ -92,9 +98,30 @@ public abstract class ApiServiceBase
     {
         try
         {
-            var problema = await respuesta.Content.ReadFromJsonAsync<Problema>();
-            if (!string.IsNullOrWhiteSpace(problema?.Detail)) return problema.Detail;
-            if (!string.IsNullOrWhiteSpace(problema?.Title)) return problema.Title;
+            var json = await respuesta.Content.ReadAsStringAsync();
+            using var doc = System.Text.Json.JsonDocument.Parse(json);
+            var root = doc.RootElement;
+
+      
+            if (root.TryGetProperty("errors", out var errorsElement))
+            {
+                var listaErrores = new List<string>();
+                foreach (var prop in errorsElement.EnumerateObject())
+                {
+                    foreach (var error in prop.Value.EnumerateArray())
+                    {
+                        listaErrores.Add($"{prop.Name}: {error.GetString()}");
+                    }
+                }
+                if (listaErrores.Count > 0)
+                    return "Faltan datos:\n" + string.Join("\n", listaErrores);
+            }
+
+            if (root.TryGetProperty("detail", out var detailElement))
+                return detailElement.GetString() ?? "Error de validación.";
+
+            if (root.TryGetProperty("title", out var titleElement))
+                return titleElement.GetString() ?? "Error de validación.";
         }
         catch { }
         return $"Error del servidor ({(int)respuesta.StatusCode}).";
