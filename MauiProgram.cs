@@ -1,9 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-using MongoDB.Driver;
 using slotsi_citas.Pages;
 using slotsi_citas.Services;
 using slotsi_citas.ViewModel;
 using slotsi_citas.ViewModels;
+using slotsi_citas.Services.Api;
 using Supabase;
 using Syncfusion.Maui.Toolkit.Hosting;
 
@@ -21,7 +21,6 @@ public static class MauiProgram
             {
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                fonts.AddFont("MauiMaterialAssets.ttf", "MaterialIcons");
                 fonts.AddFont("MaterialIcons-Regular.ttf", "MaterialIcons");
             });
 
@@ -29,72 +28,65 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
-        builder.Services.AddSingleton<AppShell>();
-
-
+        // --- SUPABASE ---
         var supabaseUrl = "https://vnasklmkkamytgwymzih.supabase.co";
         var supabaseKey = "sb_publishable_z8qlsYsGV7mYU4iJGGu8NA_fljnaFtq";
-
         var options = new SupabaseOptions();
         var client = new Client(supabaseUrl, supabaseKey, options);
-
-        _ = client.InitializeAsync();
-
-        builder.Services.AddSingleton(client);
-        Task.Run(async () => await client.InitializeAsync());
+        client.InitializeAsync().Wait();
 
         builder.Services.AddSingleton(client);
 
-        builder.Services.AddSingleton<IMongoClient>(sp => new MongoClient(MongoDbSettings.ConnectionString));
-
-        builder.Services.AddSingleton<IMongoDatabase>(sp =>
-        {
-            var mongoClient = sp.GetRequiredService<IMongoClient>();
-            return mongoClient.GetDatabase(MongoDbSettings.DatabaseName);
-        });
 
         builder.Services.AddSingleton<MongoService>();
         builder.Services.AddSingleton<AuthService>();
-        builder.Services.AddSingleton<UsuarioService>();
+        builder.Services.AddSingleton<SupabaseStorageService>();
+
+        // --- SERVICIOS HTTP (API)
+        builder.Services.AddHttpClient<UsuarioService>(c =>
+            c.BaseAddress = ApiConfiguracion.UrlBase);
+
+        builder.Services.AddHttpClient<NegocioService>(c =>
+            c.BaseAddress = ApiConfiguracion.UrlBase);
+
+        // --- OTROS SERVICIOS ---
         builder.Services.AddSingleton<RecuperacionService>();
-        builder.Services.AddSingleton<EmailJSService>();
-        builder.Services.AddSingleton<RecuperacionService>();
-        builder.Services.AddSingleton<NegocioService>();
         builder.Services.AddSingleton<SuscripcionService>();
         builder.Services.AddSingleton<EmailJSService>();
 
+        // --- VIEWMODELS ---
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<CitasClienteViewModel>();
         builder.Services.AddTransient<UsuarioBasicoViewModel>();
-        builder.Services.AddTransient<RegistroUsuariosViewModel>();
-        builder.Services.AddTransient<SeleccionarCitaViewModel>();
-        builder.Services.AddTransient<RecuperarContrasenaViewModel>();
+        builder.Services.AddTransient<RegistrarNegocioViewModel>();
         builder.Services.AddTransient<ListaTrabjadoresViewModel>();
         builder.Services.AddTransient<NuevoTrabajadorViewModel>();
-        builder.Services.AddTransient<EditarPerfilViewModel>();
         builder.Services.AddTransient<PagoSuscripcionViewModel>();
-        builder.Services.AddTransient<CrearResenaViewModel>();
-        builder.Services.AddTransient<CentroReseñasViewModel>();
+        builder.Services.AddTransient<EditarPerfilViewModel>();
         builder.Services.AddTransient<RecuperarContrasenaViewModel>();
 
-        builder.Services.AddTransient<LoginPage>();
-        builder.Services.AddTransient<Cita_ClientePage>();
-        builder.Services.AddTransient<Cita_UsuarioPage>();
-        builder.Services.AddTransient<CentroCalificaciones>();
+        // --- PÁGINAS ---
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<CrearResena>();
         builder.Services.AddTransient<RegistroUsuarioBasico>();
-        builder.Services.AddTransient<RegistroUsuariosPage>();
+        builder.Services.AddTransient<RegistroUsuarioNegocio>();
+        builder.Services.AddTransient<Cita_ClientePage>();
         builder.Services.AddTransient<NuevoTrabajador>();
         builder.Services.AddTransient<ListaTrabajadores>();
-        builder.Services.AddTransient<RecuperarContra>();
-        builder.Services.AddTransient<NuevaContra>();
         builder.Services.AddTransient<CalendarioPage>();
         builder.Services.AddTransient<catalogoservicios>();
         builder.Services.AddTransient<CatalogoCliente>();
         builder.Services.AddTransient<DueñosNegociosPage>();
         builder.Services.AddTransient<PagoSuscripcionPage>();
-        builder.Services.AddTransient<SeleccionarCitaPage>();
+        builder.Services.AddTransient<EditarPerfilPage>();
+        builder.Services.AddTransient<CatalogoCliente>();
+        builder.Services.AddTransient<RecuperarContra>();
+        builder.Services.AddTransient<NuevaContra>();
+
+
+        builder.Services.AddTransient<DueñosNegociosViewModel>();
+        builder.Services.AddTransient<DueñosNegociosPage>();
+
 
         return builder.Build();
     }

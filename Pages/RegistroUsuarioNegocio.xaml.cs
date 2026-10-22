@@ -2,6 +2,7 @@
 using slotsi_citas.ViewModel;
 using Syncfusion.Maui.Toolkit.Carousel;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 
 
 namespace slotsi_citas.Pages;
@@ -19,11 +20,11 @@ public partial class RegistroUsuarioNegocio : ContentPage
     private RegistrarNegocioViewModel _viewModel;
 
 
-    public RegistroUsuarioNegocio()
+    public RegistroUsuarioNegocio(RegistrarNegocioViewModel viewModel)
     {
         InitializeComponent();
 
-        _viewModel = new RegistrarNegocioViewModel();
+        _viewModel = viewModel;
         BindingContext = _viewModel;
     }
 

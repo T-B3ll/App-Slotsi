@@ -121,11 +121,6 @@ namespace slotsi_citas.Models
         [BsonIgnore]
         public string TextoBoton => EsSeleccionado ? "Quitar" : "Agregar";
 
-        [BsonIgnore]
-        public string DuracionTexto => $"{DuracionMinutos} min";
-
-        [BsonIgnore]
-        public string PrecioTexto => $"C$ {Precio:N2}";
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
