@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
+             xmlns:models="clr-namespace:slotsi_citas.Models"
+             x:Class="slotsi_citas.Pages.HorariosDisponiblesPage"
+             x:Name="PageRoot"
+             BackgroundColor="#F8FAFC"
+             Shell.NavBarIsVisible="False"
+             NavigationPage.HasNavigationBar="False">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- HEADER AZUL CON SELECTOR DE FECHA -->
+        <Grid Grid.Row="0" BackgroundColor="#2563EB" Padding="16, 12, 16, 16">
+            <VerticalStackLayout Spacing="12">
+
+                <!-- Título -->
+                <Grid ColumnDefinitions="Auto, *, Auto">
+                    <Label Grid.Column="0" Text="&#xE5C4;" FontFamily="MaterialIcons" FontSize="24" TextColor="White" VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding VolverCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                    <Label Grid.Column="1" Text="Calendario de citas..." FontSize="20" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    <BoxView Grid.Column="2" WidthRequest="24" Color="Transparent"/>
+                </Grid>
+
+                <!-- Fila Selector de Fecha y Botón Hoy -->
+                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12" Margin="4,0,4,0">
+
+                    <!-- Caja de la Fecha -->
+                    <Border Grid.Column="0" BackgroundColor="#FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 8" HeightRequest="42" Padding="12,0">
+                        <Grid>
+                            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                <Label Grid.Column="0" Text="{Binding TextoFechaSeleccionada}" FontSize="13" FontAttributes="Bold" TextColor="#111827" VerticalOptions="Center" MaxLines="1"/>
+                                <Image Grid.Column="1" Source="calendar.png" HeightRequest="16" WidthRequest="16" VerticalOptions="Center" Margin="6,0,0,0"/>
+                            </Grid>
+                            <!-- DatePicker invisible que cubre la caja para abrir el calendario nativo -->
+                            <DatePicker Date="{Binding FechaSeleccionada, Mode=TwoWay}" Opacity="0.01" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Botón Hoy -->
+                    <Border Grid.Column="1" BackgroundColor="#FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 8" HeightRequest="42" Padding="16,0">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding HoyCommand}"/>
+                        </Border.GestureRecognizers>
+                        <Label Text="Hoy" TextColor="#111827" FontAttributes="Bold" FontSize="13" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- CUERPO PRINCIPAL: LISTA DE HORARIOS -->
+        <Grid Grid.Row="1" BackgroundColor="#FFFFFF">
+
+            <!-- Indicador de Carga -->
+            <ActivityIndicator IsRunning="{Binding EstaCargando}" IsVisible="{Binding EstaCargando}" Color="#2563EB" HorizontalOptions="Center" VerticalOptions="Center"/>
+
+            <!-- Mensaje si no hay horarios -->
+            <VerticalStackLayout IsVisible="{Binding NoHayHorarios}" VerticalOptions="Center" HorizontalOptions="Center" Padding="20">
+                <Label Text="No hay horarios disponibles para este día." FontSize="14" TextColor="#64748B" HorizontalTextAlignment="Center"/>
+            </VerticalStackLayout>
+
+            <CollectionView ItemsSource="{Binding RangosHorarios}" Margin="16,12" IsVisible="{Binding HayHorarios}">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:RangoHorario">
+                        <Grid ColumnDefinitions="75, *">
+                            <!-- Hora -->
+                            <Label Grid.Column="0" Text="{Binding HoraDisplay}" FontSize="13" FontAttributes="Bold" TextColor="#1F2937" VerticalOptions="Center"/>
+
+                            <!-- CASO 1: DISPONIBLE -->
+                            <Border Grid.Column="1"
+                                    IsVisible="{Binding EsDisponible}"
+                                    BackgroundColor="#FFFFFF"
+                                    Stroke="#E5E7EB"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 12"
+                                    HeightRequest="48"
+                                    Padding="16,0">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SeleccionarHorarioCommand}" CommandParameter="{Binding .}"/>
+                                </Border.GestureRecognizers>
+                                <Label Text="Agendar cita" TextColor="#111827" FontSize="13" FontAttributes="Bold" VerticalOptions="Center"/>
+                            </Border>
+
+                            <!-- CASO 2: NO DISPONIBLE (PAUSA) -->
+                            <Border Grid.Column="1"
+                                    IsVisible="{Binding EsNoDisponible}"
+                                    BackgroundColor="#F1F5F9"
+                                    Stroke="#E2E8F0"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 12"
+                                    HeightRequest="48"
+                                    Padding="0">
+                                <Grid ColumnDefinitions="4, *">
+                                    <BoxView Grid.Column="0" Color="#64748B" CornerRadius="12,0,0,12"/>
+                                    <VerticalStackLayout Grid.Column="1" Padding="14,0" VerticalOptions="Center" Spacing="1">
+                                        <Label Text="No disponible" TextColor="#334155" FontSize="12" FontAttributes="Bold"/>
+                                        <Label Text="{Binding DetallePausa}" TextColor="#64748B" FontSize="10"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+
+                            <!-- CASO 3: OCUPADO (Reservado) -->
+                            <Border Grid.Column="1"
+                                    IsVisible="{Binding EsOcupado}"
+                                    BackgroundColor="#FEF2F2"
+                                    Stroke="#FEE2E2"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 12"
+                                    HeightRequest="48"
+                                    Padding="0">
+                                <Grid ColumnDefinitions="4, *">
+                                    <BoxView Grid.Column="0" Color="#EF4444" CornerRadius="12,0,0,12"/>
+                                    <VerticalStackLayout Grid.Column="1" Padding="14,0" VerticalOptions="Center" Spacing="1">
+                                        <Label Text="Ocupado" TextColor="#991B1B" FontSize="12" FontAttributes="Bold"/>
+                                        <Label Text="(Reservado)" TextColor="#DC2626" FontSize="10"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+
+        <!-- BARRA INFERIOR -->
+        <Grid Grid.Row="2" ColumnDefinitions="*, *, *, *" BackgroundColor="#FFFFFF" HeightRequest="56" Padding="0,4">
+            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <Image Source="home.png" HeightRequest="20" WidthRequest="20"/>
+                <Label Text="Inicio" FontSize="11" TextColor="#6B7280"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <Image Source="calendar.png" HeightRequest="20" WidthRequest="20"/>
+                <Label Text="Citas" FontSize="11" TextColor="#2563EB" FontAttributes="Bold"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <Image Source="location.png" HeightRequest="20" WidthRequest="20"/>
+                <Label Text="Sucursal" FontSize="11" TextColor="#6B7280"/>
+            </VerticalStackLayout>
+            <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <Image Source="profile.png" HeightRequest="20" WidthRequest="20"/>
+                <Label Text="Perfil" FontSize="11" TextColor="#6B7280"/>
+            </VerticalStackLayout>
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.Collections.Generic;
 
 namespace slotsi_citas.Models
 {
@@ -48,15 +49,20 @@ namespace slotsi_citas.Models
         [BsonElement("DiasCerrados")]
         public List<string> DiasCerrados { get; set; } = new();
 
+        // ¡ESTA ES LA MAGIA! 
+        // BsonIgnoreExtraElements evita que MongoDB falle si encuentra un campo 
+        // llamado "apertura" en lugar de "a".
+        [BsonIgnoreExtraElements]
         public class HorarioDia
         {
-            [BsonElement("a")] public string Apertura { get; set; } = "";
-            [BsonElement("c")] public string Cierre { get; set; } = "";
-            [BsonElement("p")] public List<string> Pausas { get; set; } = new();
+            [BsonElement("a")]
+            public string Apertura { get; set; } = "";
+
+            [BsonElement("c")]
+            public string Cierre { get; set; } = "";
+
+            [BsonElement("p")]
+            public List<string> Pausas { get; set; } = new();
         }
-
     }
-
 }
-
-

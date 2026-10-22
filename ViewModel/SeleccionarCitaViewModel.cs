@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Input;
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using slotsi_citas.Models;
+using slotsi_citas.Pages;
 using slotsi_citas.Services;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace slotsi_citas.ViewModel
 {
@@ -70,6 +71,13 @@ namespace slotsi_citas.ViewModel
             set { _clienteId = value; OnPropertyChanged(); }
         }
 
+        private Negocio? _negocioActualObj;
+        public Negocio? NegocioActualObj
+        {
+            get => _negocioActualObj;
+            set { _negocioActualObj = value; OnPropertyChanged(); }
+        }
+
         private RangoHorario? _horarioSeleccionado;
         public RangoHorario? HorarioSeleccionado
         {
@@ -81,9 +89,16 @@ namespace slotsi_citas.ViewModel
                     _horarioSeleccionado = value;
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(HorarioTextoResumen));
+                    OnPropertyChanged(nameof(TieneHorarioSeleccionado));
+                    OnPropertyChanged(nameof(NoTieneHorarioSeleccionado));
+                    OnPropertyChanged(nameof(TextoBotonHorario));
                 }
             }
         }
+
+        public bool TieneHorarioSeleccionado => HorarioSeleccionado != null;
+        public bool NoTieneHorarioSeleccionado => HorarioSeleccionado == null;
+        public string TextoBotonHorario => HorarioSeleccionado != null ? "Cambiar horario" : "Elegir horario";
 
         private DateTime _fechaSeleccionada = DateTime.Today;
         public DateTime FechaSeleccionada
@@ -119,18 +134,54 @@ namespace slotsi_citas.ViewModel
         public ICommand SeleccionarEspecialistaServicioCommand { get; }
         public ICommand ConfirmarCitaCommand { get; }
         public ICommand VolverCommand { get; }
+        public ICommand IrAHorariosCommand { get; }
+        public ICommand NavegarInicioCommand { get; }
+        public ICommand NavegarCitasCommand { get; }
+        public ICommand NavegarSucursalCommand { get; }
+        public ICommand NavegarPerfilCommand { get; }
 
         public SeleccionarCitaViewModel(MongoService mongoService)
         {
             _mongoService = mongoService;
 
             HorarioSeleccionado = CitaSession.HorarioSeleccionado;
-            FechaSeleccionada = CitaSession.FechaSeleccionada;
+            FechaSeleccionada = CitaSession.FechaSeleccionada != default
+                ? CitaSession.FechaSeleccionada
+                : DateTime.Today;
+
+            if (CitaSession.NegocioActual != null)
+            {
+                NegocioActualObj = CitaSession.NegocioActual;
+                NegocioNombre = !string.IsNullOrEmpty(NegocioActualObj.NombreNegocio) ? NegocioActualObj.NombreNegocio : NegocioActualObj.Nombre;
+                NegocioFoto = NegocioActualObj.UrlFotoPerfil;
+                if (!string.IsNullOrEmpty(NegocioActualObj.DireccionNegocio))
+                {
+                    DireccionCliente = NegocioActualObj.DireccionNegocio;
+                }
+            }
 
             ToggleServicioCommand = new Microsoft.Maui.Controls.Command<Servicios>(OnToggleServicio);
             SeleccionarEspecialistaServicioCommand = new Microsoft.Maui.Controls.Command<Trabajador>(OnSeleccionarEspecialistaServicio);
             ConfirmarCitaCommand = new Command(OnConfirmarCita);
             VolverCommand = new Command(async () => await RegresarPantallaAnterior());
+            IrAHorariosCommand = new Command(async () => await IrAHorariosAsync());
+
+            NavegarInicioCommand = new Command(async () =>
+            {
+                if (Shell.Current != null) await Shell.Current.GoToAsync("//dueñosnegocios");
+            });
+            NavegarCitasCommand = new Command(async () =>
+            {
+                await IrAHorariosAsync();
+            });
+            NavegarSucursalCommand = new Command(async () =>
+            {
+                if (Shell.Current != null) await Shell.Current.GoToAsync("//dueñosnegocios");
+            });
+            NavegarPerfilCommand = new Command(async () =>
+            {
+                if (Shell.Current != null) await Shell.Current.GoToAsync("//EditarPerfilPage");
+            });
 
             _ = CargarDatosSesionClienteAsync();
         }
@@ -139,10 +190,23 @@ namespace slotsi_citas.ViewModel
         {
         }
 
+       
+
+            public async Task IrAHorariosAsync()
+        {
+            if (Shell.Current != null)
+            {
+                await Shell.Current.GoToAsync(nameof(HorariosDisponiblesPage));
+            }
+        }
+
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             if (query.TryGetValue("Negocio", out var negocioObj) && negocioObj is Negocio negocio)
             {
+                NegocioActualObj = negocio;
+                CitaSession.NegocioActual = negocio;
+                CitaSession.NegocioId = negocio.Id ?? string.Empty;
                 NegocioNombre = !string.IsNullOrEmpty(negocio.NombreNegocio) ? negocio.NombreNegocio : negocio.Nombre;
                 NegocioFoto = negocio.UrlFotoPerfil;
                 if (!string.IsNullOrEmpty(negocio.DireccionNegocio))
@@ -380,7 +444,11 @@ namespace slotsi_citas.ViewModel
 
             if (HorarioSeleccionado == null)
             {
-                await Application.Current.MainPage.DisplayAlert("Atención", "Selecciona un horario válido.", "OK");
+                bool irACalendario = await Application.Current.MainPage.DisplayAlert("Horario Requerido", "Aún no has seleccionado un horario para tu cita. ¿Deseas elegir uno ahora?", "Sí, elegir", "Cancelar");
+                if (irACalendario)
+                {
+                    await IrAHorariosAsync();
+                }
                 return;
             }
 
@@ -394,10 +462,16 @@ namespace slotsi_citas.ViewModel
                 var servicioPrincipal = _serviciosSeleccionados.First();
                 string trabajadorIdAsignado = servicioPrincipal.ColaboradorSeleccionado?.Id ?? "652b1234567890abcdef1235";
 
+                string negocioIdFinal = NegocioActualObj?.Id ?? Preferences.Get("NegocioSeleccionadoId", CitaSession.NegocioId);
+                if (string.IsNullOrEmpty(negocioIdFinal))
+                {
+                    negocioIdFinal = "652b1234567890abcdef1234";
+                }
+
                 var nuevaCita = new Citas
                 {
                     Id = null,
-                    NegocioId = Preferences.Get("NegocioSeleccionadoId", "652b1234567890abcdef1234"),
+                    NegocioId = negocioIdFinal,
                     TrabajadorId = trabajadorIdAsignado,
                     ServicioId = servicioPrincipal.Id,
                     ClienteId = string.IsNullOrEmpty(ClienteId) ? "652b1234567890abcdef1237" : ClienteId,
