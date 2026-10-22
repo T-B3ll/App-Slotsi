@@ -85,7 +85,6 @@ namespace slotsi_citas.ViewModel
             try
             {
                 EstaCargando = true;
-                _esDuenoNegocio = Preferences.Get("EsDuenoNegocio", false);
                 string usuarioIdSesion = Preferences.Get("UsuarioIdSesion", Preferences.Get("UsuarioId", string.Empty));
 
                 if (string.IsNullOrWhiteSpace(usuarioIdSesion))
@@ -94,43 +93,56 @@ namespace slotsi_citas.ViewModel
                     return;
                 }
 
+                var builder = Builders<BsonDocument>.Filter;
+
+                var filtroNegocioCheck = builder.Or(
+                    builder.Eq("usuario_id", usuarioIdSesion),
+                    builder.Eq("id_usuario", usuarioIdSesion),
+                    builder.Eq("UsuarioId", usuarioIdSesion)
+                );
+                if (ObjectId.TryParse(usuarioIdSesion, out var userObjCheck))
+                {
+                    filtroNegocioCheck = builder.Or(
+                        filtroNegocioCheck,
+                        builder.Eq("usuario_id", userObjCheck),
+                        builder.Eq("id_usuario", userObjCheck),
+                        builder.Eq("UsuarioId", userObjCheck),
+                        builder.Eq("_id", userObjCheck)
+                    );
+                }
+                else
+                {
+                    filtroNegocioCheck = builder.Or(
+                        filtroNegocioCheck,
+                        builder.Eq("_id", usuarioIdSesion)
+                    );
+                }
+
+                var negocioDoc = await _coleccionNegocios.Find(filtroNegocioCheck).FirstOrDefaultAsync();
+                _esDuenoNegocio = (negocioDoc != null);
+
                 DateTime ahoraUtc = DateTime.UtcNow;
                 DateTime limiteUnMesAtras = ahoraUtc.AddDays(-30);
 
-                var builder = Builders<BsonDocument>.Filter;
                 FilterDefinition<BsonDocument> filtroUsuario;
 
                 if (_esDuenoNegocio)
-                {     
-                    var filtroNegocioDoc = builder.Or(
-                        builder.Eq("usuario_id", usuarioIdSesion),
-                        builder.Eq("id_usuario", usuarioIdSesion),
-                        builder.Eq("UsuarioId", usuarioIdSesion)
-                    );
-                    if (ObjectId.TryParse(usuarioIdSesion, out var userObj))
-                    {
-                        filtroNegocioDoc = builder.Or(filtroNegocioDoc, builder.Eq("usuario_id", userObj));
-                    }
+                {
+                    string negocioId = negocioDoc["_id"].ToString() ?? usuarioIdSesion;
+                    var possibleNegocioIds = new List<string> { negocioId, usuarioIdSesion };
 
-                    var negocioDoc = await _coleccionNegocios.Find(filtroNegocioDoc).FirstOrDefaultAsync();
-                    string negocioId = negocioDoc != null ? negocioDoc["_id"].ToString() ?? "" : usuarioIdSesion;
-
-                    if (ObjectId.TryParse(negocioId, out var negObjId))
+                    var listNegocioFilters = new List<FilterDefinition<BsonDocument>>();
+                    foreach (var id in possibleNegocioIds.Where(x => !string.IsNullOrEmpty(x)))
                     {
-                        filtroUsuario = builder.Or(
-                            builder.Eq("NegocioId", negObjId),
-                            builder.Eq("NegocioId", negocioId),
-                            builder.Eq("negocio_id", negObjId),
-                            builder.Eq("negocio_id", negocioId)
-                        );
+                        listNegocioFilters.Add(builder.Eq("NegocioId", id));
+                        listNegocioFilters.Add(builder.Eq("negocio_id", id));
+                        if (ObjectId.TryParse(id, out var objId))
+                        {
+                            listNegocioFilters.Add(builder.Eq("NegocioId", objId));
+                            listNegocioFilters.Add(builder.Eq("negocio_id", objId));
+                        }
                     }
-                    else
-                    {
-                        filtroUsuario = builder.Or(
-                            builder.Eq("NegocioId", negocioId),
-                            builder.Eq("negocio_id", negocioId)
-                        );
-                    }
+                    filtroUsuario = builder.Or(listNegocioFilters);
                 }
                 else
                 {
@@ -203,6 +215,7 @@ namespace slotsi_citas.ViewModel
                         NombreNegocio = nombreNegocio,
                         NombreCliente = clienteNombre,
                         FechaHora = fechaHora.ToLocalTime(),
+                        EsDuenoNegocio = _esDuenoNegocio,
                         EstaSeleccionada = false
                     });
                 }
@@ -305,6 +318,10 @@ namespace slotsi_citas.ViewModel
         public string NombreCliente { get; set; } = string.Empty;
         public DateTime FechaHora { get; set; }
         public string FechaTexto => FechaHora.ToString("dd 'de' MMM, yyyy - hh:mm tt");
+        public bool EsDuenoNegocio { get; set; }
+        public string TituloCard => EsDuenoNegocio ? NombreCliente : NombreNegocio;
+        public string TextoEvaluacionResumen => EsDuenoNegocio ? "Evaluando al cliente:" : "Evaluando atención en:";
+        public string NombreEvaluadoResumen => EsDuenoNegocio ? NombreCliente : NombreNegocio;
 
         private bool _estaSeleccionada;
         public bool EstaSeleccionada
