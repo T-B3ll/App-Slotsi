@@ -1,47 +1,87 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
 namespace slotsi_citas.Models
 {
-    [BsonIgnoreExtraElements]
     public class Servicios : INotifyPropertyChanged
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
+        private string? _id;
+        [JsonPropertyName("id")]
+        public string? Id
+        {
+            get => _id;
+            set { _id = value; OnPropertyChanged(); }
+        }
 
-        [BsonElement("negocio_id")]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string NegocioId { get; set; } = string.Empty;
+        private string _negocioId = string.Empty;
+        [JsonPropertyName("negocioId")]
+        public string NegocioId
+        {
+            get => _negocioId;
+            set { _negocioId = value; OnPropertyChanged(); }
+        }
 
-        [BsonElement("nombre")]
-        public string Nombre { get; set; } = string.Empty;
+        private string _nombre = string.Empty;
+        [JsonPropertyName("nombre")]
+        public string Nombre
+        {
+            get => _nombre;
+            set { _nombre = value; OnPropertyChanged(); }
+        }
 
-        [BsonElement("descripcion")]
-        public string Descripcion { get; set; } = string.Empty;
+        private string _descripcion = string.Empty;
+        [JsonPropertyName("descripcion")]
+        public string Descripcion
+        {
+            get => _descripcion;
+            set { _descripcion = value; OnPropertyChanged(); }
+        }
 
-        [BsonElement("duracion_minutos")]
-        public int DuracionMinutos { get; set; }
+        private int _duracionMinutos;
+        [JsonPropertyName("duracionMinutos")]
+        public int DuracionMinutos
+        {
+            get => _duracionMinutos;
+            set { _duracionMinutos = value; OnPropertyChanged(); }
+        }
 
-        [BsonElement("precio")]
-        public decimal Precio { get; set; }
+        private decimal _precio;
+        [JsonPropertyName("precio")]
+        public decimal Precio
+        {
+            get => _precio;
+            set { _precio = value; OnPropertyChanged(); }
+        }
 
-        [BsonElement("categoria")]
-        public string Categoria { get; set; } = string.Empty;
+        private string _categoria = string.Empty;
+        [JsonPropertyName("categoria")]
+        public string Categoria
+        {
+            get => _categoria;
+            set { _categoria = value; OnPropertyChanged(); }
+        }
 
-        [BsonElement("colaboradores_habilitados")]
-        public List<ObjectId> ColaboradoresHabilitados { get; set; } = new();
+        private List<string> _colaboradoresHabilitados = new();
+        [JsonPropertyName("colaboradoresHabilitados")]
+        public List<string> ColaboradoresHabilitados
+        {
+            get => _colaboradoresHabilitados;
+            set { _colaboradoresHabilitados = value; OnPropertyChanged(); }
+        }
 
-        [BsonElement("disponible_domicilio")]
-        public bool DisponibleDomicilio { get; set; }
+        private bool _disponibleDomicilio;
+        [JsonPropertyName("disponibleDomicilio")]
+        public bool DisponibleDomicilio
+        {
+            get => _disponibleDomicilio;
+            set { _disponibleDomicilio = value; OnPropertyChanged(); }
+        }
 
         private bool _activo;
-
-        [BsonElement("activo")]
+        [JsonPropertyName("activo")]
         public bool Activo
         {
             get => _activo;
@@ -55,11 +95,17 @@ namespace slotsi_citas.Models
             }
         }
 
-        [BsonIgnore]
+        private string _foto = string.Empty;
+        [JsonPropertyName("foto")]
+        public string Foto
+        {
+            get => _foto;
+            set { _foto = value; OnPropertyChanged(); OnPropertyChanged(nameof(TieneFoto)); OnPropertyChanged(nameof(NoTieneFoto)); }
+        }
+
         public ObservableCollection<Trabajador> ColaboradoresDelServicio { get; set; } = new();
 
         private Trabajador? _colaboradorSeleccionado;
-        [BsonIgnore]
         public Trabajador? ColaboradorSeleccionado
         {
             get => _colaboradorSeleccionado;
@@ -74,24 +120,13 @@ namespace slotsi_citas.Models
             }
         }
 
-        [BsonIgnore]
         public string ColaboradorSeleccionadoNombre => ColaboradorSeleccionado != null ? ColaboradorSeleccionado.Nombre : "Seleccionar especialista";
 
-        [BsonElement("foto")]
-        public string Foto { get; set; } = string.Empty;
-
-        [BsonIgnore]
         public bool TieneFoto => !string.IsNullOrEmpty(Foto);
-
-        [BsonIgnore]
         public bool NoTieneFoto => string.IsNullOrEmpty(Foto);
-
-        [BsonIgnore]
         public string ModalidadTexto => DisponibleDomicilio ? "🏠 A Domicilio" : "💈 En Local";
 
         private bool _esSeleccionado;
-
-        [BsonIgnore]
         public bool EsSeleccionado
         {
             get => _esSeleccionado;
@@ -109,23 +144,10 @@ namespace slotsi_citas.Models
             }
         }
 
-        [BsonIgnore]
         public string ColorBordeCard => EsSeleccionado ? "#2563EB" : "#E5E7EB";
-
-        [BsonIgnore]
         public string ColorFondoBoton => EsSeleccionado ? "#2563EB" : "#FFFFFF";
-
-        [BsonIgnore]
         public string ColorTextoBoton => EsSeleccionado ? "#FFFFFF" : "#2563EB";
-
-        [BsonIgnore]
         public string TextoBoton => EsSeleccionado ? "Quitar" : "Agregar";
-
-        [BsonIgnore]
-        public string DuracionTexto => $"{DuracionMinutos} min";
-
-        [BsonIgnore]
-        public string PrecioTexto => $"C$ {Precio:N2}";
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)

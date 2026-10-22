@@ -1,18 +1,10 @@
-﻿using System.Diagnostics;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Media;
-using MongoDB.Driver;
-using slotsi_citas.Models;
+﻿using slotsi_citas.Models;
 using slotsi_citas.Services;
+using slotsi_citas.Services.Api;
 using slotsi_citas.ViewModel;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace slotsi_citas.ViewModels
@@ -20,7 +12,8 @@ namespace slotsi_citas.ViewModels
     [QueryProperty(nameof(TrabajadorAEditar), "TrabajadorEditar")]
     public class NuevoTrabajadorViewModel : INotifyPropertyChanged
     {
-        private readonly IMongoCollection<Trabajador> _trabajadoresCollection;
+        private readonly NegocioService _negocioService;
+        private readonly TrabajadorService _trabajadorService;
         private string _trabajadorId;
 
         private Trabajador _trabajadorAEditar;
@@ -118,25 +111,26 @@ namespace slotsi_citas.ViewModels
             set { _listaHorariosUI = value; OnPropertyChanged(); }
         }
 
+        private bool _datosCargados;
+
         public Trabajador TrabajadorAEditar
         {
             get => _trabajadorAEditar;
             set
             {
+                if (value == null || _datosCargados) return;
+
                 _trabajadorAEditar = value;
+                _datosCargados = true;
                 OnPropertyChanged();
-                if (_trabajadorAEditar != null)
-                {
-                    CargarDatosTrabajador(_trabajadorAEditar);
-                }
+                CargarDatosTrabajador(value);
             }
         }
 
-        public NuevoTrabajadorViewModel()
+        public NuevoTrabajadorViewModel(TrabajadorService trabajadorService, NegocioService negocioService)
         {
-            var client = new MongoClient(MongoDbSettings.ConnectionString);
-            var database = client.GetDatabase(MongoDbSettings.DatabaseName);
-            _trabajadoresCollection = database.GetCollection<Trabajador>("Trabajadores");
+            _trabajadorService = trabajadorService;
+            _negocioService = negocioService;
 
             SubirDocumentoCommand = new Command(async () => await SubirDocumentoAsync());
             SeleccionarFotoCommand = new Command(async () => await SeleccionarFotoAsync());
@@ -317,100 +311,67 @@ namespace slotsi_citas.ViewModels
                 return;
             }
 
-            string negocioIdActual = Preferences.Get("negocio_id", string.Empty);
-
-            if (string.IsNullOrEmpty(negocioIdActual))
-            {
-                string usuarioId = Preferences.Get("UsuarioId", string.Empty);
-
-                if (!string.IsNullOrEmpty(usuarioId) && MongoDB.Bson.ObjectId.TryParse(usuarioId, out var usuarioObjectId))
-                {
-                    try
-                    {
-                        var client = new MongoClient(MongoDbSettings.ConnectionString);
-                        var database = client.GetDatabase(MongoDbSettings.DatabaseName);
-                        var negociosCollection = database.GetCollection<MongoDB.Bson.BsonDocument>("Negocios");
-
-                        var filtroNegocio = Builders<MongoDB.Bson.BsonDocument>.Filter.Eq("UsuarioId", usuarioObjectId);
-                        var negocioDoc = await negociosCollection.Find(filtroNegocio).FirstOrDefaultAsync();
-
-                        if (negocioDoc != null)
-                        {
-                            negocioIdActual = negocioDoc["_id"].ToString();
-                            Preferences.Set("negocio_id", negocioIdActual);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine($"[ERROR FETCH NEGOCIO] {ex.Message}");
-                    }
-                }
-            }
-
-            if (string.IsNullOrEmpty(negocioIdActual))
-            {
-                await Shell.Current.DisplayAlert("Error de Sesión", "No se encontró ningún negocio asociado al usuario en sesión.", "OK");
-                return;
-            }
-
             try
             {
+                
+                string negocioIdActual = _trabajadorAEditar?.NegocioId ?? Preferences.Get("negocio_id", string.Empty);
+
+                if (string.IsNullOrEmpty(negocioIdActual))
+                {
+                    string usuarioId = Preferences.Get("UsuarioId", string.Empty);
+                    if (!string.IsNullOrEmpty(usuarioId))
+                    {
+                        var negocio = await _negocioService.ObtenerPorUsuarioIdAsync(usuarioId);
+                        negocioIdActual = negocio?.Id ?? string.Empty;
+                        if (!string.IsNullOrEmpty(negocioIdActual))
+                            Preferences.Set("negocio_id", negocioIdActual);
+                    }
+                }
+
+                if (string.IsNullOrEmpty(negocioIdActual))
+                {
+                    await Shell.Current.DisplayAlert("Error de Sesión", "No se encontró ningún negocio asociado al usuario en sesión.", "OK");
+                    return;
+                }
+
                 string nombreCompleto = string.IsNullOrWhiteSpace(Apellido)
                     ? Nombre.Trim()
                     : $"{Nombre.Trim()} {Apellido.Trim()}";
 
-                var horariosConfigurados = ObtenerHorariosParaMongo();
+                var trabajador = new Trabajador
+                {
+                    Id = _trabajadorId,
+                    NegocioId = negocioIdActual,
+                    Nombre = nombreCompleto,
+                    Especialidad = Especialidad.Trim(),
+                    Correo = Correo.Trim(),
+                    Telefono = Telefono.Trim(),
+                    Cedula = Cedula.Trim(),
+                    Foto = _fotoBase64 ?? string.Empty,
+                    ArchivoProfesional = _archivoProfesionalBase64 ?? string.Empty,
+                    Activo = Activo,
+                    HorarioTrabajo = ObtenerHorariosParaMongo()
+                };
+
+                var dto = trabajador.ToDto();
 
                 if (string.IsNullOrEmpty(_trabajadorId))
-                {
-                    var nuevoTrabajador = new Trabajador
-                    {
-                        NegocioId = negocioIdActual,
-                        Nombre = nombreCompleto,
-                        Especialidad = Especialidad.Trim(),
-                        Correo = Correo.Trim(),
-                        Telefono = Telefono.Trim(),
-                        Cedula = Cedula.Trim(),
-                        Foto = _fotoBase64 ?? string.Empty,
-                        ArchivoProfesional = _archivoProfesionalBase64 ?? string.Empty,
-                        Activo = Activo,
-                        HorarioTrabajo = horariosConfigurados
-                    };
-
-                    await _trabajadoresCollection.InsertOneAsync(nuevoTrabajador);
-                }
+                    await _trabajadorService.CrearAsync(dto);
                 else
-                {
-                    var filter = Builders<Trabajador>.Filter.Eq(t => t.Id, _trabajadorId);
-                    var update = Builders<Trabajador>.Update
-                        .Set(t => t.Nombre, nombreCompleto)
-                        .Set(t => t.Especialidad, Especialidad.Trim())
-                        .Set(t => t.Correo, Correo.Trim())
-                        .Set(t => t.Telefono, Telefono.Trim())
-                        .Set(t => t.Cedula, Cedula.Trim())
-                        .Set(t => t.Foto, _fotoBase64 ?? string.Empty)
-                        .Set(t => t.ArchivoProfesional, _archivoProfesionalBase64 ?? string.Empty)
-                        .Set(t => t.Activo, Activo)
-                        .Set(t => t.HorarioTrabajo, horariosConfigurados);
+                    await _trabajadorService.ActualizarAsync(dto);
 
-                    await _trabajadoresCollection.UpdateOneAsync(filter, update);
-                }
                 _trabajadorAEditar = null;
 
                 await Shell.Current.DisplayAlert("Éxito", "Trabajador guardado correctamente.", "OK");
 
                 if (Shell.Current.Navigation.NavigationStack.Count > 1)
-                {
                     await Shell.Current.Navigation.PopAsync();
-                }
                 else
-                {
                     await Shell.Current.GoToAsync("..");
-                }
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Error", $"No se pudo guardar en la base de datos: {ex.Message}", "OK");
+                await Shell.Current.DisplayAlert("Error", $"No se pudo guardar: {ApiException.MensajePara(ex)}", "OK");
             }
         }
 

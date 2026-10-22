@@ -4,6 +4,7 @@
              xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
              xmlns:models="clr-namespace:slotsi_citas.Models"
              x:Class="slotsi_citas.Pages.RegistroUsuariosPage"
+             xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
              x:DataType="vm:RegistroUsuariosViewModel"
              x:Name="PageRoot"
              Title="Registro de usuarios"

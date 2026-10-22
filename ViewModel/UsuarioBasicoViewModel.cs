@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
@@ -75,10 +77,8 @@ namespace slotsi_citas.ViewModel
         {
             _usuarioService = usuarioService;
 
-
             RegistrarCommand = new Command(async () =>
             {
-                // 1. Validar campos vacíos
                 if (string.IsNullOrWhiteSpace(NombreCompleto) ||
                     string.IsNullOrWhiteSpace(Correo) ||
                     string.IsNullOrWhiteSpace(Contrasena))
@@ -87,7 +87,6 @@ namespace slotsi_citas.ViewModel
                     return;
                 }
 
-              
                 if (Contrasena.Length < 8)
                 {
                     await Application.Current.MainPage.DisplayAlert("Error", "Mínimo 8 caracteres.", "OK");
@@ -97,35 +96,39 @@ namespace slotsi_citas.ViewModel
                 EstaCargando = true;
                 try
                 {
-                  
                     var existe = await _usuarioService.ObtenerPorCorreoAsync(Correo);
                     if (existe != null)
                     {
                         await Application.Current.MainPage.DisplayAlert("Error", "Este correo ya está registrado.", "OK");
-                        return; 
+                        return;
                     }
 
-                   
-                    await _usuarioService.CrearAsync(new Usuario
+                    string passwordEncriptada = EncriptarPassword(Contrasena);
+
+                    System.Diagnostics.Debug.WriteLine($"[REGISTRO] Hash generado: {passwordEncriptada}");
+
+                    var nuevoUsuario = new Usuario
                     {
                         NombreCompleto = NombreCompleto.Trim(),
                         Correo = Correo.Trim().ToLower(),
                         Telefono = Telefono.Trim(),
                         Cedula = Cedula.Trim(),
-                        Contrasena = Contrasena,
+                        Contrasena = passwordEncriptada,
                         TipoUsuario = false,
                         EstaActivo = true
-                    });
+                    };
+
+                    System.Diagnostics.Debug.WriteLine($"[REGISTRO] Objeto Usuario.Contrasena antes de enviar: {nuevoUsuario.Contrasena}");
+
+                    await _usuarioService.CrearAsync(nuevoUsuario);
 
                     await Application.Current.MainPage.DisplayAlert("Éxito", "Usuario creado correctamente.", "OK");
-
-             
                     await Application.Current.MainPage.Navigation.PopAsync();
                 }
                 catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.WriteLine($"[REGISTRO] Error: {ex.Message}");
                     await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
-                
                 }
                 finally
                 {
@@ -133,6 +136,7 @@ namespace slotsi_citas.ViewModel
                 }
             });
         }
+
 
 
         public async Task<(bool Exito, string Mensaje)> RegistrarUsuarioAsync()
@@ -170,5 +174,28 @@ namespace slotsi_citas.ViewModel
                 EstaCargando = false;
             }
         }
+
+
+
+
+        private string EncriptarPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(password);
+                byte[] hash = sha256.ComputeHash(bytes);
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < hash.Length; i++)
+                {
+                    sb.Append(hash[i].ToString("x2"));
+                }
+                return sb.ToString();
+            }
+        }
+
     }
+
+
+
 }

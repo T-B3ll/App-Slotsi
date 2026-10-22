@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System;
 using Microsoft.Maui.Controls;
 using slotsi_citas.Models;
 using slotsi_citas.Services;
@@ -21,21 +22,21 @@ namespace slotsi_citas.ViewModel
 
         public Command RefreshCommand { get; }
 
-        public DueñosNegociosViewModel()
+        public DueñosNegociosViewModel(NegocioService negocioService)
         {
-            _negocioService = new NegocioService();
+            _negocioService = negocioService;
             ListaDueños = new ObservableCollection<Negocio>();
-            RefreshCommand = new Command(async () => await CargarDatosAsync());
 
-         
-            MainThread.BeginInvokeOnMainThread(async () => await CargarDatosAsync());
+            RefreshCommand = new Command(async () => await CargarNegociosAsync());
+
+            MainThread.BeginInvokeOnMainThread(async () => await CargarNegociosAsync());
         }
 
-        private async Task CargarDatosAsync()
+        
+        public async Task CargarNegociosAsync()
         {
             try
             {
-               
                 var negocios = await _negocioService.ObtenerTodosAsync();
 
                 MainThread.BeginInvokeOnMainThread(() =>

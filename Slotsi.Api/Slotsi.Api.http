@@ -1,0 +1,6 @@
+@Slotsi.Api_HostAddress = http://localhost:5286
+
+GET {{Slotsi.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

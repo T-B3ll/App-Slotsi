@@ -1,5 +1,7 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Storage;
+using Slotsi.Shared.Dtos;
 using slotsi_citas.Services;
 using System;
 using System.Collections.Generic;
@@ -7,15 +9,13 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using static slotsi_citas.Models.Calificaciones;
 
 namespace slotsi_citas.ViewModel
 {
     public class CrearResenaViewModel : BindableObject
     {
-        private readonly IMongoCollection<BsonDocument> _coleccionCitas;
-        private readonly IMongoCollection<BsonDocument> _coleccionNegocios;
-        private readonly IMongoCollection<CalificacionModel> _coleccionCalificaciones;
+        private readonly CalificacionService _calificacionService;
+        private readonly NegocioService _negocioService;
 
         private bool _esDuenoNegocio;
 
@@ -66,14 +66,10 @@ namespace slotsi_citas.ViewModel
         public ICommand CambiarPuntuacionCommand { get; }
         public ICommand GuardarResenaCommand { get; }
 
-        public CrearResenaViewModel()
+        public CrearResenaViewModel(CalificacionService calificacionService, NegocioService negocioService)
         {
-            var client = new MongoClient(MongoDbSettings.ConnectionString);
-            var database = client.GetDatabase(MongoDbSettings.DatabaseName);
-
-            _coleccionCitas = database.GetCollection<BsonDocument>("Citas");
-            _coleccionNegocios = database.GetCollection<BsonDocument>("Negocios");
-            _coleccionCalificaciones = database.GetCollection<CalificacionModel>("Calificaciones");
+            _calificacionService = calificacionService ?? throw new ArgumentNullException(nameof(calificacionService));
+            _negocioService = negocioService ?? throw new ArgumentNullException(nameof(negocioService));
 
             SeleccionarCitaCommand = new Microsoft.Maui.Controls.Command<CitaElegibleModel>(OnSeleccionarCita);
             CambiarPuntuacionCommand = new Microsoft.Maui.Controls.Command<string>(OnCambiarPuntuacion);
@@ -93,132 +89,9 @@ namespace slotsi_citas.ViewModel
                     return;
                 }
 
-                var builder = Builders<BsonDocument>.Filter;
-
-                var filtroNegocioCheck = builder.Or(
-                    builder.Eq("usuario_id", usuarioIdSesion),
-                    builder.Eq("id_usuario", usuarioIdSesion),
-                    builder.Eq("UsuarioId", usuarioIdSesion)
-                );
-                if (ObjectId.TryParse(usuarioIdSesion, out var userObjCheck))
-                {
-                    filtroNegocioCheck = builder.Or(
-                        filtroNegocioCheck,
-                        builder.Eq("usuario_id", userObjCheck),
-                        builder.Eq("id_usuario", userObjCheck),
-                        builder.Eq("UsuarioId", userObjCheck),
-                        builder.Eq("_id", userObjCheck)
-                    );
-                }
-                else
-                {
-                    filtroNegocioCheck = builder.Or(
-                        filtroNegocioCheck,
-                        builder.Eq("_id", usuarioIdSesion)
-                    );
-                }
-
-                var negocioDoc = await _coleccionNegocios.Find(filtroNegocioCheck).FirstOrDefaultAsync();
-                _esDuenoNegocio = (negocioDoc != null);
-
-                DateTime ahoraUtc = DateTime.UtcNow;
-                DateTime limiteUnMesAtras = ahoraUtc.AddDays(-30);
-
-                FilterDefinition<BsonDocument> filtroUsuario;
-
-                if (_esDuenoNegocio)
-                {
-                    string negocioId = negocioDoc["_id"].ToString() ?? usuarioIdSesion;
-                    var possibleNegocioIds = new List<string> { negocioId, usuarioIdSesion };
-
-                    var listNegocioFilters = new List<FilterDefinition<BsonDocument>>();
-                    foreach (var id in possibleNegocioIds.Where(x => !string.IsNullOrEmpty(x)))
-                    {
-                        listNegocioFilters.Add(builder.Eq("NegocioId", id));
-                        listNegocioFilters.Add(builder.Eq("negocio_id", id));
-                        if (ObjectId.TryParse(id, out var objId))
-                        {
-                            listNegocioFilters.Add(builder.Eq("NegocioId", objId));
-                            listNegocioFilters.Add(builder.Eq("negocio_id", objId));
-                        }
-                    }
-                    filtroUsuario = builder.Or(listNegocioFilters);
-                }
-                else
-                {
-                    if (ObjectId.TryParse(usuarioIdSesion, out var clienteObjId))
-                    {
-                        filtroUsuario = builder.Or(
-                            builder.Eq("ClienteId", clienteObjId),
-                            builder.Eq("ClienteId", usuarioIdSesion),
-                            builder.Eq("cliente_id", clienteObjId),
-                            builder.Eq("cliente_id", usuarioIdSesion)
-                        );
-                    }
-                    else
-                    {
-                        filtroUsuario = builder.Or(
-                            builder.Eq("ClienteId", usuarioIdSesion),
-                            builder.Eq("cliente_id", usuarioIdSesion)
-                        );
-                    }
-                }
-
-                var filtroFecha = builder.And(
-                    builder.Gte("FechaHoraInicio", limiteUnMesAtras),
-                    builder.Lte("FechaHoraInicio", ahoraUtc)
-                );
-
-                var filtroFinal = builder.And(filtroUsuario, filtroFecha);
-
-                var docsCitas = await _coleccionCitas.Find(filtroFinal).SortByDescending(c => c["FechaHoraInicio"]).ToListAsync();
+                _esDuenoNegocio = Preferences.Get("EsDuenoNegocio", false);
 
                 var listaElegibles = new List<CitaElegibleModel>();
-
-                foreach (var doc in docsCitas)
-                {
-                    string citaId = doc.Contains("_id") ? doc["_id"].ToString() ?? "" : "";
-                    string negocioId = doc.Contains("NegocioId") ? doc["NegocioId"].ToString() ?? "" : (doc.Contains("negocio_id") ? doc["negocio_id"].ToString() ?? "" : "");
-                    string trabajadorId = doc.Contains("TrabajadorId") ? doc["TrabajadorId"].ToString() ?? "" : (doc.Contains("trabajador_id") ? doc["trabajador_id"].ToString() ?? "" : "");
-                    string servicioNombre = doc.Contains("ServicioNombre") ? doc["ServicioNombre"].AsString : "Servicio";
-                    DateTime fechaHora = doc.Contains("FechaHoraInicio") ? doc["FechaHoraInicio"].ToUniversalTime() : DateTime.UtcNow;
-
-                    string clienteNombre = "Cliente";
-                    if (doc.Contains("Cliente") && doc["Cliente"].IsBsonDocument)
-                    {
-                        var objCliente = doc["Cliente"].AsBsonDocument;
-                        if (objCliente.Contains("Nombre")) clienteNombre = objCliente["Nombre"].AsString;
-                    }
-
-                    string nombreNegocio = "Negocio";
-                    if (!string.IsNullOrEmpty(negocioId))
-                    {
-                        FilterDefinition<BsonDocument> filtroNegocio = ObjectId.TryParse(negocioId, out var negObj)
-                            ? builder.Eq("_id", negObj)
-                            : builder.Eq("_id", negocioId);
-
-                        var docNegocio = await _coleccionNegocios.Find(filtroNegocio).FirstOrDefaultAsync();
-                        if (docNegocio != null)
-                        {
-                            if (docNegocio.Contains("nombre_negocio")) nombreNegocio = docNegocio["nombre_negocio"].AsString;
-                            else if (docNegocio.Contains("NombreNegocio")) nombreNegocio = docNegocio["NombreNegocio"].AsString;
-                            else if (docNegocio.Contains("nombre")) nombreNegocio = docNegocio["nombre"].AsString;
-                        }
-                    }
-
-                    listaElegibles.Add(new CitaElegibleModel
-                    {
-                        CitaId = citaId,
-                        NegocioId = negocioId,
-                        TrabajadorId = trabajadorId,
-                        ServicioNombre = servicioNombre,
-                        NombreNegocio = nombreNegocio,
-                        NombreCliente = clienteNombre,
-                        FechaHora = fechaHora.ToLocalTime(),
-                        EsDuenoNegocio = _esDuenoNegocio,
-                        EstaSeleccionada = false
-                    });
-                }
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -283,7 +156,7 @@ namespace slotsi_citas.ViewModel
             {
                 string usuarioIdSesion = Preferences.Get("UsuarioIdSesion", Preferences.Get("UsuarioId", string.Empty));
 
-                var nuevaResena = new CalificacionModel
+                var nuevaResenaDto = new CalificacionesDtos
                 {
                     Id = null,
                     IdNegocio = CitaSeleccionada.NegocioId,
@@ -296,7 +169,7 @@ namespace slotsi_citas.ViewModel
                     Comentario = Comentario.Trim()
                 };
 
-                await _coleccionCalificaciones.InsertOneAsync(nuevaResena);
+                await _calificacionService.CrearAsync(nuevaResenaDto);
 
                 await Application.Current.MainPage.DisplayAlert("¡Gracias!", "Tu reseña ha sido registrada exitosamente.", "OK");
                 await Shell.Current.GoToAsync("..");
