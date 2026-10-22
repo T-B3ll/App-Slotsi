@@ -19,7 +19,9 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
     clientSettings.ServerSelectionTimeout = TimeSpan.FromSeconds(5);
     return new MongoClient(clientSettings);
 });
-
+builder.Services.AddSingleton<ITrabajadorRepository, TrabajadoreRepository>();
+builder.Services.AddSingleton<IServicioRepository, ServiciosRepository>();
+builder.Services.AddSingleton<ICalificacionRepository, CalificacionRepository>();
 builder.Services.AddSingleton<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddSingleton<INegocioRepository, NegocioRepository>();
 

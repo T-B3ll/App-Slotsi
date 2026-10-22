@@ -1,8 +1,6 @@
 ﻿using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
-using MongoDB.Bson;
-using MongoDB.Driver;
 using slotsi_citas.Models;
 using slotsi_citas.Services;
 using System;
@@ -17,16 +15,14 @@ namespace slotsi_citas.ViewModel
 {
     public class CatalogoServiciosViewModel : BindableObject
     {
-        private readonly IMongoCollection<Servicios> _coleccionServicios;
-        private readonly IMongoCollection<Negocio> _coleccionNegocios;
+        private readonly CatalogoService _catalogoService;
+        private readonly TrabajadorService _trabajadorService;
 
         private List<Servicios> _todosLosServiciosCliente = new();
         public ObservableCollection<Servicios> Servicios { get; set; } = new();
 
-        // Lista de servicios actualmente seleccionados por el cliente (máximo 3)
         private readonly List<Servicios> _serviciosSeleccionados = new();
 
-        // Datos del negocio actual
         private Negocio? _negocioActual;
         public Negocio? NegocioActual
         {
@@ -66,7 +62,6 @@ namespace slotsi_citas.ViewModel
             }
         }
 
-        // Propiedades auxiliares para la barra resumen inferior
         public int CantidadSeleccionados => _serviciosSeleccionados.Count;
         public bool TieneServiciosSeleccionados => _serviciosSeleccionados.Any();
         public decimal TotalPrecioSeleccionado => _serviciosSeleccionados.Sum(s => s.Precio);
@@ -91,13 +86,10 @@ namespace slotsi_citas.ViewModel
         public ICommand EditarservicioCommand { get; }
         public ICommand CambiarFotoServicio { get; }
 
-        public CatalogoServiciosViewModel()
+        public CatalogoServiciosViewModel(CatalogoService catalogoService, TrabajadorService trabajadorService)
         {
-            var cliente = new MongoClient(MongoDbSettings.ConnectionString);
-            var bd = cliente.GetDatabase(MongoDbSettings.DatabaseName);
-
-            _coleccionServicios = bd.GetCollection<Servicios>("servicios");
-            _coleccionNegocios = bd.GetCollection<Negocio>("Negocios");
+            _catalogoService = catalogoService ?? throw new ArgumentNullException(nameof(catalogoService));
+            _trabajadorService = trabajadorService ?? throw new ArgumentNullException(nameof(trabajadorService));
 
             FiltrarModalidadCommand = new Microsoft.Maui.Controls.Command<string>((modalidad) => ModalidadSeleccionada = modalidad ?? "Todos");
             ToggleSeleccionServicioCommand = new Microsoft.Maui.Controls.Command<Servicios>(OnToggleSeleccionServicio);
@@ -126,29 +118,11 @@ namespace slotsi_citas.ViewModel
 
                 if (string.IsNullOrEmpty(negocioId)) return;
 
-                // Cargar datos completos del Negocio
-                await CargarDatosNegocioAsync(negocioId);
+                NegocioActual = await _catalogoService.ObtenerNegocioPorIdAsync(negocioId);
 
-                FilterDefinition<Servicios> filtroNegocio;
+                var resultados = await _catalogoService.ObtenerServiciosPorNegocioAsync(negocioId);
 
-                if (ObjectId.TryParse(negocioId, out ObjectId negocioObjectId))
-                {
-                    filtroNegocio = Builders<Servicios>.Filter.Or(
-                        Builders<Servicios>.Filter.Eq("negocio_id", negocioObjectId),
-                        Builders<Servicios>.Filter.Eq(s => s.NegocioId, negocioId)
-                    );
-                }
-                else
-                {
-                    filtroNegocio = Builders<Servicios>.Filter.Eq(s => s.NegocioId, negocioId);
-                }
-
-                var filtroActivo = Builders<Servicios>.Filter.Eq(s => s.Activo, true);
-                var filtroFinal = Builders<Servicios>.Filter.And(filtroNegocio, filtroActivo);
-
-                var resultados = await _coleccionServicios.Find(filtroFinal).ToListAsync();
-
-                _todosLosServiciosCliente = resultados;
+                _todosLosServiciosCliente = resultados.Where(s => s.Activo).ToList();
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -158,28 +132,6 @@ namespace slotsi_citas.ViewModel
             catch (Exception ex)
             {
                 await Application.Current.MainPage.DisplayAlert("Error", $"Error al cargar servicios activos: {ex.Message}", "OK");
-            }
-        }
-
-        private async Task CargarDatosNegocioAsync(string negocioId)
-        {
-            try
-            {
-                FilterDefinition<Negocio> filtro;
-                if (ObjectId.TryParse(negocioId, out ObjectId objectId))
-                {
-                    filtro = Builders<Negocio>.Filter.Eq("_id", objectId);
-                }
-                else
-                {
-                    filtro = Builders<Negocio>.Filter.Eq(n => n.Id, negocioId);
-                }
-
-                NegocioActual = await _coleccionNegocios.Find(filtro).FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[ERROR MONGODB NEGOCIO]: {ex.Message}");
             }
         }
 
@@ -226,7 +178,6 @@ namespace slotsi_citas.ViewModel
                 return;
             }
 
-            // Guardar datos del negocio y dirección en la sesión global
             if (NegocioActual != null)
             {
                 CitaSession.DireccionCliente = string.IsNullOrEmpty(NegocioActual.DireccionNegocio)
@@ -234,7 +185,6 @@ namespace slotsi_citas.ViewModel
                     : NegocioActual.DireccionNegocio;
             }
 
-            // Guardar IDs / Lista de servicios seleccionados para la siguiente vista
             string serviciosIdsJson = string.Join(",", _serviciosSeleccionados.Select(s => s.Id));
             Preferences.Set("ServiciosSeleccionadosIds", serviciosIdsJson);
 
@@ -277,7 +227,6 @@ namespace slotsi_citas.ViewModel
             Servicios.Clear();
             foreach (var serv in filtrados)
             {
-                // Preservar el estado de selección si ya estaba agregado
                 serv.EsSeleccionado = _serviciosSeleccionados.Any(s => s.Id == serv.Id);
                 Servicios.Add(serv);
             }
@@ -296,7 +245,6 @@ namespace slotsi_citas.ViewModel
         private async Task<string?> ObtenerNegocioIdDeSesionAsync()
         {
             string usuarioIdSesion = Preferences.Get("UsuarioIdSesion", string.Empty);
-
             if (string.IsNullOrEmpty(usuarioIdSesion))
             {
                 usuarioIdSesion = Preferences.Get("UsuarioId", string.Empty);
@@ -308,8 +256,7 @@ namespace slotsi_citas.ViewModel
                 return null;
             }
 
-            var filtroNegocio = Builders<Negocio>.Filter.Eq(n => n.UsuarioId, usuarioIdSesion);
-            var negocio = await _coleccionNegocios.Find(filtroNegocio).FirstOrDefaultAsync();
+            var negocio = await _catalogoService.ObtenerNegocioPorUsuarioAsync(usuarioIdSesion);
 
             if (negocio == null || string.IsNullOrEmpty(negocio.Id))
             {
@@ -328,8 +275,7 @@ namespace slotsi_citas.ViewModel
                 string? negocioId = await ObtenerNegocioIdDeSesionAsync();
                 if (string.IsNullOrEmpty(negocioId)) return;
 
-                var filtroServicios = Builders<Servicios>.Filter.Eq(s => s.NegocioId, negocioId);
-                var resultados = await _coleccionServicios.Find(filtroServicios).ToListAsync();
+                var resultados = await _catalogoService.ObtenerServiciosPorNegocioAsync(negocioId);
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -366,32 +312,27 @@ namespace slotsi_citas.ViewModel
                 }
             }
 
-            try
+            bool actualizado = await _catalogoService.ActualizarEstadoServicioAsync(servicio.Id!, servicio.Activo);
+            if (actualizado)
             {
-                var filtro = Builders<Servicios>.Filter.Eq(s => s.Id, servicio.Id);
-                var actualizacion = Builders<Servicios>.Update.Set(s => s.Activo, servicio.Activo);
-
-                await _coleccionServicios.UpdateOneAsync(filtro, actualizacion);
                 ServiciosActivosCount = Servicios.Count(s => s.Activo);
             }
-            catch (Exception ex)
+            else
             {
                 servicio.Activo = !servicio.Activo;
-                await Application.Current.MainPage.DisplayAlert("Error", $"Error al actualizar: {ex.Message}", "OK");
+                await Application.Current.MainPage.DisplayAlert("Error", "No se pudo actualizar el estado del servicio.", "OK");
             }
         }
-
         public async Task CrearServicioAsync()
         {
             string? negocioId = await ObtenerNegocioIdDeSesionAsync();
-
             if (string.IsNullOrEmpty(negocioId))
             {
                 await Application.Current.MainPage.DisplayAlert("Error", "No se pudo identificar el negocio", "OK");
                 return;
             }
 
-            var paginaCreacion = new Pages.EditarServicio(null, _coleccionServicios, negocioId);
+            var paginaCreacion = new Pages.EditarServicio(null, _catalogoService, _trabajadorService, negocioId);
             await Application.Current.MainPage.Navigation.PushModalAsync(paginaCreacion);
             await CargarServiciosAsync();
         }
@@ -421,12 +362,17 @@ namespace slotsi_citas.ViewModel
                     string base64Imagen = $"data:image/{extension};base64,{Convert.ToBase64String(bytesImagen)}";
                     servicio.Foto = base64Imagen;
 
-                    var filtro = Builders<Servicios>.Filter.Eq(s => s.Id, servicio.Id);
-                    var actualizacion = Builders<Servicios>.Update.Set(s => s.Foto, base64Imagen);
+                    bool guardado = await _catalogoService.ActualizarServicioAsync(servicio.Id!, servicio);
 
-                    await _coleccionServicios.UpdateOneAsync(filtro, actualizacion);
-                    await CargarServiciosAsync();
-                    await Application.Current.MainPage.DisplayAlert("Éxito", "La imagen del servicio fue actualizada correctamente.", "OK");
+                    if (guardado)
+                    {
+                        await CargarServiciosAsync();
+                        await Application.Current.MainPage.DisplayAlert("Éxito", "La imagen del servicio fue actualizada correctamente.", "OK");
+                    }
+                    else
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Error", "No se pudo guardar la imagen en el servidor.", "OK");
+                    }
                 }
             }
             catch (Exception ex)
@@ -439,7 +385,7 @@ namespace slotsi_citas.ViewModel
         {
             if (servicio == null) return;
 
-            var paginaEdicion = new Pages.EditarServicio(servicio, _coleccionServicios);
+            var paginaEdicion = new Pages.EditarServicio(servicio, _catalogoService, _trabajadorService, servicio.NegocioId);
             await Application.Current.MainPage.Navigation.PushModalAsync(paginaEdicion);
         }
     }

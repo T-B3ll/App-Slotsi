@@ -50,9 +50,8 @@ public class UsuarioRepository : IUsuarioRepository
 
     public async Task<UsuarioEntity?> BuscarPorTextoAsync(string texto, CancellationToken ct = default)
     {
-      
-        var patron = $".*{texto.Trim()}.*";
-        var regex = new BsonRegularExpression(patron, "i"); 
+        var patron = $@"^\s*{System.Text.RegularExpressions.Regex.Escape(texto.Trim())}\s*$";
+        var regex = new BsonRegularExpression(patron, "i");
 
         var filtro = Builders<UsuarioEntity>.Filter.Or(
             Builders<UsuarioEntity>.Filter.Regex(u => u.Correo, regex),

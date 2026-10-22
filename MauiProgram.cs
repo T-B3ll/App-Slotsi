@@ -49,7 +49,16 @@ public static class MauiProgram
         builder.Services.AddHttpClient<NegocioService>(c =>
             c.BaseAddress = ApiConfiguracion.UrlBase);
 
-        // --- OTROS SERVICIOS ---
+        builder.Services.AddHttpClient<CatalogoService>(c =>
+            c.BaseAddress = ApiConfiguracion.UrlBase);
+   
+
+        builder.Services.AddHttpClient<TrabajadorService>(c =>
+            c.BaseAddress = ApiConfiguracion.UrlBase);
+
+        builder.Services.AddHttpClient<CalificacionService>(c =>
+            c.BaseAddress = ApiConfiguracion.UrlBase);
+
         builder.Services.AddSingleton<RecuperacionService>();
         builder.Services.AddSingleton<SuscripcionService>();
         builder.Services.AddSingleton<EmailJSService>();
@@ -57,15 +66,18 @@ public static class MauiProgram
         // --- VIEWMODELS ---
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<CitasClienteViewModel>();
+        builder.Services.AddTransient<CatalogoServiciosViewModel>();
         builder.Services.AddTransient<UsuarioBasicoViewModel>();
+        builder.Services.AddTransient<EditarServicioViewModel>();
         builder.Services.AddTransient<RegistrarNegocioViewModel>();
         builder.Services.AddTransient<ListaTrabjadoresViewModel>();
         builder.Services.AddTransient<NuevoTrabajadorViewModel>();
         builder.Services.AddTransient<PagoSuscripcionViewModel>();
+        builder.Services.AddTransient<CrearResenaViewModel>();
+        builder.Services.AddTransient<CentroReseñasViewModel>();
         builder.Services.AddTransient<EditarPerfilViewModel>();
         builder.Services.AddTransient<RecuperarContrasenaViewModel>();
 
-        // --- PÁGINAS ---
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<CrearResena>();
         builder.Services.AddTransient<RegistroUsuarioBasico>();

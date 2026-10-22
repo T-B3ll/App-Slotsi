@@ -15,6 +15,7 @@ namespace slotsi_citas.ViewModel
     public class LoginViewModel : INotifyPropertyChanged
     {
         private readonly UsuarioService _usuarioService;
+        private readonly NegocioService _negocioService;
         private string _email;
         private string _password;
         private bool _isBusy;
@@ -42,9 +43,10 @@ namespace slotsi_citas.ViewModel
         // COMANDO DE INICIO DE SESIÓN
         public ICommand LoginCommand { get; }
 
-        public LoginViewModel(UsuarioService usuarioService)
+        public LoginViewModel(UsuarioService usuarioService, NegocioService negocioService)
         {
             _usuarioService = usuarioService;
+            _negocioService = negocioService;
             LoginCommand = new Command(async () => await ExecuteLogin());
         }
 
@@ -147,12 +149,27 @@ namespace slotsi_citas.ViewModel
             Preferences.Set("EsDuenoNegocio", usuario.TipoUsuario);
             Preferences.Set("UsuarioCorreo", usuario.Correo);
 
-            
+            Preferences.Remove("negocio_id");
+            if (usuario.TipoUsuario)
+            {
+                try
+                {
+                    var negocio = await _negocioService.ObtenerPorUsuarioIdAsync(idUsuarioString);
+                    if (!string.IsNullOrEmpty(negocio?.Id))
+                        Preferences.Set("negocio_id", negocio.Id);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"⚠️ [LOGIN] No se pudo obtener el negocio: {ex.Message}");
+                }
+            }
+
+
             Application.Current.MainPage = new AppShell();
    
 
 
-            string ruta = usuario.TipoUsuario ? "//dueñosnegocios" : "//Cita_ClientePage";
+            string ruta = usuario.TipoUsuario ? "//catalogoservicios" : "//dueñosnegocios";
 
             System.Diagnostics.Debug.WriteLine($" [LOGIN] Navegando a: {ruta}");
 

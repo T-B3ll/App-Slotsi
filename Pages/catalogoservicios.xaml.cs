@@ -1,3 +1,4 @@
+using slotsi_citas.Services;
 using slotsi_citas.ViewModel;
 
 namespace slotsi_citas.Pages
@@ -6,10 +7,10 @@ namespace slotsi_citas.Pages
 	public partial class catalogoservicios : ContentPage
 	{
 		private readonly CatalogoServiciosViewModel _vm;
-		public catalogoservicios()
+		public catalogoservicios(CatalogoService catalogoService, TrabajadorService trabajadorService)
 		{
 			InitializeComponent();
-			_vm = new CatalogoServiciosViewModel();
+			_vm = new CatalogoServiciosViewModel(catalogoService, trabajadorService);
 			BindingContext = _vm;
 		}
 

@@ -1,8 +1,7 @@
 ﻿using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
-using MongoDB.Bson;
-using MongoDB.Driver;
+using Slotsi.Shared.Dtos;
 using slotsi_citas.Models;
 using slotsi_citas.Pages;
 using slotsi_citas.Services;
@@ -25,8 +24,8 @@ namespace slotsi_citas.ViewModel
 
     public class CentroReseñasViewModel : BindableObject
     {
-        private readonly IMongoCollection<CalificacionModel> _coleccionCalificaciones;
-        private readonly IMongoCollection<BsonDocument> _coleccionNegociosBson;
+        private readonly CalificacionService _calificacionService;
+        private readonly NegocioService _negocioService;
 
         public ObservableCollection<CalificacionModel> ListaCalificaciones { get; set; } = new();
 
@@ -73,13 +72,11 @@ namespace slotsi_citas.ViewModel
 
         public ICommand SeleccionarPestanaCommand { get; }
 
-        public CentroReseñasViewModel()
+        public CentroReseñasViewModel(CalificacionService calificacionService, NegocioService negocioService)
         {
-            var client = new MongoClient(MongoDbSettings.ConnectionString);
-            var database = client.GetDatabase(MongoDbSettings.DatabaseName);
+            _calificacionService = calificacionService ?? throw new ArgumentNullException(nameof(calificacionService));
+            _negocioService = negocioService ?? throw new ArgumentNullException(nameof(negocioService));
 
-            _coleccionCalificaciones = database.GetCollection<CalificacionModel>("Calificaciones");
-            _coleccionNegociosBson = database.GetCollection<BsonDocument>("Negocios");
             IrACrearResenaCommand = new Command(async () => await NavegarACrearResena());
             SeleccionarPestanaCommand = new Microsoft.Maui.Controls.Command<string>((pestana) =>
             {
@@ -91,6 +88,7 @@ namespace slotsi_citas.ViewModel
         {
             await Shell.Current.GoToAsync(nameof(CrearResena));
         }
+
         public async Task CargarCalificacionesAsync()
         {
             try
@@ -106,94 +104,97 @@ namespace slotsi_citas.ViewModel
                     return;
                 }
 
-                FilterDefinition<CalificacionModel> filtroFinal;
+                List<CalificacionesDtos> dtos = new();
 
                 if (_rolActual == TipoRolUsuario.Negocio)
                 {
-                    var builderNegocio = Builders<BsonDocument>.Filter;
-                    FilterDefinition<BsonDocument> filtroUsuarioNegocio;
-
-                    if (ObjectId.TryParse(usuarioIdActivo, out var userObj))
+                    string negocioId = usuarioIdActivo;
+                    try
                     {
-                        filtroUsuarioNegocio = builderNegocio.Or(
-                            builderNegocio.Eq("usuario_id", userObj),
-                            builderNegocio.Eq("usuario_id", usuarioIdActivo),
-                            builderNegocio.Eq("id_usuario", userObj),
-                            builderNegocio.Eq("id_usuario", usuarioIdActivo),
-                            builderNegocio.Eq("UsuarioId", userObj),
-                            builderNegocio.Eq("UsuarioId", usuarioIdActivo)
-                        );
+                        var negocio = await _negocioService.ObtenerPorUsuarioIdAsync(usuarioIdActivo);
+                        if (negocio != null && !string.IsNullOrEmpty(negocio.Id))
+                        {
+                            negocioId = negocio.Id;
+                        }
                     }
-                    else
+                    catch
                     {
-                        filtroUsuarioNegocio = builderNegocio.Or(
-                            builderNegocio.Eq("usuario_id", usuarioIdActivo),
-                            builderNegocio.Eq("id_usuario", usuarioIdActivo),
-                            builderNegocio.Eq("UsuarioId", usuarioIdActivo)
-                        );
+
                     }
 
-                    var negocioDoc = await _coleccionNegociosBson.Find(filtroUsuarioNegocio).FirstOrDefaultAsync();
-
-                    string negocioId = negocioDoc != null ? negocioDoc["_id"].ToString() : usuarioIdActivo;
+                    var todasNegocio = await _calificacionService.ObtenerPorNegocioAsync(negocioId);
                     bool estadoCalificado = MostrarRecibidas;
+                    dtos = todasNegocio.Where(c => c.NegocioCalificado == estadoCalificado).ToList();
 
-                    var builderCal = Builders<CalificacionModel>.Filter;
-                    filtroFinal = builderCal.And(
-                        builderCal.Or(
-                            builderCal.Eq(c => c.IdNegocio, negocioId),
-                            ObjectId.TryParse(negocioId, out var negObj)
-                                ? builderCal.Eq("id_negocio", negObj)
-                                : builderCal.Eq("id_negocio", negocioId)
-                        ),
-                        builderCal.Eq(c => c.NegocioCalificado, estadoCalificado)
-                    );
+                    try
+                    {
+                        var promedioDto = await _calificacionService.ObtenerPromedioNegocioAsync(negocioId);
+                        if (promedioDto != null && MostrarRecibidas)
+                        {
+                            TotalCalificaciones = promedioDto.Total;
+                            PromedioCalificacion = promedioDto.Promedio;
+                        }
+                    }
+                    catch
+                    {
+                    }
                 }
                 else
                 {
+                    var todasCliente = await _calificacionService.ObtenerPorUsuarioAsync(usuarioIdActivo);
                     bool estadoCalificado = !MostrarRecibidas;
-
-                    var builderCal = Builders<CalificacionModel>.Filter;
-                    filtroFinal = builderCal.And(
-                        builderCal.Or(
-                            builderCal.Eq(c => c.IdUsuarioCliente, usuarioIdActivo),
-                            ObjectId.TryParse(usuarioIdActivo, out var cliObj)
-                                ? builderCal.Eq("id_usuario_cliente", cliObj)
-                                : builderCal.Eq("id_usuario_cliente", usuarioIdActivo)
-                        ),
-                        builderCal.Eq(c => c.NegocioCalificado, estadoCalificado)
-                    );
+                    dtos = todasCliente.Where(c => c.NegocioCalificado == estadoCalificado).ToList();
                 }
-
-                var lista = await _coleccionCalificaciones.Find(filtroFinal).ToListAsync();
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     ListaCalificaciones.Clear();
 
-                    if (lista != null && lista.Count > 0)
+                    if (dtos != null && dtos.Count > 0)
                     {
-                        foreach (var item in lista)
+                        foreach (var dto in dtos)
                         {
+                            var model = new CalificacionModel
+                            {
+                                Id = dto.Id,
+                                IdNegocio = dto.IdNegocio,
+                                IdColaborador = dto.IdColaborador,
+                                IdUsuarioCliente = dto.IdUsuarioCliente,
+                                RangoCalificacion = dto.RangoCalificacion,
+                                NegocioCalificado = dto.NegocioCalificado,
+                                NombreNegocio = dto.NombreNegocio ?? string.Empty,
+                                NombreUsuario = dto.NombreUsuario ?? string.Empty,
+                                Comentario = dto.Comentario ?? string.Empty
+                            };
+
                             if (_rolActual == TipoRolUsuario.Negocio)
                             {
-                                item.TituloMostrado = $"Cliente: {item.NombreUsuario}";
-                                item.SubtituloMostrado = $"Negocio: {item.NombreNegocio}";
+                                model.TituloMostrado = $"Cliente: {model.NombreUsuario}";
+                                model.SubtituloMostrado = $"Negocio: {model.NombreNegocio}";
                             }
                             else
                             {
-                                item.TituloMostrado = $"Negocio: {item.NombreNegocio}";
-                                item.SubtituloMostrado = $"Cliente: {item.NombreUsuario}";
+                                model.TituloMostrado = $"Negocio: {model.NombreNegocio}";
+                                model.SubtituloMostrado = $"Cliente: {model.NombreUsuario}";
                             }
 
-                            ListaCalificaciones.Add(item);
+                            ListaCalificaciones.Add(model);
                         }
-                        TotalCalificaciones = lista.Count;
-                        PromedioCalificacion = Math.Round(lista.Average(c => c.RangoCalificacion), 1);
+
+                        if (_rolActual != TipoRolUsuario.Negocio || !MostrarRecibidas)
+                        {
+                            TotalCalificaciones = dtos.Count;
+                            PromedioCalificacion = dtos.Count > 0 ? Math.Round(dtos.Average(c => c.RangoCalificacion), 1) : 0;
+                        }
                     }
                     else
                     {
                         LimpiarLista();
+                        if (_rolActual != TipoRolUsuario.Negocio || !MostrarRecibidas)
+                        {
+                            TotalCalificaciones = 0;
+                            PromedioCalificacion = 0;
+                        }
                     }
                 });
             }
