@@ -91,7 +91,6 @@ public static class MauiProgram
         builder.Services.AddTransient<CrearResena>();
         builder.Services.AddTransient<RegistroUsuarioBasico>();
         builder.Services.AddTransient<RegistroUsuarioNegocio>();
-        builder.Services.AddTransient<Cita_ClientePage>();
         builder.Services.AddTransient<NuevoTrabajador>();
         builder.Services.AddTransient<ListaTrabajadores>();
         builder.Services.AddTransient<CalendarioPage>();
