@@ -13,7 +13,6 @@ namespace slotsi_citas
             Routing.RegisterRoute(nameof(DueñosNegociosPage), typeof(DueñosNegociosPage));
             Routing.RegisterRoute(nameof(SeleccionarCitaPage), typeof(SeleccionarCitaPage));
             Routing.RegisterRoute(nameof(SeleccionarCitaPage), typeof(SeleccionarCitaPage));
-            Routing.RegisterRoute(nameof(Cita_ClientePage), typeof(Cita_ClientePage));
             Routing.RegisterRoute(nameof(Cita_UsuarioPage), typeof(Cita_UsuarioPage));
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
             Routing.RegisterRoute(nameof(CrearResena), typeof(CrearResena));

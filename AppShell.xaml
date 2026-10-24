@@ -34,13 +34,6 @@
         <ShellContent ContentTemplate="{DataTemplate pages:PagoSuscripcionPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Citas Cliente" Route="Cita_ClientePage">
-        <FlyoutItem.Icon>
-            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xEBCC;" Color="#2563EB" Size="22" />
-        </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:Cita_ClientePage}" />
-    </FlyoutItem>
-
     <FlyoutItem Title="Citas Barbero" Route="Cita_UsuarioPage">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FD;" Color="#2563EB" Size="22" />

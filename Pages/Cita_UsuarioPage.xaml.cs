@@ -7,14 +7,14 @@ namespace slotsi_citas.Pages;
 
 public partial class Cita_UsuarioPage : ContentPage
 {
-    private CitasClienteViewModel? ViewModel => BindingContext as CitasClienteViewModel ;
+    private CitasClientesViewModel? ViewModel => BindingContext as CitasClientesViewModel ;
 
     public Cita_UsuarioPage()
     {
         InitializeComponent();
     }
 
-    public Cita_UsuarioPage(CitasClienteViewModel viewModel) : this()
+    public Cita_UsuarioPage(CitasClientesViewModel viewModel) : this()
     {
         BindingContext = viewModel;
     }

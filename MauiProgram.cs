@@ -2,7 +2,6 @@
 using slotsi_citas.Pages;
 using slotsi_citas.Services;
 using slotsi_citas.ViewModel;
-<<<<<<< HEAD
 using slotsi_citas.ViewModels;
 using slotsi_citas.Services.Api;
 using Supabase;
@@ -83,7 +82,6 @@ public static class MauiProgram
         builder.Services.AddTransient<CrearResena>();
         builder.Services.AddTransient<RegistroUsuarioBasico>();
         builder.Services.AddTransient<RegistroUsuarioNegocio>();
-        builder.Services.AddTransient<Cita_ClientePage>();
         builder.Services.AddTransient<NuevoTrabajador>();
         builder.Services.AddTransient<ListaTrabajadores>();
         builder.Services.AddTransient<CalendarioPage>();

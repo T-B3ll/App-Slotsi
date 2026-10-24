@@ -12,7 +12,7 @@ using System.Windows.Input;
 
 namespace slotsi_citas.ViewModel
 {
-    public class CitasClienteViewModel : BindableObject
+    public class CitasClientesViewModel : BindableObject
     {
         private readonly MongoService _mongoService;
         private DateTime _fechaSeleccionada;
@@ -38,7 +38,7 @@ namespace slotsi_citas.ViewModel
         public ICommand CambiarAFechaDeHoyCommand { get; }
         public ICommand AgendarCitaClienteCommand { get; }
 
-        public CitasClienteViewModel(MongoService mongoService)
+        public CitasClientesViewModel(MongoService mongoService)
         {
             _mongoService = mongoService;
 
@@ -53,7 +53,7 @@ namespace slotsi_citas.ViewModel
             _ = CargarRangosHorariosAsync();
         }
 
-        public CitasClienteViewModel() : this(new MongoService())
+        public CitasClientesViewModel() : this(new MongoService())
         {
         }
 

@@ -14,34 +14,6 @@ namespace slotsi_citas.ViewModel
 {
     public class CitasClienteViewModel : BindableObject
     {
-        private readonly MongoService _mongoService;
-        private DateTime _fechaSeleccionada;
-
-        public DateTime FechaSeleccionada
-        {
-            get => _fechaSeleccionada;
-            set
-            {
-                if (_fechaSeleccionada != value)
-                {
-                    _fechaSeleccionada = value;
-                    OnPropertyChanged();
-                    _ = CargarRangosHorariosAsync();
-                }
-            }
-        }
-
-        public ObservableCollection<RangoHorario> RangosHorarios { get; } = new ObservableCollection<RangoHorario>();
-
-        public ICommand SemanaAnteriorCommand { get; }
-        public ICommand SemanaSiguienteCommand { get; }
-        public ICommand CambiarAFechaDeHoyCommand { get; }
-        public ICommand AgendarCitaClienteCommand { get; }
-
-        // Constructor con Inyección de Dependencias
-        public CitasClienteViewModel(MongoService mongoService)
-        {
-            _mongoService = mongoService;
 
     }
 }
