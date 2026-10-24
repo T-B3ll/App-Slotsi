@@ -27,45 +27,43 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="4">
-                <Label Text="Nombre del Servicio" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                <Label Text="Nombre del Servicio" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
                 <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
-                    <Entry Text="{Binding Nombre}" TextColor="#374151" Placeholder="Ej. Corte Clásico" HeightRequest="45" />
+                    <Entry Text="{Binding Nombre}" TextColor="#1E293B" Placeholder="Ej. Corte Clásico" HeightRequest="45" />
                 </Border>
             </VerticalStackLayout>
 
             <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
                 <VerticalStackLayout Grid.Column="0" Spacing="4">
-                    <Label Text="Precio ($)" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                    <Label Text="Precio ($)" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
                     <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
-                        <Entry Text="{Binding Precio}" TextColor="#374151" Keyboard="Numeric" HeightRequest="45" />
+                        <Entry Text="{Binding Precio}" TextColor="#1E293B" Keyboard="Numeric" HeightRequest="45" />
                     </Border>
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Grid.Column="1" Spacing="4">
-                    <Label Text="Duración (min)" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                    <Label Text="Duración (min)" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
                     <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
-                        <Entry Text="{Binding DuracionMinutos}" TextColor="#374151" Keyboard="Numeric" HeightRequest="45" />
+                        <Entry Text="{Binding DuracionMinutos}" TextColor="#1E293B" Keyboard="Numeric" HeightRequest="45" />
                     </Border>
                 </VerticalStackLayout>
             </Grid>
 
             <VerticalStackLayout Spacing="4">
-                <Label Text="Categoría" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                <Label Text="Categoría" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
                 <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
-                    <Entry Text="{Binding Categoria}" TextColor="#374151" Placeholder="Ej. Barbería" HeightRequest="45" />
+                    <Entry Text="{Binding Categoria}" TextColor="#1E293B" Placeholder="Ej. Barbería" HeightRequest="45" />
                 </Border>
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="4">
-                <Label Text="Descripción" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                <Label Text="Descripción" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
                 <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,4" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
-                    <Editor Text="{Binding Descripcion}" TextColor="#374151" HeightRequest="90" AutoSize="Disabled"/>
+                    <Editor Text="{Binding Descripcion}" TextColor="#1E293B" HeightRequest="90" AutoSize="Disabled"/>
                 </Border>
             </VerticalStackLayout>
-
-            <!-- Sección de Colaboradores Habilitados -->
             <VerticalStackLayout Spacing="6" Margin="0,5">
-                <Label Text="Colaboradores Habilitados" FontSize="13" TextColor="#374151" FontAttributes="Bold"/>
+                <Label Text="Colaboradores Habilitados" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
 
                 <CollectionView ItemsSource="{Binding Colaboradores}" HeightRequest="160">
                     <CollectionView.ItemTemplate>
