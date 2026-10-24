@@ -1,5 +1,4 @@
 using slotsi_citas.ViewModel;
-using MongoDB.Driver;
 
 namespace slotsi_citas.Pages;
 
@@ -7,10 +6,10 @@ public partial class ListaTrabajadores : ContentPage
 {
     private readonly ListaTrabjadoresViewModel _viewModel;
 
-    public ListaTrabajadores()
+    public ListaTrabajadores(ListaTrabjadoresViewModel viewModel)
     {
         InitializeComponent();
-        _viewModel = new ListaTrabjadoresViewModel();
+        _viewModel = viewModel;
         BindingContext = _viewModel;
     }
 
@@ -24,12 +23,12 @@ public partial class ListaTrabajadores : ContentPage
     }
     private async void OnEstadotrabajadorToggled(object sender, ToggledEventArgs e)
     {
-        if (sender is Switch switchControl && switchControl.BindingContext is Models.Trabajador trab)
+        if (sender is Switch sw && sw.BindingContext is Models.Trabajador trab)
         {
-            if (BindingContext is ViewModel.ListaTrabjadoresViewModel _viewModel)
-            {
-                await _viewModel.CambiarEstadoActivoAsync(trab);
-            }
+            if (e.Value == trab.Activo) return;
+
+            trab.Activo = e.Value;
+            await _viewModel.CambiarEstadoActivoAsync(trab);
         }
     }
 }

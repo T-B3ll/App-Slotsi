@@ -1,3 +1,4 @@
+using slotsi_citas.Services;
 using slotsi_citas.ViewModel;
 
 namespace slotsi_citas.Pages;
@@ -5,10 +6,12 @@ namespace slotsi_citas.Pages;
 public partial class CatalogoCliente : ContentPage
 {
     private readonly CatalogoServiciosViewModel _vm;
-    public CatalogoCliente()
+    private bool _isLoading = false;
+    public CatalogoCliente(CatalogoService catalogoService, TrabajadorService trabajadorService)
 	{
 		InitializeComponent();
-        _vm = new CatalogoServiciosViewModel();
+        _vm = new CatalogoServiciosViewModel(catalogoService,trabajadorService);
+
         BindingContext = _vm;
     }
     protected override async void OnAppearing()

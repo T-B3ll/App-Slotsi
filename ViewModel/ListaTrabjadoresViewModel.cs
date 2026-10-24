@@ -1,10 +1,9 @@
 ﻿using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
-using MongoDB.Bson;
-using MongoDB.Driver;
 using slotsi_citas.Models;
 using slotsi_citas.Pages;
 using slotsi_citas.Services;
+using slotsi_citas.Services.Api;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,7 +18,8 @@ namespace slotsi_citas.ViewModel
 {
     public class ListaTrabjadoresViewModel : INotifyPropertyChanged
     {
-        private readonly IMongoCollection<Trabajador> _trabajadoresCollection;
+        private readonly TrabajadorService _trabajadorService;
+        private readonly NegocioService _negocioService;
 
         public ICommand EditarTrabajadorCommand { get; }
         public ICommand IrANuevoTrabajadorCommand { get; }
@@ -41,23 +41,14 @@ namespace slotsi_citas.ViewModel
 
         public ObservableCollection<Trabajador> Trabajadores { get; set; } = new ObservableCollection<Trabajador>();
 
-        public ListaTrabjadoresViewModel()
+        public ListaTrabjadoresViewModel(TrabajadorService trabajadorService, NegocioService negocioService)
         {
-            CambiarEstadoActivoCommand = new Microsoft.Maui.Controls.Command<Trabajador>(async (trabajador) => await CambiarEstadoActivoAsync(trabajador));
+            _trabajadorService = trabajadorService;
+            _negocioService = negocioService;
+
+            CambiarEstadoActivoCommand = new Command<Trabajador>(async (t) => await CambiarEstadoActivoAsync(t));
             IrANuevoTrabajadorCommand = new Command(async () => await IrANuevoTrabajadorAsync());
-            EditarTrabajadorCommand = new Microsoft.Maui.Controls.Command<Trabajador>(async (trabajador) => await EditarTrabajadorAsync(trabajador));
-
-            try
-            {
-                var client = new MongoClient(MongoDbSettings.ConnectionString);
-                var database = client.GetDatabase(MongoDbSettings.DatabaseName);
-
-                _trabajadoresCollection = database.GetCollection<Trabajador>("Trabajadores");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"[ERROR MONGODB INIT] {ex.Message}");
-            }
+            EditarTrabajadorCommand = new Command<Trabajador>(async (t) => await EditarTrabajadorAsync(t));
         }
 
         private async Task EditarTrabajadorAsync(Trabajador trabajador)
@@ -79,8 +70,6 @@ namespace slotsi_citas.ViewModel
 
         public async Task CargarTrabajadoresAsync()
         {
-            if (_trabajadoresCollection == null) return;
-
             try
             {
                 string usuarioId = Preferences.Get("UsuarioId", string.Empty);
@@ -91,30 +80,22 @@ namespace slotsi_citas.ViewModel
                     return;
                 }
 
-                if (!ObjectId.TryParse(usuarioId, out ObjectId usuarioObjectId))
+                var negocioId = Preferences.Get("negocio_id", string.Empty);
+
+                if (string.IsNullOrEmpty(negocioId))
                 {
-                    Debug.WriteLine($"[MONGODB ERROR] El UsuarioId '{usuarioId}' no es un ObjectId válido.");
-                    return;
+                    var negocio = await _negocioService.ObtenerPorUsuarioIdAsync(usuarioId);
+                    if (negocio == null || string.IsNullOrEmpty(negocio.Id))
+                    {
+                        Debug.WriteLine("[API] No se encontró ningún negocio vinculado a este UsuarioId.");
+                        return;
+                    }
+                    negocioId = negocio.Id;
+                    Preferences.Set("negocio_id", negocioId);
                 }
 
-                var client = new MongoClient(MongoDbSettings.ConnectionString);
-                var database = client.GetDatabase(MongoDbSettings.DatabaseName);
-                var negociosCollection = database.GetCollection<BsonDocument>("Negocios");
-
-                var filtroNegocio = Builders<BsonDocument>.Filter.Eq("UsuarioId", usuarioObjectId);
-                var negocioDoc = await negociosCollection.Find(filtroNegocio).FirstOrDefaultAsync();
-
-                if (negocioDoc == null)
-                {
-                    Debug.WriteLine("[MONGODB ERROR] No se encontró ningún negocio vinculado a este UsuarioId.");
-                    return;
-                }
-
-                string negocioIdActual = negocioDoc["_id"].ToString();
-                Preferences.Set("negocio_id", negocioIdActual);
-
-                var filtroTrabajadores = Builders<Trabajador>.Filter.Eq(t => t.NegocioId, negocioIdActual);
-                var lista = await _trabajadoresCollection.Find(filtroTrabajadores).ToListAsync();
+                var dtos = await _trabajadorService.ObtenerPorNegocioAsync(negocioId);
+                var lista = dtos.Select(d => d.ToModel()).ToList();
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -128,7 +109,8 @@ namespace slotsi_citas.ViewModel
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"[ERROR MONGODB FETCH] {ex.Message}");
+                Debug.WriteLine($"[ERROR API TRABAJADORES] {ex}");
+                await Application.Current.MainPage.DisplayAlert("Error", ApiException.MensajePara(ex), "OK");
             }
         }
 
@@ -153,17 +135,14 @@ namespace slotsi_citas.ViewModel
 
             try
             {
-                var filtro = Builders<Trabajador>.Filter.Eq(t => t.Id, trabajador.Id);
-                var actualizacion = Builders<Trabajador>.Update.Set(t => t.Activo, trabajador.Activo);
-
-                await _trabajadoresCollection.UpdateOneAsync(filtro, actualizacion);
-
+                await _trabajadorService.CambiarEstadoAsync(trabajador.Id, trabajador.Activo);
+                trabajador.Activo = trabajador.Activo;
                 TrabajadoresActivosCount = Trabajadores.Count(t => t.Activo);
             }
             catch (Exception ex)
             {
                 trabajador.Activo = !trabajador.Activo;
-                await Application.Current.MainPage.DisplayAlert("Error", $"Error al actualizar: {ex.Message}", "OK");
+                await Application.Current.MainPage.DisplayAlert("Error", $"Error al actualizar: {ApiException.MensajePara(ex)}", "OK");
             }
         }
 

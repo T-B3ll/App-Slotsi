@@ -48,7 +48,7 @@
         <ShellContent ContentTemplate="{DataTemplate pages:Cita_UsuarioPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Catálogo de Servicios" Route="cataloservicios">
+    <FlyoutItem Title="Catálogo de Servicios" Route="catalogoservicios">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8EF;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>

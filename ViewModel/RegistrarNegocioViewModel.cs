@@ -5,6 +5,8 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
@@ -22,7 +24,6 @@ namespace slotsi_citas.ViewModel
         private Usuario _usuarioData = new Usuario();
         private Negocio _negocioData = new Negocio();
 
-        // ✅ NUEVA PROPIEDAD PARA LA LISTA ACUMULATIVA DE DOCUMENTOS
         private ObservableCollection<string> _listaDocumentos = new ObservableCollection<string>();
         public ObservableCollection<string> ListaDocumentos
         {
@@ -30,7 +31,6 @@ namespace slotsi_citas.ViewModel
             set { _listaDocumentos = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasDocumentos)); }
         }
 
-        // ✅ PROPIEDAD AUXILIAR PARA MOSTRAR/OCULTAR MENSAJES EN EL XAML
         public bool HasDocumentos => ListaDocumentos.Count > 0;
 
         public ObservableCollection<DiaHorarioUI> ListaDiasHorario { get; set; } = new ObservableCollection<DiaHorarioUI>();
@@ -39,11 +39,14 @@ namespace slotsi_citas.ViewModel
         public Command SeleccionarDocumentoCommand { get; }
         public Command RegistrarCommand { get; }
 
-        public RegistrarNegocioViewModel()
+        public RegistrarNegocioViewModel(
+            SupabaseStorageService storageService,
+            NegocioService negocioService,
+            UsuarioService usuarioService)
         {
-            _storageService = new SupabaseStorageService();
-            _negocioService = new NegocioService();
-            _usuarioService = new UsuarioService();
+            _storageService = storageService;
+            _negocioService = negocioService;
+            _usuarioService = usuarioService;
 
             SeleccionarFotoCommand = new Command(async () => await SeleccionarFotoAsync());
             SeleccionarDocumentoCommand = new Command(async () => await SeleccionarDocumentoAsync());
@@ -103,7 +106,6 @@ namespace slotsi_citas.ViewModel
             set { _negocioData.UrlFotoPerfil = value; OnPropertyChanged(); }
         }
 
-        
         public string UrlDocumentoTitulo
         {
             get => _negocioData.UrlDocumentoTitulo;
@@ -126,7 +128,6 @@ namespace slotsi_citas.ViewModel
             }
         }
 
-
         private List<string> _urlsDocumentosSubidos = new List<string>();
 
         private async Task RegistrarNegocioAsync()
@@ -134,7 +135,6 @@ namespace slotsi_citas.ViewModel
             if (!string.IsNullOrWhiteSpace(Correo))
             {
                 var usuarioExistente = await _usuarioService.ObtenerPorCorreoAsync(Correo);
-
                 if (usuarioExistente != null)
                 {
                     await Application.Current.MainPage.DisplayAlert(
@@ -161,11 +161,31 @@ namespace slotsi_citas.ViewModel
             {
                 _usuarioData.TipoUsuario = true;
                 _usuarioData.EstaActivo = true;
+
+                string passwordHash;
+                using (var sha256 = SHA256.Create())
+                {
+                    byte[] bytes = Encoding.UTF8.GetBytes(Contrasena);
+                    byte[] hash = sha256.ComputeHash(bytes);
+                    StringBuilder sb = new StringBuilder();
+                    foreach (byte b in hash)
+                    {
+                        sb.Append(b.ToString("x2"));
+                    }
+                    passwordHash = sb.ToString();
+                }
+
+                _usuarioData.Contrasena = passwordHash;
+
                 await _usuarioService.CrearAsync(_usuarioData);
 
-                if (string.IsNullOrEmpty(_usuarioData.Id))
+                var usuarioCreado = await _usuarioService.ObtenerPorCorreoAsync(_usuarioData.Correo);
+
+                if (usuarioCreado == null || string.IsNullOrEmpty(usuarioCreado.Id))
                     throw new Exception("Error al generar ID de usuario.");
 
+                _usuarioData.Id = usuarioCreado.Id;
+                _negocioData.Nombre = _usuarioData.NombreCompleto;
                 _negocioData.UsuarioId = _usuarioData.Id;
                 _negocioData.FechaRegistro = DateTime.UtcNow;
 
@@ -178,10 +198,10 @@ namespace slotsi_citas.ViewModel
                 _negocioData.DiasCerrados = new List<string>();
 
                 var mapDias = new Dictionary<string, string>
-        {
-            {"Lunes","Lun"}, {"Martes","Mar"}, {"Miércoles","Mie"},
-            {"Jueves","Jue"}, {"Viernes","Vie"}, {"Sábado","Sab"}, {"Domingo","Dom"}
-        };
+                {
+                    {"Lunes","Lun"}, {"Martes","Mar"}, {"Miércoles","Mie"},
+                    {"Jueves","Jue"}, {"Viernes","Vie"}, {"Sábado","Sab"}, {"Domingo","Dom"}
+                };
 
                 foreach (var diaUI in ListaDiasHorario)
                 {
@@ -193,8 +213,8 @@ namespace slotsi_citas.ViewModel
                     {
                         var pausas = diaUI.TienePausa
                             ? new List<string> {
-                        diaUI.PausaInicio.ToString("hh\\:mm"),
-                        diaUI.PausaFin.ToString("hh\\:mm")
+                                diaUI.PausaInicio.ToString("hh\\:mm"),
+                                diaUI.PausaFin.ToString("hh\\:mm")
                               }
                             : new List<string>();
 
@@ -239,7 +259,6 @@ namespace slotsi_citas.ViewModel
             catch (Exception ex) { await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK"); }
         }
 
-
         private async Task SeleccionarDocumentoAsync()
         {
             try
@@ -260,13 +279,8 @@ namespace slotsi_citas.ViewModel
                     string fileName = $"doc_{Guid.NewGuid()}.pdf";
                     string url = await _storageService.SubirArchivoAsync(stream, "documentos", fileName);
 
-                 
                     ListaDocumentos.Add(file.FileName);
-
-                   
                     _urlsDocumentosSubidos.Add(url);
-
-                   
                     OnPropertyChanged(nameof(HasDocumentos));
 
                     await Application.Current.MainPage.DisplayAlert("Éxito", "Documento agregado a la lista.", "OK");

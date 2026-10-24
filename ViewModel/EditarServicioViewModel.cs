@@ -1,8 +1,8 @@
 ﻿using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
-using MongoDB.Bson;
-using MongoDB.Driver;
 using slotsi_citas.Models;
+using slotsi_citas.Services;
+using Slotsi.Shared.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,7 +15,6 @@ namespace slotsi_citas.ViewModel
 {
     public class ColaboradorSeleccionable : BindableObject
     {
-        public ObjectId ObjectId { get; set; }
         public string Id { get; set; } = string.Empty;
         public string Nombre { get; set; } = string.Empty;
 
@@ -29,8 +28,9 @@ namespace slotsi_citas.ViewModel
 
     public class EditarServicioViewModel : BindableObject
     {
+        private readonly CatalogoService _catalogoService;
+        private readonly TrabajadorService _trabajadorService;
         private readonly string _negocioId;
-        private readonly IMongoCollection<Servicios> _coleccionServicios;
         private readonly Servicios? _servicioOriginal;
         private readonly bool _esNuevo;
 
@@ -66,13 +66,13 @@ namespace slotsi_citas.ViewModel
         public ICommand GuardarCommand { get; }
         public ICommand CancelarCommand { get; }
 
-        public EditarServicioViewModel(Servicios? servicio, IMongoCollection<Servicios> coleccion, string negocioId = "")
+        public EditarServicioViewModel(Servicios? servicio, CatalogoService catalogoService, TrabajadorService trabajadorService, string negocioId = "")
         {
-            _coleccionServicios = coleccion;
+            _catalogoService = catalogoService ?? throw new ArgumentNullException(nameof(catalogoService));
+            _trabajadorService = trabajadorService ?? throw new ArgumentNullException(nameof(trabajadorService));
             _servicioOriginal = servicio;
             _esNuevo = (servicio == null);
 
-            // Obtener negocioId del servicio si es edición
             _negocioId = !_esNuevo && servicio != null ? servicio.NegocioId : negocioId;
 
             if (!_esNuevo && servicio != null)
@@ -91,7 +91,6 @@ namespace slotsi_citas.ViewModel
             GuardarCommand = new Command(async () => await GuardarCambiosAsync());
             CancelarCommand = new Command(async () => await Application.Current.MainPage.Navigation.PopModalAsync());
 
-            // Cargar colaboradores del negocio
             _ = CargarColaboradoresAsync();
         }
 
@@ -101,41 +100,21 @@ namespace slotsi_citas.ViewModel
 
             try
             {
-                var bd = _coleccionServicios.Database;
-                var coleccionColaboradores = bd.GetCollection<BsonDocument>("Trabajadores");
-
-                FilterDefinition<BsonDocument> filtro;
-                if (ObjectId.TryParse(_negocioId, out ObjectId negocioObjectId))
-                {
-                    filtro = Builders<BsonDocument>.Filter.Or(
-                        Builders<BsonDocument>.Filter.Eq("negocio_id", negocioObjectId),
-                        Builders<BsonDocument>.Filter.Eq("negocio_id", _negocioId)
-                    );
-                }
-                else
-                {
-                    filtro = Builders<BsonDocument>.Filter.Eq("negocio_id", _negocioId);
-                }
-
-                var listaColaboradores = await coleccionColaboradores.Find(filtro).ToListAsync();
+                var listaDtos = await _trabajadorService.ObtenerPorNegocioAsync(_negocioId);
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     Colaboradores.Clear();
-                    foreach (var doc in listaColaboradores)
+                    foreach (var colab in listaDtos)
                     {
-                        var colabIdObj = doc.Contains("_id") ? doc["_id"].AsObjectId : ObjectId.Empty;
-                        string nombreColab = doc.Contains("nombre") ? doc["nombre"].AsString : "Sin Nombre";
-
                         bool estaHabilitado = _servicioOriginal != null
                             && _servicioOriginal.ColaboradoresHabilitados != null
-                            && _servicioOriginal.ColaboradoresHabilitados.Contains(colabIdObj);
+                            && _servicioOriginal.ColaboradoresHabilitados.Contains(colab.Id);
 
                         Colaboradores.Add(new ColaboradorSeleccionable
                         {
-                            ObjectId = colabIdObj,
-                            Id = colabIdObj.ToString(),
-                            Nombre = nombreColab,
+                            Id = colab.Id,
+                            Nombre = colab.Nombre ?? "Sin Nombre",
                             IsSeleccionado = estaHabilitado
                         });
                     }
@@ -184,10 +163,9 @@ namespace slotsi_citas.ViewModel
                 return;
             }
 
-            // Obtener lista de ObjectId de colaboradores seleccionados
             var colaboradoresSeleccionados = Colaboradores
                 .Where(c => c.IsSeleccionado)
-                .Select(c => c.ObjectId)
+                .Select(c => c.Id)
                 .ToList();
 
             try
@@ -214,22 +192,36 @@ namespace slotsi_citas.ViewModel
                         ColaboradoresHabilitados = colaboradoresSeleccionados
                     };
 
-                    await _coleccionServicios.InsertOneAsync(nuevoServicio);
+                    bool creado = await _catalogoService.CrearServicioAsync(nuevoServicio);
+                    if (!creado)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Error", "No se pudo crear el servicio en el servidor.", "OK");
+                        return;
+                    }
                 }
                 else
                 {
-                    var filtro = Builders<Servicios>.Filter.Eq(s => s.Id, Id);
-                    var actualizacion = Builders<Servicios>.Update
-                        .Set(s => s.Nombre, Nombre)
-                        .Set(s => s.Precio, Precio)
-                        .Set(s => s.DuracionMinutos, DuracionMinutos)
-                        .Set(s => s.Categoria, Categoria)
-                        .Set(s => s.Descripcion, Descripcion)
-                        .Set(s => s.DisponibleDomicilio, DisponibleDomicilio)
-                        .Set(s => s.Foto, Foto)
-                        .Set(s => s.ColaboradoresHabilitados, colaboradoresSeleccionados);
+                    var servicioActualizado = new Servicios
+                    {
+                        Id = Id,
+                        NegocioId = _negocioId,
+                        Nombre = Nombre,
+                        Precio = Precio,
+                        DuracionMinutos = DuracionMinutos,
+                        Categoria = Categoria,
+                        Descripcion = Descripcion,
+                        DisponibleDomicilio = DisponibleDomicilio,
+                        Foto = Foto,
+                        Activo = _servicioOriginal?.Activo ?? true,
+                        ColaboradoresHabilitados = colaboradoresSeleccionados
+                    };
 
-                    await _coleccionServicios.UpdateOneAsync(filtro, actualizacion);
+                    bool actualizado = await _catalogoService.ActualizarServicioAsync(Id, servicioActualizado);
+                    if (!actualizado)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Error", "No se pudieron actualizar los cambios en el servidor.", "OK");
+                        return;
+                    }
 
                     if (_servicioOriginal != null)
                     {

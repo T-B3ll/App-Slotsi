@@ -4,11 +4,11 @@ namespace slotsi_citas.Pages;
 
 public partial class CentroCalificaciones : ContentPage
 {
-	private readonly CentroReseñasViewModel _vm;
-    public CentroCalificaciones()
-	{
-		InitializeComponent();
-        _vm = new CentroReseñasViewModel();
+    private readonly CentroReseñasViewModel _vm;
+    public CentroCalificaciones(CentroReseñasViewModel vm)
+    {
+        InitializeComponent();
+        _vm = vm;
         BindingContext = _vm;
     }
 

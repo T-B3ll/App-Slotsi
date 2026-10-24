@@ -1,33 +1,31 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
-using slotsi_citas.Models;
+﻿using slotsi_citas.Models;
+using slotsi_citas.Services.Api;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
+
 namespace slotsi_citas.Services
 {
-    public class NegocioService
+    public class NegocioService : ApiServiceBase
     {
-
-        private readonly IMongoCollection<Negocio> _negocios;
-
-
-
-        public NegocioService()
+        public NegocioService(HttpClient http) : base(http)
         {
-            var client = new MongoClient(MongoDbSettings.ConnectionString);
-
-            var database = client.GetDatabase(MongoDbSettings.DatabaseName);
-            _negocios = database.GetCollection<Negocio>("Negocios");
         }
 
         public async Task CrearAsync(Negocio negocio)
         {
-            await _negocios.InsertOneAsync(negocio);
+            await PostAsync<Negocio>("api/negocios", negocio);
         }
 
         public async Task<List<Negocio>> ObtenerTodosAsync()
         {
-            
-            return await _negocios.Find(_ => true).ToListAsync();
+            return await GetAsync<List<Negocio>>("api/negocios");
+        }
+
+        public async Task<Negocio?> ObtenerPorUsuarioIdAsync(string usuarioId)
+        {
+            return await GetOrNullAsync<Negocio>($"api/negocios/usuario/{usuarioId}");
         }
 
         public async Task ActualizarAsync(Negocio negocio)
@@ -35,8 +33,7 @@ namespace slotsi_citas.Services
             if (string.IsNullOrEmpty(negocio.Id))
                 throw new Exception("El negocio no tiene un ID válido.");
 
-            var filter = Builders<Negocio>.Filter.Eq("_id", ObjectId.Parse(negocio.Id));
-            await _negocios.ReplaceOneAsync(filter, negocio);
+            await PutAsync($"api/negocios/{negocio.Id}", negocio);
         }
     }
 }
