@@ -25,16 +25,13 @@ namespace slotsi_citas
         }
         private async void OnCerrarSesionClicked(object sender, EventArgs e)
         {
-            bool confirmar = await DisplayAlert("Cerrar Sesión", "¿Deseas salir de la cuenta?", "Sí", "Cancelar");
-            if (!confirmar) return;
-
-            Preferences.Remove("UsuarioId");
-            Preferences.Remove("UsuarioIdSesion");
-            Preferences.Remove("EsDuenoNegocio");
-            Preferences.Remove("UsuarioCorreo");
-
-            var serviceProvider = Handler?.MauiContext?.Services;
-            if (serviceProvider != null)
+            botonCerrarSesion.IsEnabled = false;
+            try
+            {
+                await _auth.CerrarSesionAsync(); // revoca el token y borra la sesión local[cite: 18]
+                await Shell.Current.GoToAsync(nameof(LoginPage));
+            }
+            finally
             {
                 var loginPage = serviceProvider.GetRequiredService<Pages.LoginPage>();
                 Application.Current.MainPage = new NavigationPage(loginPage);
