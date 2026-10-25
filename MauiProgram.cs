@@ -106,6 +106,7 @@ public static class MauiProgram
         builder.Services.AddTransient<CatalogoCliente>();
         builder.Services.AddTransient<RecuperarContra>();
         builder.Services.AddTransient<NuevaContra>();
+        builder.Services.AddTransient<ReportesMenuPage>();
 
 
         builder.Services.AddTransient<DueñosNegociosViewModel>();

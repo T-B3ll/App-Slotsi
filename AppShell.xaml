@@ -68,7 +68,7 @@
         <ShellContent ContentTemplate="{DataTemplate pages:SeleccionarCitaPage}" />
     </FlyoutItem>
 
-    <!-- NUEVO: Acceso directo a la pantalla de horarios -->
+
     <FlyoutItem Title="Horarios Disponibles" Route="HorariosDisponiblesPage">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8B5;" Color="#2563EB" Size="22" />
@@ -103,6 +103,15 @@
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:EditarPerfilPage}" />
     </FlyoutItem>
+
+
+    <FlyoutItem Title="Reportes" Route="ReportesMenuPage">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8B5;" Color="#2563EB" Size="22" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:ReportesMenuPage}" />
+    </FlyoutItem>
+
 
     <Shell.FlyoutFooter>
         <Border BackgroundColor="#FEF2F2" Margin="16,10,16,20" Padding="12" Stroke="#FEE2E2" StrokeShape="RoundRectangle 10">
