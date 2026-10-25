@@ -35,7 +35,7 @@ public class CitaEntity
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
     public DateTime FechaActualizacion { get; set; } = DateTime.UtcNow;
 
-    // Snapshot del cliente (para no tener que hacer JOIN)
+
     public string ClienteNombre { get; set; } = string.Empty;
     public string ClienteTelefono { get; set; } = string.Empty;
 }

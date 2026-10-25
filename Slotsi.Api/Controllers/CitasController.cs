@@ -120,7 +120,7 @@ public class CitasController : ControllerBase
                     NombreServicio = g.Key,
                     TotalCitas = g.Count(),
                     IngresosTotales = 0,
-                    DuracionMinutos = (int)g.Average(x => x.Duracion) 
+                    DuracionMinutos = (int)g.Average(x => x.Duracion)
                 })
                 .OrderByDescending(x => x.TotalCitas)
                 .Take(5)
@@ -147,27 +147,32 @@ public class CitasController : ControllerBase
                 citas = citas.Where(c => c.NegocioId.ToString() == negocioId).ToList();
             }
 
-            var fechaLimite = DateTime.UtcNow;
-            if (periodo == "semana")
-            {
-                fechaLimite = DateTime.UtcNow.AddDays(-7);
-            }
-            else if (periodo == "mes")
-            {
-                fechaLimite = DateTime.UtcNow.AddMonths(-1);
-            }
+        
+            var hoyLocal = DateTime.Now.Date; 
+            int diasParaLunes = ((int)hoyLocal.DayOfWeek + 6) % 7;
+            var inicioSemana = hoyLocal.AddDays(-diasParaLunes);
+            var finSemana = inicioSemana.AddDays(7);
 
-            citas = citas.Where(c => c.FechaHoraInicio >= fechaLimite).ToList();
+           
+            citas = citas.Where(c =>
+            {
+                var fechaLocal = c.FechaHoraInicio.ToLocalTime();
+                return fechaLocal >= inicioSemana && fechaLocal < finSemana;
+            }).ToList();
 
             var demanda = citas
                 .Where(c => c.Estado != "Cancelada")
-                .GroupBy(c => c.FechaHoraInicio.DayOfWeek)
+                .GroupBy(c => new
+                {
+                    Dia = c.FechaHoraInicio.ToLocalTime().DayOfWeek,
+                    Hora = c.FechaHoraInicio.ToLocalTime().Hour
+                })
                 .Select(g => new DemandaSemanalDto
                 {
-                    DiaSemana = g.Key.ToString(),
+                    DiaSemana = g.Key.Dia.ToString(),
+                    Hora = g.Key.Hora,
                     TotalCitas = g.Count()
                 })
-                .OrderBy(x => x.DiaSemana)
                 .ToList();
 
             return Ok(demanda);

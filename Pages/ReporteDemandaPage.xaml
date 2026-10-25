@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="slotsi_citas.Pages.ReporteDemandaPage"
+             Title="Demanda Semanal"
+             BackgroundColor="#F8FAFC"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <Grid Grid.Row="0" BackgroundColor="#F8FAFC" Padding="16, 14">
+            <Grid ColumnDefinitions="Auto, *">
+                <Label Grid.Column="0" 
+                       Text="&#xE5C4;" 
+                       FontFamily="MaterialIcons" 
+                       FontSize="26" 
+                       TextColor="#2563EB" 
+                       VerticalOptions="Center"
+                       Margin="0,0,10,0">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnVolverClicked"/>
+                    </Label.GestureRecognizers>
+                </Label>
+                <Label Grid.Column="1" 
+                       Text="Demanda Semanal" 
+                       FontSize="19" 
+                       FontAttributes="Bold" 
+                       TextColor="#2563EB" 
+                       HorizontalOptions="Center" 
+                       VerticalOptions="Center"/>
+            </Grid>
+        </Grid>
+
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="12" Spacing="12">
+
+                <Border StrokeShape="RoundRectangle 12" 
+                        BackgroundColor="White" 
+                        Stroke="#E5E7EB" 
+                        StrokeThickness="1" 
+                        Padding="12,16">
+                    <VerticalStackLayout x:Name="MatrizContainer" Spacing="4" />
+                </Border>
+
+                <Border StrokeShape="RoundRectangle 12" 
+                        BackgroundColor="White" 
+                        Stroke="#E5E7EB" 
+                        StrokeThickness="1" 
+                        Padding="12">
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Nivel de Demanda" FontSize="11" FontAttributes="Bold" TextColor="#6B7280" />
+                        <FlexLayout Wrap="Wrap" JustifyContent="Start" AlignItems="Center">
+                            <HorizontalStackLayout Spacing="4" Margin="0,0,10,0">
+                                <BoxView Color="#F1F5F9" WidthRequest="14" HeightRequest="14" CornerRadius="3" />
+                                <Label Text="Vacío" FontSize="10" TextColor="#4B5563" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="4" Margin="0,0,10,0">
+                                <BoxView Color="#DBEAFE" WidthRequest="14" HeightRequest="14" CornerRadius="3" />
+                                <Label Text="Bajo" FontSize="10" TextColor="#4B5563" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="4" Margin="0,0,10,0">
+                                <BoxView Color="#93C5FD" WidthRequest="14" HeightRequest="14" CornerRadius="3" />
+                                <Label Text="Medio" FontSize="10" TextColor="#4B5563" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="4" Margin="0,0,10,0">
+                                <BoxView Color="#34D399" WidthRequest="14" HeightRequest="14" CornerRadius="3" />
+                                <Label Text="Alto" FontSize="10" TextColor="#4B5563" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="4">
+                                <BoxView Color="#10B981" WidthRequest="14" HeightRequest="14" CornerRadius="3" />
+                                <Label Text="Pico" FontSize="10" TextColor="#4B5563" VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </FlexLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border StrokeShape="RoundRectangle 12" 
+                        BackgroundColor="#DCFCE7" 
+                        StrokeThickness="0" 
+                        Padding="12">
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                        <Image Source="{FontImageSource FontFamily=MaterialIcons, Glyph='&#xE8B5;', Color=#10B981, Size=20}" WidthRequest="20" HeightRequest="20" />
+                        <Label x:Name="lblMensajeDemanda"
+                               Text="Calculando demanda..." 
+                               FontSize="11" 
+                               TextColor="#166534" 
+                               VerticalOptions="Center"
+                               LineBreakMode="WordWrap" />
+                    </HorizontalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
+</ContentPage>

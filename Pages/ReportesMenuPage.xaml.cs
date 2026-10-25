@@ -18,6 +18,6 @@ public partial class ReportesMenuPage : ContentPage
     private async void OnDemandaSemanalTapped(object sender, TappedEventArgs e)
     {
 
-        
+        await Shell.Current.GoToAsync(nameof(ReporteDemandaPage));
     }
 }

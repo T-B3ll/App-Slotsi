@@ -146,6 +146,10 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 
+	  <MauiXaml Update="Pages\ReporteDemandaPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+
 	  <MauiXaml Update="Pages\ReportesMenuPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

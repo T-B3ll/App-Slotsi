@@ -11,5 +11,8 @@ public class TopServicioDto
 public class DemandaSemanalDto
 {
     public string DiaSemana { get; set; } = string.Empty;
+    public int Hora { get; set; }
     public int TotalCitas { get; set; }
+
+
 }
