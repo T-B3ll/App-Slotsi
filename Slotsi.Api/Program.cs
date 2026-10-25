@@ -24,6 +24,7 @@ builder.Services.AddSingleton<IServicioRepository, ServiciosRepository>();
 builder.Services.AddSingleton<ICalificacionRepository, CalificacionRepository>();
 builder.Services.AddSingleton<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddSingleton<INegocioRepository, NegocioRepository>();
+builder.Services.AddSingleton<ICitaRepository, CitaRepository>();
 
 builder.Services.AddControllers();
 builder.Services.AddRouting(opciones => opciones.LowercaseUrls = true);
@@ -47,7 +48,7 @@ if (app.Environment.IsDevelopment())
 
     app.MapScalarApiReference(options =>
     {
-        options.Title = "Slotsi API - Documentación";
+        options.Title = "Slotsi API - Documentaci n";
         options.Theme = ScalarTheme.BluePlanet;
         options.OpenApiRoutePattern = "/openapi/v1.json";
     });

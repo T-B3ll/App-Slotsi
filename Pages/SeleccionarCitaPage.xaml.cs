@@ -9,15 +9,12 @@ namespace slotsi_citas.Pages
     {
         private readonly SeleccionarCitaViewModel _viewModel;
 
+        // ✅ SOLO ESTE CONSTRUCTOR (Recibe el ViewModel por inyección)
         public SeleccionarCitaPage(SeleccionarCitaViewModel viewModel)
         {
             InitializeComponent();
             _viewModel = viewModel;
             BindingContext = _viewModel;
-        }
-
-        public SeleccionarCitaPage() : this(new SeleccionarCitaViewModel())
-        {
         }
 
         protected override async void OnAppearing()
@@ -38,8 +35,8 @@ namespace slotsi_citas.Pages
                 if (_viewModel.NegocioActualObj == null && CitaSession.NegocioActual != null)
                 {
                     _viewModel.NegocioActualObj = CitaSession.NegocioActual;
-                    _viewModel.NegocioNombre = !string.IsNullOrEmpty(CitaSession.NegocioActual.NombreNegocio) 
-                        ? CitaSession.NegocioActual.NombreNegocio 
+                    _viewModel.NegocioNombre = !string.IsNullOrEmpty(CitaSession.NegocioActual.NombreNegocio)
+                        ? CitaSession.NegocioActual.NombreNegocio
                         : CitaSession.NegocioActual.Nombre;
                     _viewModel.NegocioFoto = CitaSession.NegocioActual.UrlFotoPerfil;
                     if (!string.IsNullOrEmpty(CitaSession.NegocioActual.DireccionNegocio))
@@ -49,7 +46,7 @@ namespace slotsi_citas.Pages
                 }
 
                 await _viewModel.CargarDatosSesionClienteAsync();
-                await _viewModel.CargarColaboradoresParaServiciosAsync();
+                // ❌ ELIMINADA: await _viewModel.CargarColaboradoresParaServiciosAsync(); (ya no existe)
             }
         }
     }

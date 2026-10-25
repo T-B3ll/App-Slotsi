@@ -1,3 +1,8 @@
+
+using Microsoft.Maui.Storage;
+using Slotsi.Shared.Dtos;
+using slotsi_citas.Models;
+using slotsi_citas.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -5,21 +10,15 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Storage;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using slotsi_citas.Models;
 using slotsi_citas.Pages;
-using slotsi_citas.Services;
 
 namespace slotsi_citas.ViewModel
 {
     public class CitasClienteViewModel : BindableObject, IQueryAttributable
     {
-        private readonly MongoService _mongoService;
-        private readonly IMongoCollection<Negocio> _coleccionNegocios;
+        private readonly CitaService _citaService;
+        private readonly NegocioService _negocioService;
+        private readonly CitasClienteViewModel _parent;
 
         private Negocio? _negocioActual;
         public Negocio? NegocioActual
@@ -94,13 +93,10 @@ namespace slotsi_citas.ViewModel
         public ICommand NavegarSucursalCommand { get; }
         public ICommand NavegarPerfilCommand { get; }
 
-        public CitasClienteViewModel(MongoService mongoService)
+        public CitasClienteViewModel(CitaService citaService, NegocioService negocioService)
         {
-            _mongoService = mongoService;
-
-            var clienteMongo = new MongoClient(MongoDbSettings.ConnectionString);
-            var database = clienteMongo.GetDatabase(MongoDbSettings.DatabaseName);
-            _coleccionNegocios = database.GetCollection<Negocio>("Negocios");
+            _citaService = citaService;
+            _negocioService = negocioService;
 
             _fechaSeleccionada = CitaSession.FechaSeleccionada != default
                 ? CitaSession.FechaSeleccionada
@@ -133,10 +129,6 @@ namespace slotsi_citas.ViewModel
             });
 
             _ = InicializarAsync();
-        }
-
-        public CitasClienteViewModel() : this(new MongoService())
-        {
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -189,17 +181,7 @@ namespace slotsi_citas.ViewModel
 
                 if (!string.IsNullOrEmpty(negocioId))
                 {
-                    FilterDefinition<Negocio> filter;
-                    if (ObjectId.TryParse(negocioId, out ObjectId oId))
-                    {
-                        filter = Builders<Negocio>.Filter.Eq("_id", oId);
-                    }
-                    else
-                    {
-                        filter = Builders<Negocio>.Filter.Eq(n => n.Id, negocioId);
-                    }
-
-                    var negocioDb = await _coleccionNegocios.Find(filter).FirstOrDefaultAsync();
+                    var negocioDb = await _negocioService.ObtenerPorIdAsync(negocioId);
                     if (negocioDb != null)
                     {
                         NegocioActual = negocioDb;
@@ -233,12 +215,10 @@ namespace slotsi_citas.ViewModel
 
                 if (NegocioActual != null && NegocioActual.Horarios != null && NegocioActual.Horarios.Count > 0)
                 {
-                    // 1. Verificar si el día está en la lista de días cerrados
                     if (NegocioActual.DiasCerrados != null && NegocioActual.DiasCerrados.Any(d => d.Equals(diaKey, StringComparison.OrdinalIgnoreCase)))
                     {
                         estaCerrado = true;
                     }
-                    // 2. Verificar si el diccionario contiene la configuración del día
                     else if (NegocioActual.Horarios.TryGetValue(diaKey, out var diaConfig))
                     {
                         horarioConfig = diaConfig;
@@ -250,7 +230,6 @@ namespace slotsi_citas.ViewModel
                 }
                 else
                 {
-                    // Fallback para negocios que no tienen el campo Horarios configurado (ej. Barbería el pelón)
                     if (FechaSeleccionada.DayOfWeek == DayOfWeek.Sunday)
                     {
                         estaCerrado = true;
@@ -276,17 +255,14 @@ namespace slotsi_citas.ViewModel
                 EstaCerradoElDia = false;
                 MensajeCerrado = string.Empty;
 
-                // Parsear Apertura y Cierre
                 TimeSpan horaApertura = ParsearHora(horarioConfig.Apertura, new TimeSpan(8, 0, 0));
                 TimeSpan horaCierre = ParsearHora(horarioConfig.Cierre, new TimeSpan(17, 0, 0));
 
-                // Si la hora de cierre es menor o igual a la de apertura y menor a 12 (ej. 06:00 o 05:00 en formato 12h)
                 if (horaCierre <= horaApertura && horaCierre.Hours < 12)
                 {
                     horaCierre = horaCierre.Add(TimeSpan.FromHours(12));
                 }
 
-                // Parsear Pausas (descanso)
                 bool tienePausa = false;
                 TimeSpan pausaInicio = TimeSpan.Zero;
                 TimeSpan pausaFin = TimeSpan.Zero;
@@ -308,30 +284,40 @@ namespace slotsi_citas.ViewModel
                     tienePausa = true;
                 }
 
-                // Cargar citas existentes desde MongoDB para validar horarios ocupados
-                var citasDelDia = await _mongoService.ObtenerCitasPorFechaAsync(FechaSeleccionada);
+                // Obtener citas desde la API
+                var citasDelDiaDto = await _citaService.ObtenerPorFechaAsync(FechaSeleccionada);
                 string negocioIdFiltro = NegocioActual?.Id ?? Preferences.Get("NegocioSeleccionadoId", string.Empty);
 
                 if (!string.IsNullOrEmpty(negocioIdFiltro))
                 {
-                    citasDelDia = citasDelDia.Where(c => c.NegocioId == negocioIdFiltro && c.Estado != "Cancelada").ToList();
+                    citasDelDiaDto = citasDelDiaDto.Where(c => c.NegocioId == negocioIdFiltro && c.Estado != "Cancelada").ToList();
                 }
 
-                // Generar los bloques de horario
                 for (var hora = horaApertura; hora < horaCierre; hora = hora.Add(TimeSpan.FromHours(1)))
                 {
                     var inicioBloque = FechaSeleccionada.Date.Add(hora);
                     var finBloque = inicioBloque.AddHours(1);
 
-                    // Verificar pausa
                     bool esHorarioPausa = tienePausa && (hora >= pausaInicio && hora < pausaFin);
+                    var citaOcupadaDto = citasDelDiaDto.FirstOrDefault(c => c.FechaHoraInicio < finBloque && c.FechaHoraFin > inicioBloque);
+                    bool esOcupado = citaOcupadaDto != null;
 
-                    // Verificar citas ocupadas
-                    var citaOcupada = citasDelDia.FirstOrDefault(c => c.FechaHoraInicio < finBloque && c.FechaHoraFin > inicioBloque);
-                    bool esOcupado = citaOcupada != null;
-
-                    bool esNoDisponible = esHorarioPausa;
                     bool esDisponible = !esHorarioPausa && !esOcupado;
+
+                    var citaOcupada = citaOcupadaDto != null ? new Citas
+                    {
+                        Id = citaOcupadaDto.Id ?? string.Empty,
+                        NegocioId = citaOcupadaDto.NegocioId,
+                        ClienteId = citaOcupadaDto.ClienteId,
+                        FechaHoraInicio = citaOcupadaDto.FechaHoraInicio,
+                        FechaHoraFin = citaOcupadaDto.FechaHoraFin,
+                        Estado = citaOcupadaDto.Estado,
+                        Cliente = new ClienteSnapshot
+                        {
+                            Nombre = citaOcupadaDto.ClienteNombre,
+                            Telefono = citaOcupadaDto.ClienteTelefono
+                        }
+                    } : null;
 
                     string detallePausa = esHorarioPausa
                         ? $"({FormatearHora12(pausaInicio)} - {FormatearHora12(pausaFin)})"
@@ -348,7 +334,7 @@ namespace slotsi_citas.ViewModel
                         HoraFin = finBloque,
                         EsDisponible = esDisponible,
                         EsOcupado = esOcupado,
-                        EsNoDisponible = esNoDisponible,
+                        EsNoDisponible = esHorarioPausa,
                         EstadoTexto = estadoTexto,
                         DetallePausa = detallePausa,
                         Cita = citaOcupada

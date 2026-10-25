@@ -1,11 +1,10 @@
 using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
-using MongoDB.Bson;
-using MongoDB.Driver;
 using slotsi_citas.Models;
 using slotsi_citas.Pages;
 using slotsi_citas.Services;
+using Slotsi.Shared.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,7 +17,8 @@ namespace slotsi_citas.ViewModel
 {
     public class SeleccionarCitaViewModel : BindableObject, IQueryAttributable
     {
-        private readonly MongoService _mongoService;
+        private readonly CitaService _citaService;
+        private readonly NegocioService _negocioService;
 
         private string _negocioNombre = "Cargando negocio...";
         public string NegocioNombre
@@ -140,9 +140,10 @@ namespace slotsi_citas.ViewModel
         public ICommand NavegarSucursalCommand { get; }
         public ICommand NavegarPerfilCommand { get; }
 
-        public SeleccionarCitaViewModel(MongoService mongoService)
+        public SeleccionarCitaViewModel(CitaService citaService, NegocioService negocioService)
         {
-            _mongoService = mongoService;
+            _citaService = citaService;
+            _negocioService = negocioService;
 
             HorarioSeleccionado = CitaSession.HorarioSeleccionado;
             FechaSeleccionada = CitaSession.FechaSeleccionada != default
@@ -186,13 +187,7 @@ namespace slotsi_citas.ViewModel
             _ = CargarDatosSesionClienteAsync();
         }
 
-        public SeleccionarCitaViewModel() : this(new MongoService())
-        {
-        }
-
-       
-
-            public async Task IrAHorariosAsync()
+        public async Task IrAHorariosAsync()
         {
             if (Shell.Current != null)
             {
@@ -230,8 +225,6 @@ namespace slotsi_citas.ViewModel
 
                 OnPropertyChanged(nameof(ServicioNombreResumen));
                 OnPropertyChanged(nameof(ServicioPrecioResumen));
-
-                _ = CargarColaboradoresParaServiciosAsync();
             }
 
             if (query.TryGetValue("HorarioSeleccionado", out var horarioObj) && horarioObj is RangoHorario horario)
@@ -242,64 +235,6 @@ namespace slotsi_citas.ViewModel
             if (query.TryGetValue("FechaSeleccionada", out var fechaObj) && fechaObj is DateTime fecha)
             {
                 FechaSeleccionada = fecha;
-            }
-        }
-
-        public async Task CargarColaboradoresParaServiciosAsync()
-        {
-            try
-            {
-                var clienteMongo = new MongoClient(MongoDbSettings.ConnectionString);
-                var bd = clienteMongo.GetDatabase(MongoDbSettings.DatabaseName);
-
-                var coleccionTrab = bd.GetCollection<BsonDocument>("Trabajadores");
-                var listaDocs = await coleccionTrab.Find(Builders<BsonDocument>.Filter.Empty).ToListAsync();
-
-                var mapaTrabajadores = new Dictionary<string, Trabajador>();
-                foreach (var doc in listaDocs)
-                {
-                    string idStr = doc.Contains("_id") ? doc["_id"].ToString() ?? "" : "";
-                    string nombreStr = doc.Contains("nombre") ? doc["nombre"].AsString : (doc.Contains("Nombre") ? doc["Nombre"].AsString : "Especialista");
-
-                    var trab = new Trabajador
-                    {
-                        Id = idStr,
-                        Nombre = nombreStr,
-                        Especialidad = doc.Contains("especialidad") ? doc["especialidad"].AsString : "Especialista",
-                        Foto = doc.Contains("foto") ? doc["foto"].AsString : ""
-                    };
-
-                    if (!string.IsNullOrEmpty(idStr))
-                        mapaTrabajadores[idStr] = trab;
-                }
-
-                MainThread.BeginInvokeOnMainThread(() =>
-                {
-                    foreach (var servicio in ServiciosTarjetas)
-                    {
-                        servicio.ColaboradoresDelServicio.Clear();
-                        if (servicio.ColaboradoresHabilitados != null)
-                        {
-                            foreach (var idObj in servicio.ColaboradoresHabilitados)
-                            {
-                                string idKey = idObj.ToString();
-                                if (mapaTrabajadores.TryGetValue(idKey, out var trab))
-                                {
-                                    servicio.ColaboradoresDelServicio.Add(trab);
-                                }
-                            }
-                        }
-
-                        if (servicio.ColaboradorSeleccionado == null && servicio.ColaboradoresDelServicio.Any())
-                        {
-                            servicio.ColaboradorSeleccionado = servicio.ColaboradoresDelServicio.First();
-                        }
-                    }
-                });
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"[ERROR]: {ex.Message}");
             }
         }
 
@@ -327,62 +262,8 @@ namespace slotsi_citas.ViewModel
                 if (string.IsNullOrEmpty(ClienteId))
                     ClienteId = Preferences.Get("UsuarioIdSesion", string.Empty);
 
-                string correo = Preferences.Get("UsuarioCorreo", string.Empty);
-                if (string.IsNullOrEmpty(correo))
-                    correo = Preferences.Get("Correo", string.Empty);
-
                 string nombreLocal = Preferences.Get("UsuarioNombre", string.Empty);
-
-                bool esNombreInvalido = string.IsNullOrWhiteSpace(nombreLocal) ||
-                                        nombreLocal.Equals("LoginPage", StringComparison.OrdinalIgnoreCase) ||
-                                        nombreLocal.Equals("Cliente Básico", StringComparison.OrdinalIgnoreCase) ||
-                                        nombreLocal.Equals("Cliente", StringComparison.OrdinalIgnoreCase);
-
-                if (esNombreInvalido)
-                {
-                    var clienteMongo = new MongoClient(MongoDbSettings.ConnectionString);
-                    var bd = clienteMongo.GetDatabase(MongoDbSettings.DatabaseName);
-
-                    var coleccionUsuarios = bd.GetCollection<BsonDocument>("usuarios");
-                    var filtros = new List<FilterDefinition<BsonDocument>>();
-
-                    if (!string.IsNullOrEmpty(ClienteId))
-                    {
-                        if (ObjectId.TryParse(ClienteId, out ObjectId objectId))
-                            filtros.Add(Builders<BsonDocument>.Filter.Eq("_id", objectId));
-                        filtros.Add(Builders<BsonDocument>.Filter.Eq("_id", ClienteId));
-                    }
-
-                    if (!string.IsNullOrEmpty(correo))
-                    {
-                        filtros.Add(Builders<BsonDocument>.Filter.Eq("Correo", correo));
-                        filtros.Add(Builders<BsonDocument>.Filter.Eq("correo", correo));
-                    }
-
-                    var usuarioDoc = await coleccionUsuarios.Find(Builders<BsonDocument>.Filter.Or(filtros)).FirstOrDefaultAsync();
-
-                    if (usuarioDoc == null)
-                    {
-                        coleccionUsuarios = bd.GetCollection<BsonDocument>("Usuarios");
-                        usuarioDoc = await coleccionUsuarios.Find(Builders<BsonDocument>.Filter.Or(filtros)).FirstOrDefaultAsync();
-                    }
-
-                    if (usuarioDoc != null)
-                    {
-                        if (usuarioDoc.Contains("NombreCompleto") && !usuarioDoc["NombreCompleto"].AsBsonValue.IsBsonNull)
-                            nombreLocal = usuarioDoc["NombreCompleto"].AsString.Trim();
-                        else if (usuarioDoc.Contains("Nombre") && !usuarioDoc["Nombre"].AsBsonValue.IsBsonNull)
-                            nombreLocal = usuarioDoc["Nombre"].AsString.Trim();
-                        else if (usuarioDoc.Contains("nombre") && !usuarioDoc["nombre"].AsBsonValue.IsBsonNull)
-                            nombreLocal = usuarioDoc["nombre"].AsString.Trim();
-
-                        if (usuarioDoc.Contains("Telefono") && !usuarioDoc["Telefono"].AsBsonValue.IsBsonNull)
-                            Preferences.Set("UsuarioTelefono", usuarioDoc["Telefono"].AsString.Trim());
-
-                        if (!string.IsNullOrEmpty(nombreLocal))
-                            Preferences.Set("UsuarioNombre", nombreLocal);
-                    }
-                }
+                string correo = Preferences.Get("UsuarioCorreo", string.Empty);
 
                 if (string.IsNullOrEmpty(nombreLocal) && !string.IsNullOrEmpty(correo))
                 {
@@ -430,8 +311,6 @@ namespace slotsi_citas.ViewModel
 
             OnPropertyChanged(nameof(ServicioNombreResumen));
             OnPropertyChanged(nameof(ServicioPrecioResumen));
-
-            _ = CargarColaboradoresParaServiciosAsync();
         }
 
         private async void OnConfirmarCita()
@@ -460,26 +339,22 @@ namespace slotsi_citas.ViewModel
 
                 string telefonoCliente = Preferences.Get("UsuarioTelefono", string.Empty);
                 var servicioPrincipal = _serviciosSeleccionados.First();
-                string trabajadorIdAsignado = servicioPrincipal.ColaboradorSeleccionado?.Id ?? "652b1234567890abcdef1235";
+                string trabajadorIdAsignado = servicioPrincipal.ColaboradorSeleccionado?.Id ?? "";
 
                 string negocioIdFinal = NegocioActualObj?.Id ?? Preferences.Get("NegocioSeleccionadoId", CitaSession.NegocioId);
                 if (string.IsNullOrEmpty(negocioIdFinal))
                 {
-                    negocioIdFinal = "652b1234567890abcdef1234";
+                    negocioIdFinal = "652b1234567890abcdef1234"; // Fallback
                 }
 
-                var nuevaCita = new Citas
+                var citaDto = new CitaDto
                 {
-                    Id = null,
                     NegocioId = negocioIdFinal,
                     TrabajadorId = trabajadorIdAsignado,
                     ServicioId = servicioPrincipal.Id,
                     ClienteId = string.IsNullOrEmpty(ClienteId) ? "652b1234567890abcdef1237" : ClienteId,
-                    Cliente = new ClienteSnapshot
-                    {
-                        Nombre = ClienteNombre,
-                        Telefono = telefonoCliente
-                    },
+                    ClienteNombre = ClienteNombre,
+                    ClienteTelefono = telefonoCliente,
                     ServicioNombre = ServicioNombreResumen,
                     Precio = (decimal)_serviciosSeleccionados.Sum(s => s.Precio),
                     Moneda = "NIO",
@@ -489,25 +364,18 @@ namespace slotsi_citas.ViewModel
                     Tipo = "EnLocal",
                     Estado = "Confirmada",
                     MetodoPago = "Efectivo",
-                    FechaCreacion = DateTime.UtcNow,
-                    FechaActualizacion = DateTime.UtcNow
+                    Notas = ""
                 };
 
-                bool guardado = await _mongoService.GuardarCitaAsync(nuevaCita);
+                // 👇 AQUÍ SE USA EL CITA SERVICE (API) EN LUGAR DE MONGO
+                await _citaService.CrearAsync(citaDto);
 
-                if (guardado)
-                {
-                    await Application.Current.MainPage.DisplayAlert("Éxito", "¡Cita registrada correctamente en MongoDB Atlas!", "OK");
-                    await Shell.Current.GoToAsync("..");
-                }
-                else
-                {
-                    await Application.Current.MainPage.DisplayAlert("Aviso", "No se pudo sincronizar con la nube. Revisa tu conexión.", "OK");
-                }
+                await Application.Current.MainPage.DisplayAlert("Éxito", "¡Cita registrada correctamente en la API!", "OK");
+                await Shell.Current.GoToAsync("..");
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", $"No se pudo completar la operación: {ex.Message}", "OK");
+                await Application.Current.MainPage.DisplayAlert("Error", $"No se pudo agendar la cita: {ex.Message}", "OK");
             }
         }
     }
