@@ -26,6 +26,10 @@
         </Grid>
     </Shell.FlyoutHeader>
 
+    <ShellContent Title="Inicio"
+              Route="ResumenPage"
+              ContentTemplate="{DataTemplate pages:ResumenPage}" />
+
     <FlyoutItem Title="Pago de la suscripción" Route="PagoSuscripcionPage">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#2563EB" Size="22" />

@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
+             xmlns:behaviors="clr-namespace:slotsi_citas.Pages"
              x:Class="slotsi_citas.Pages.EditarServicio"
              Title="Editar Servicio"
              BackgroundColor="#F9FAFB"
@@ -11,59 +12,131 @@
         <VerticalStackLayout Spacing="16" Margin="0,0,0,30">
 
             <Label Text="{Binding TituloPantalla}" FontSize="22" FontAttributes="Bold" TextColor="#111827" />
+            <Label Text="Los campos maracados con un *, son obligatorios" FontSize="10" TextColor="#EF4444" FontAttributes="Bold"/>
 
             <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                <HorizontalStackLayout Spacing="2" HorizontalOptions="Center">
+                    
+                    <Label Text="Foto del servicio" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
+                    <Label Text="*" FontSize="13" TextColor="#EF4444" FontAttributes="Bold"/>
+                </HorizontalStackLayout>
                 <Border WidthRequest="110" HeightRequest="110" Stroke="#D1D5DB" StrokeThickness="1" StrokeShape="RoundRectangle 16" BackgroundColor="#E5E7EB">
                     <Image Source="{Binding Foto}" Aspect="AspectFill"/>
                 </Border>
 
-                <Button Text="Seleccionar Foto" 
-                        Command="{Binding CambiarFotoCommand}" 
-                        BackgroundColor="#E5E7EB" 
-                        TextColor="#374151" 
-                        CornerRadius="8" 
-                        HeightRequest="36" 
+                <Button Text="Seleccionar Foto"
+                        Command="{Binding CambiarFotoCommand}"
+                        BackgroundColor="#E5E7EB"
+                        TextColor="#374151"
+                        CornerRadius="8"
+                        HeightRequest="36"
                         FontSize="12"/>
             </VerticalStackLayout>
 
+
             <VerticalStackLayout Spacing="4">
-                <Label Text="Nombre del Servicio" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
+                <HorizontalStackLayout Spacing="2">
+                    <Label Text="Nombre del Servicio" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
+                    <Label Text="*" FontSize="13" TextColor="#EF4444" FontAttributes="Bold"/>
+                </HorizontalStackLayout>
                 <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
-                    <Entry Text="{Binding Nombre}" TextColor="#1E293B" Placeholder="Ej. Corte Clásico" HeightRequest="45" />
+                    <Entry Text="{Binding Nombre}"
+                           TextColor="#1E293B"
+                           Placeholder="Ej. Corte Clásico"
+                           PlaceholderColor="#9CA3AF"
+                           Keyboard="Text"
+                           MaxLength="60"
+                           HeightRequest="45">
+                        <Entry.Behaviors>
+                            <behaviors:FiltroEntryBehavior Tipo="SoloLetras" />
+                        </Entry.Behaviors>
+                    </Entry>
                 </Border>
             </VerticalStackLayout>
 
             <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
                 <VerticalStackLayout Grid.Column="0" Spacing="4">
-                    <Label Text="Precio ($)" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="2">
+                        <Label Text="Precio ($)" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
+                        <Label Text="*" FontSize="13" TextColor="#EF4444" FontAttributes="Bold"/>
+                    </HorizontalStackLayout>
                     <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
-                        <Entry Text="{Binding Precio}" TextColor="#1E293B" Keyboard="Numeric" HeightRequest="45" />
+                        <Entry Text="{Binding PrecioTexto}"
+                               TextColor="#1E293B"
+                               Placeholder="Ej. 150"
+                               PlaceholderColor="#9CA3AF"
+                               Keyboard="Numeric"
+                               MaxLength="9"
+                               HeightRequest="45">
+                            <Entry.Behaviors>
+                                <behaviors:FiltroEntryBehavior Tipo="SoloDecimales" />
+                            </Entry.Behaviors>
+                        </Entry>
                     </Border>
                 </VerticalStackLayout>
 
                 <VerticalStackLayout Grid.Column="1" Spacing="4">
-                    <Label Text="Duración (min)" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
+                    <HorizontalStackLayout Spacing="2">
+                        <Label Text="Duración (min)" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
+                        <Label Text="*" FontSize="13" TextColor="#EF4444" FontAttributes="Bold"/>
+                    </HorizontalStackLayout>
                     <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
-                        <Entry Text="{Binding DuracionMinutos}" TextColor="#1E293B" Keyboard="Numeric" HeightRequest="45" />
+                        <Entry Text="{Binding DuracionTexto}"
+                               TextColor="#1E293B"
+                               Placeholder="Ej. 30"
+                               PlaceholderColor="#9CA3AF"
+                               Keyboard="Numeric"
+                               MaxLength="4"
+                               HeightRequest="45">
+                            <Entry.Behaviors>
+                                <behaviors:FiltroEntryBehavior Tipo="SoloEnteros" />
+                            </Entry.Behaviors>
+                        </Entry>
                     </Border>
                 </VerticalStackLayout>
             </Grid>
 
             <VerticalStackLayout Spacing="4">
-                <Label Text="Categoría" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
+                <HorizontalStackLayout Spacing="2">
+                    <Label Text="Categoría" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
+                    <Label Text="*" FontSize="13" TextColor="#EF4444" FontAttributes="Bold"/>
+                </HorizontalStackLayout>
                 <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
-                    <Entry Text="{Binding Categoria}" TextColor="#1E293B" Placeholder="Ej. Barbería" HeightRequest="45" />
+                    <Entry Text="{Binding Categoria}"
+                           TextColor="#1E293B"
+                           Placeholder="Ej. Barbería"
+                           PlaceholderColor="#9CA3AF"
+                           Keyboard="Text"
+                           MaxLength="40"
+                           HeightRequest="45">
+                        <Entry.Behaviors>
+                            <behaviors:FiltroEntryBehavior Tipo="SoloLetras" />
+                        </Entry.Behaviors>
+                    </Entry>
                 </Border>
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="4">
-                <Label Text="Descripción" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
+                <HorizontalStackLayout Spacing="2">
+                    <Label Text="Descripción" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
+                    <Label Text="*" FontSize="13" TextColor="#EF4444" FontAttributes="Bold"/>
+                </HorizontalStackLayout>
                 <Border Stroke="#D1D5DB" StrokeThickness="1" Padding="10,4" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 8">
-                    <Editor Text="{Binding Descripcion}" TextColor="#1E293B" HeightRequest="90" AutoSize="Disabled"/>
+                    <Editor Text="{Binding Descripcion}"
+                            TextColor="#1E293B"
+                            Placeholder="Ej. Corte con máquina y tijera, incluye lavado"
+                            PlaceholderColor="#9CA3AF"
+                            MaxLength="250"
+                            HeightRequest="90"
+                            AutoSize="Disabled"/>
                 </Border>
             </VerticalStackLayout>
+
             <VerticalStackLayout Spacing="6" Margin="0,5">
-                <Label Text="Colaboradores Habilitados" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
+                <HorizontalStackLayout Spacing="2">
+                    <Label Text="Colaboradores Habilitados" FontSize="13" TextColor="#1E293B" FontAttributes="Bold"/>
+                    <Label Text="*" FontSize="13" TextColor="#EF4444" FontAttributes="Bold"/>
+                </HorizontalStackLayout>
 
                 <CollectionView ItemsSource="{Binding Colaboradores}" HeightRequest="160">
                     <CollectionView.ItemTemplate>

@@ -14,9 +14,6 @@ public partial class RegistroUsuarioNegocio : ContentPage
     private string _tipoNegocio = "";
 
 
-
-
-
     private RegistrarNegocioViewModel _viewModel;
 
 

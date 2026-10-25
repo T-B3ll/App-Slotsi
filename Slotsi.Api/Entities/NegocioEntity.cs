@@ -16,7 +16,6 @@ public class NegocioEntity
     [BsonElement("NombreNegocio")]
     public string NombreNegocio { get; set; } = string.Empty;
 
- 
     [BsonElement("UsuarioId")]
     [BsonRepresentation(BsonType.ObjectId)]
     public ObjectId? UsuarioId { get; set; }
@@ -49,10 +48,20 @@ public class NegocioEntity
     [BsonElement("DiasCerrados")]
     public List<string> DiasCerrados { get; set; } = new();
 
+    [BsonIgnoreExtraElements]
     public class HorarioDiaEntity
     {
-        [BsonElement("apertura")] public string Apertura { get; set; } = "";
-        [BsonElement("cierre")] public string Cierre { get; set; } = "";
-        [BsonElement("pausas")] public List<string> Pausas { get; set; } = new();
+        [BsonElement("a")] public string Apertura { get; set; } = "";
+        [BsonElement("c")] public string Cierre { get; set; } = "";
+        [BsonElement("p")] public List<string> Pausas { get; set; } = new();
+
+        [BsonElement("apertura"), BsonIgnoreIfNull]
+        public string? AperturaLarga { get => null; set { if (value != null) Apertura = value; } }
+
+        [BsonElement("cierre"), BsonIgnoreIfNull]
+        public string? CierreLargo { get => null; set { if (value != null) Cierre = value; } }
+
+        [BsonElement("pausas"), BsonIgnoreIfNull]
+        public List<string>? PausasLargas { get => null; set { if (value != null) Pausas = value; } }
     }
 }

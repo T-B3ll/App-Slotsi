@@ -36,8 +36,7 @@
                     <Label Text="*" TextColor="#EF4444" />
                 </HorizontalStackLayout>
                 <Border Stroke="#E2E8F0" StrokeShape="RoundRectangle 8" Padding="12,0" BackgroundColor="#F8FAFC">
-                    <Entry Placeholder="Ej. Carlos Rodríguez" 
-                           PlaceholderColor="#94A3B8" 
+                    <Entry Placeholder="Ej. Carlos Rodríguez" PlaceholderColor="#94A3B8" 
                            Text="{Binding Nombre}" 
                            TextColor="#0F172A" />
                 </Border>

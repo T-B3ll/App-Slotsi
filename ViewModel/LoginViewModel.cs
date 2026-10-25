@@ -140,7 +140,7 @@ namespace slotsi_citas.ViewModel
 
             Application.Current.MainPage = new AppShell(_auth);
 
-            string ruta = usuario.TipoUsuario ? "//catalogoservicios" : "//dueñosnegocios";
+            string ruta = usuario.TipoUsuario ? "//ResumenPage" : "//dueñosnegocios";
 
             System.Diagnostics.Debug.WriteLine($" [LOGIN] Navegando a: {ruta}");
 

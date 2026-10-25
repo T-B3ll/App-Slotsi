@@ -4,6 +4,7 @@ namespace Slotsi.Api.Repositories;
 
 public interface ICitaRepository
 {
+    Task<List<CitaEntity>> ObtenerPorRangoAsync(string negocioId, DateTime desde, DateTime hasta, CancellationToken ct = default);
     Task<List<CitaEntity>> ObtenerTodasAsync(CancellationToken ct = default);
     Task<CitaEntity?> ObtenerPorIdAsync(string id, CancellationToken ct = default);
     Task<List<CitaEntity>> ObtenerPorFechaAsync(DateTime fecha, CancellationToken ct = default);

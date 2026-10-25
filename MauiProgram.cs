@@ -47,10 +47,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<SupabaseStorageService>();
 
-        // --- SESIÓN Y JWT ---
-        // Guarda el token de la sesión. Singleton: una sola sesión para toda la app.
         builder.Services.AddSingleton<ISesionService, SesionService>();
-        // Añade el header "Authorization: Bearer ..." a cada petición.
         builder.Services.AddTransient<AuthHeaderHandler>();
 
         // --- SERVICIOS HTTP (API) ---
@@ -70,6 +67,11 @@ public static class MauiProgram
         builder.Services.AddHttpClient<TrabajadorService>(ConfigurarClienteApi)
             .AddHttpMessageHandler<AuthHeaderHandler>();
 
+        builder.Services.AddHttpClient<ResumenService>(ConfigurarClienteApi)
+    .AddHttpMessageHandler<AuthHeaderHandler>();
+
+        builder.Services.AddTransient<ResumenViewModel>();
+        builder.Services.AddTransient<Pages.ResumenPage>();
         builder.Services.AddHttpClient<CalificacionService>(ConfigurarClienteApi)
             .AddHttpMessageHandler<AuthHeaderHandler>();
 
@@ -80,7 +82,6 @@ public static class MauiProgram
         builder.Services.AddSingleton<SuscripcionService>();
         builder.Services.AddSingleton<EmailJSService>();
         builder.Services.AddHttpClient<CitaService>(c => c.BaseAddress = ApiConfiguracion.UrlBase);
-        // --- VIEWMODELS ---
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<CitasClienteViewModel>();
         builder.Services.AddTransient<CatalogoServiciosViewModel>();
@@ -97,8 +98,6 @@ public static class MauiProgram
 
         builder.Services.AddTransient<HorariosDisponiblesPage>();
         builder.Services.AddTransient<HorariosDisponiblesViewModel>();
-
-        builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<Cita_UsuarioPage>();
         builder.Services.AddTransient<CentroCalificaciones>();
         builder.Services.AddTransient<LoginPage>();
@@ -116,7 +115,6 @@ public static class MauiProgram
         builder.Services.AddTransient<CatalogoCliente>();
         builder.Services.AddTransient<RecuperarContra>();
         builder.Services.AddTransient<NuevaContra>();
-
 
         builder.Services.AddTransient<DueñosNegociosViewModel>();
         builder.Services.AddTransient<DueñosNegociosPage>();
