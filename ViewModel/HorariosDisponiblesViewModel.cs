@@ -1,23 +1,22 @@
-﻿using System;
+﻿using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.Controls;
+using Slotsi.Shared.Dtos;
+using slotsi_citas.Models;
+using slotsi_citas.Services;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Controls;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using slotsi_citas.Models;
-using slotsi_citas.Services;
 
 namespace slotsi_citas.ViewModel
 {
     public class HorariosDisponiblesViewModel : BindableObject, IQueryAttributable
     {
-        private readonly IMongoCollection<Negocio> _coleccionNegocios;
-        private readonly IMongoCollection<Citas> _coleccionCitas;
+        private readonly CitaService _citaService;
+        private readonly NegocioService _negocioService;
 
         private Negocio? _negocioActual;
         public Negocio? NegocioActual
@@ -51,14 +50,11 @@ namespace slotsi_citas.ViewModel
         public ICommand HoyCommand { get; }
         public ICommand SeleccionarHorarioCommand { get; }
 
-        public HorariosDisponiblesViewModel()
+        public HorariosDisponiblesViewModel(CitaService citaService, NegocioService negocioService)
         {
-            var cliente = new MongoClient(MongoDbSettings.ConnectionString);
-            var bd = cliente.GetDatabase(MongoDbSettings.DatabaseName);
-            _coleccionNegocios = bd.GetCollection<Negocio>("Negocios");
-            _coleccionCitas = bd.GetCollection<Citas>("Citas");
+            _citaService = citaService;
+            _negocioService = negocioService;
 
-            // Usamos el nombre completo para evitar conflicto con MongoDB.Driver.Command
             VolverCommand = new Microsoft.Maui.Controls.Command(async () => await Shell.Current.GoToAsync(".."));
             HoyCommand = new Microsoft.Maui.Controls.Command(() => FechaSeleccionada = DateTime.Today);
             SeleccionarHorarioCommand = new Microsoft.Maui.Controls.Command<RangoHorario>(OnSeleccionarHorario);
@@ -77,8 +73,7 @@ namespace slotsi_citas.ViewModel
                 string negocioId = Preferences.Get("NegocioSeleccionadoId", string.Empty);
                 if (!string.IsNullOrEmpty(negocioId))
                 {
-                    var filter = Builders<Negocio>.Filter.Eq(n => n.Id, negocioId);
-                    NegocioActual = await _coleccionNegocios.Find(filter).FirstOrDefaultAsync();
+                    NegocioActual = await _negocioService.ObtenerPorIdAsync(negocioId);
                 }
             }
 
@@ -115,15 +110,9 @@ namespace slotsi_citas.ViewModel
                 TimeSpan pausaInicio = tienePausa ? TimeSpan.Parse(horarioDia.Pausas[0]) : TimeSpan.Zero;
                 TimeSpan pausaFin = tienePausa ? TimeSpan.Parse(horarioDia.Pausas[1]) : TimeSpan.Zero;
 
-                // Cargar citas existentes para este negocio y fecha
-                var inicioDia = FechaSeleccionada.Date;
-                var finDia = inicioDia.AddDays(1).AddTicks(-1);
-                var filterCitas = Builders<Citas>.Filter.And(
-                    Builders<Citas>.Filter.Eq(c => c.NegocioId, NegocioActual.Id),
-                    Builders<Citas>.Filter.Gte(c => c.FechaHoraInicio, inicioDia),
-                    Builders<Citas>.Filter.Lte(c => c.FechaHoraInicio, finDia)
-                );
-                var citasDelDia = await _coleccionCitas.Find(filterCitas).ToListAsync();
+                // Obtener citas de la API
+                var citasDelDiaDto = await _citaService.ObtenerPorFechaAsync(FechaSeleccionada);
+                citasDelDiaDto = citasDelDiaDto.Where(c => c.NegocioId == NegocioActual.Id).ToList();
 
                 for (var hora = horaApertura; hora < horaCierre; hora = hora.Add(TimeSpan.FromHours(1)))
                 {
@@ -131,10 +120,25 @@ namespace slotsi_citas.ViewModel
                     var finBloque = inicioBloque.AddHours(1);
 
                     bool esHorarioPausa = tienePausa && (hora >= pausaInicio && hora < pausaFin);
-                    var citaOcupada = citasDelDia.FirstOrDefault(c => c.FechaHoraInicio < finBloque && c.FechaHoraFin > inicioBloque);
-                    bool esOcupado = citaOcupada != null;
+                    var citaOcupadaDto = citasDelDiaDto.FirstOrDefault(c => c.FechaHoraInicio < finBloque && c.FechaHoraFin > inicioBloque);
+                    bool esOcupado = citaOcupadaDto != null;
 
                     bool esDisponible = !esHorarioPausa && !esOcupado;
+
+                    var citaOcupada = citaOcupadaDto != null ? new Citas
+                    {
+                        Id = citaOcupadaDto.Id ?? string.Empty,
+                        NegocioId = citaOcupadaDto.NegocioId,
+                        ClienteId = citaOcupadaDto.ClienteId,
+                        FechaHoraInicio = citaOcupadaDto.FechaHoraInicio,
+                        FechaHoraFin = citaOcupadaDto.FechaHoraFin,
+                        Estado = citaOcupadaDto.Estado,
+                        Cliente = new ClienteSnapshot
+                        {
+                            Nombre = citaOcupadaDto.ClienteNombre,
+                            Telefono = citaOcupadaDto.ClienteTelefono
+                        }
+                    } : null;
 
                     RangosHorarios.Add(new RangoHorario
                     {

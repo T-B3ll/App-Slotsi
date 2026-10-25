@@ -6,58 +6,45 @@
              BackgroundColor="#F3F4F6"
              Shell.NavBarIsVisible="True"
              Shell.FlyoutBehavior="Flyout">
-    
+
     <Shell.BackButtonBehavior>
-        <BackButtonBehavior IsVisible="False" /> 
+        <BackButtonBehavior IsVisible="False" />
     </Shell.BackButtonBehavior>
-    
+
     <Grid RowDefinitions="Auto, *, Auto">
 
-            <Frame Grid.Row="0" BackgroundColor="White" BorderColor="Transparent" CornerRadius="0" Padding="24,20,24,16" HasShadow="False">
-                <VerticalStackLayout Spacing="16">
-
-                    <VerticalStackLayout Spacing="4">
+        <Frame Grid.Row="0" BackgroundColor="White" BorderColor="Transparent" CornerRadius="0" Padding="24,20,24,16" HasShadow="False">
+            <VerticalStackLayout Spacing="16">
+                <VerticalStackLayout Spacing="4">
                     <Label Text="Negocio Disponibles" FontSize="26" FontAttributes="Bold" TextColor="#111827"/>
                 </VerticalStackLayout>
 
-                    <Frame BackgroundColor="#F9FAFB" BorderColor="#E5E7EB" CornerRadius="12" Padding="16,0" HeightRequest="48" HasShadow="False">
-                        <Grid ColumnDefinitions="Auto, *, Auto">
-                            <Label Grid.Column="0" Text="🔍" FontSize="16" VerticalOptions="Center" Margin="0,0,10,0"/>
+                <Frame BackgroundColor="#F9FAFB" BorderColor="#E5E7EB" CornerRadius="12" Padding="16,0" HeightRequest="48" HasShadow="False">
+                    <Grid ColumnDefinitions="Auto, *, Auto">
+                        <Label Grid.Column="0" Text="🔍" FontSize="16" VerticalOptions="Center" Margin="0,0,10,0"/>
+                        <Entry x:Name="EntryBusqueda" Grid.Column="1" Placeholder="Buscar por nombre o negocio..." PlaceholderColor="#9CA3AF" TextColor="#111827" FontSize="14" BackgroundColor="Transparent" VerticalOptions="Center" TextChanged="OnSearchTextChanged"/>
+                        <Button x:Name="BtnLimpiarBusqueda" Grid.Column="2" Text="✕" FontSize="16" TextColor="#6B7280" BackgroundColor="Transparent" WidthRequest="36" HeightRequest="36" Padding="0" IsVisible="False" Clicked="OnClearSearchClicked" VerticalOptions="Center"/>
+                    </Grid>
+                </Frame>
 
-                            <Entry x:Name="EntryBusqueda" Grid.Column="1" Placeholder="Buscar por nombre o negocio..." PlaceholderColor="#9CA3AF" TextColor="#111827" FontSize="14" BackgroundColor="Transparent" 
-                               VerticalOptions="Center" TextChanged="OnSearchTextChanged"/>
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                    <HorizontalStackLayout Spacing="10">
+                        <Button x:Name="BtnTodos" Text="Todos" BackgroundColor="#2563EB" TextColor="White" CornerRadius="20" HeightRequest="38" Padding="20,0" FontSize="13" FontAttributes="Bold" Clicked="OnFilterClicked"/>
+                        <Button x:Name="BtnSalones" Text="Salones" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="38" Padding="20,0" FontSize="13" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnFilterClicked"/>
+                        <Button x:Name="BtnBarberia" Text="Barbería" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="38" Padding="20,0" FontSize="13" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnFilterClicked"/>
+                    </HorizontalStackLayout>
+                </ScrollView>
+            </VerticalStackLayout>
+        </Frame>
 
-                            <Button x:Name="BtnLimpiarBusqueda" Grid.Column="2" Text="✕" FontSize="16" TextColor="#6B7280" BackgroundColor="Transparent" WidthRequest="36" HeightRequest="36"
-                                Padding="0" IsVisible="False" Clicked="OnClearSearchClicked" VerticalOptions="Center"/>
-                        </Grid>
-                    </Frame>
-
-                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                        <HorizontalStackLayout Spacing="10">
-                            <Button x:Name="BtnTodos" Text="Todos" BackgroundColor="#2563EB" TextColor="White" CornerRadius="20" HeightRequest="38" Padding="20,0" FontSize="13" 
-                                    FontAttributes="Bold" Clicked="OnFilterClicked"/>
-
-                            <Button x:Name="BtnSalones" Text="Salones" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="38" Padding="20,0" 
-                                FontSize="13" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnFilterClicked"/>
-
-                            <Button x:Name="BtnBarberia" 
-                                Text="Barbería" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="38" Padding="20,0" 
-                                FontSize="13" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnFilterClicked"/>
-                        </HorizontalStackLayout>
-                    </ScrollView>
-
-                </VerticalStackLayout>
-            </Frame>
-
-        <!-- CollectionView sin SelectionChanged para evitar bloqueos de toque -->
-        <CollectionView Grid.Row="1" ItemsSource="{Binding ListaDueños}" Margin="16,12,16,12" VerticalScrollBarVisibility="Never">
+        <!-- CAMBIO: Se eliminó VerticalScrollBarVisibility="Never" -->
+        <CollectionView Grid.Row="1" ItemsSource="{Binding ListaDueños}" Margin="16,12,16,12">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
             </CollectionView.ItemsLayout>
 
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <!-- Gestor de toque agregado directamente al Border -->
                     <Border BackgroundColor="White" Stroke="#E5E7EB" StrokeThickness="1" Padding="16">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnNegocioTapped" CommandParameter="{Binding .}" />
@@ -111,4 +98,4 @@
             </VerticalStackLayout>
         </Grid>
     </Grid>
-    </ContentPage>
+</ContentPage>

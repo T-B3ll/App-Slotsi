@@ -41,6 +41,7 @@ builder.Services.AddSingleton<IServicioRepository, ServiciosRepository>();
 builder.Services.AddSingleton<ICalificacionRepository, CalificacionRepository>();
 builder.Services.AddSingleton<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddSingleton<INegocioRepository, NegocioRepository>();
+builder.Services.AddSingleton<ICitaRepository, CitaRepository>();
 
 // 4. Configuración de Autenticación JWT y validación de tokens revocados
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -103,7 +104,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
     app.MapScalarApiReference(options =>
     {
-        options.Title = "Slotsi API - Documentación";
+        options.Title = "Slotsi API - Documentaci n";
         options.Theme = ScalarTheme.BluePlanet;
         options.OpenApiRoutePattern = "/openapi/v1.json";
     });

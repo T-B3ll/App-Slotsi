@@ -43,6 +43,7 @@ public static class MauiProgram
 
 
         builder.Services.AddSingleton<MongoService>();
+
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<SupabaseStorageService>();
 
@@ -72,10 +73,13 @@ public static class MauiProgram
         builder.Services.AddHttpClient<CalificacionService>(ConfigurarClienteApi)
             .AddHttpMessageHandler<AuthHeaderHandler>();
 
+        builder.Services.AddHttpClient<CitaService>(c =>
+          c.BaseAddress = ApiConfiguracion.UrlBase);
+
         builder.Services.AddSingleton<RecuperacionService>();
         builder.Services.AddSingleton<SuscripcionService>();
         builder.Services.AddSingleton<EmailJSService>();
-
+        builder.Services.AddHttpClient<CitaService>(c => c.BaseAddress = ApiConfiguracion.UrlBase);
         // --- VIEWMODELS ---
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<CitasClienteViewModel>();
@@ -116,6 +120,9 @@ public static class MauiProgram
 
         builder.Services.AddTransient<DueñosNegociosViewModel>();
         builder.Services.AddTransient<DueñosNegociosPage>();
+
+        builder.Services.AddTransient<SeleccionarCitaViewModel>();
+        builder.Services.AddTransient<SeleccionarCitaPage>();
 
 
         return builder.Build();

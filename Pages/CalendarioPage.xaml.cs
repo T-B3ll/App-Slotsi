@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Microsoft.Maui.Controls;
 using slotsi_citas.ViewModel;
 
+
 namespace slotsi_citas.Pages
 {
     public partial class CalendarioPage : ContentPage, IQueryAttributable
@@ -15,9 +16,7 @@ namespace slotsi_citas.Pages
             BindingContext = _viewModel;
         }
 
-        public CalendarioPage() : this(new CitasClienteViewModel())
-        {
-        }
+
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {

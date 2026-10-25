@@ -11,6 +11,7 @@ namespace slotsi_citas.ViewModel
 {
     public class DueñosNegociosViewModel : INotifyPropertyChanged
     {
+
         private readonly NegocioService _negocioService;
         private ObservableCollection<Negocio> _listaDueños;
 
@@ -22,29 +23,30 @@ namespace slotsi_citas.ViewModel
 
         public Command RefreshCommand { get; }
 
+
         public DueñosNegociosViewModel(NegocioService negocioService)
         {
             _negocioService = negocioService;
             ListaDueños = new ObservableCollection<Negocio>();
-
             RefreshCommand = new Command(async () => await CargarNegociosAsync());
-
-            MainThread.BeginInvokeOnMainThread(async () => await CargarNegociosAsync());
         }
 
-        
         public async Task CargarNegociosAsync()
         {
             try
             {
+
                 var negocios = await _negocioService.ObtenerTodosAsync();
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     ListaDueños.Clear();
-                    foreach (var negocio in negocios)
+                    if (negocios != null)
                     {
-                        ListaDueños.Add(negocio);
+                        foreach (var negocio in negocios)
+                        {
+                            ListaDueños.Add(negocio);
+                        }
                     }
                 });
             }
