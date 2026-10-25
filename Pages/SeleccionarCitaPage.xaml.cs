@@ -1,6 +1,6 @@
 using Microsoft.Maui.Controls;
+using slotsi_citas.Services;
 using slotsi_citas.ViewModel;
-using slotsi_citas.ViewModels;
 using System;
 
 namespace slotsi_citas.Pages
@@ -8,11 +8,16 @@ namespace slotsi_citas.Pages
     public partial class SeleccionarCitaPage : ContentPage
     {
         private readonly SeleccionarCitaViewModel _viewModel;
-        public SeleccionarCitaPage()
+
+        public SeleccionarCitaPage(SeleccionarCitaViewModel viewModel)
         {
             InitializeComponent();
-            _viewModel = new SeleccionarCitaViewModel();
+            _viewModel = viewModel;
             BindingContext = _viewModel;
+        }
+
+        public SeleccionarCitaPage() : this(new SeleccionarCitaViewModel())
+        {
         }
 
         protected override async void OnAppearing()
@@ -20,10 +25,32 @@ namespace slotsi_citas.Pages
             base.OnAppearing();
             if (_viewModel != null)
             {
+                if (CitaSession.HorarioSeleccionado != null)
+                {
+                    _viewModel.HorarioSeleccionado = CitaSession.HorarioSeleccionado;
+                }
+
+                if (CitaSession.FechaSeleccionada != default)
+                {
+                    _viewModel.FechaSeleccionada = CitaSession.FechaSeleccionada;
+                }
+
+                if (_viewModel.NegocioActualObj == null && CitaSession.NegocioActual != null)
+                {
+                    _viewModel.NegocioActualObj = CitaSession.NegocioActual;
+                    _viewModel.NegocioNombre = !string.IsNullOrEmpty(CitaSession.NegocioActual.NombreNegocio) 
+                        ? CitaSession.NegocioActual.NombreNegocio 
+                        : CitaSession.NegocioActual.Nombre;
+                    _viewModel.NegocioFoto = CitaSession.NegocioActual.UrlFotoPerfil;
+                    if (!string.IsNullOrEmpty(CitaSession.NegocioActual.DireccionNegocio))
+                    {
+                        _viewModel.DireccionCliente = CitaSession.NegocioActual.DireccionNegocio;
+                    }
+                }
+
                 await _viewModel.CargarDatosSesionClienteAsync();
                 await _viewModel.CargarColaboradoresParaServiciosAsync();
             }
-
         }
     }
 }

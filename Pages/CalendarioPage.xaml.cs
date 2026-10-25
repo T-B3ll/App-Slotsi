@@ -1,19 +1,36 @@
-using Microsoft.Maui.ApplicationModel;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Storage;
-using slotsi_citas.Models;
-using slotsi_citas.Services;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Input;
+using Microsoft.Maui.Controls;
+using slotsi_citas.ViewModel;
 
-namespace slotsi_citas.ViewModel
+namespace slotsi_citas.Pages
 {
-    public class CitasClienteViewModel : BindableObject
+    public partial class CalendarioPage : ContentPage, IQueryAttributable
     {
+        private readonly CitasClienteViewModel _viewModel;
 
+        public CalendarioPage(CitasClienteViewModel viewModel)
+        {
+            InitializeComponent();
+            _viewModel = viewModel;
+            BindingContext = _viewModel;
+        }
+
+        public CalendarioPage() : this(new CitasClienteViewModel())
+        {
+        }
+
+        public void ApplyQueryAttributes(IDictionary<string, object> query)
+        {
+            _viewModel?.ApplyQueryAttributes(query);
+        }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            if (_viewModel != null)
+            {
+                await _viewModel.InicializarAsync();
+            }
+        }
     }
 }

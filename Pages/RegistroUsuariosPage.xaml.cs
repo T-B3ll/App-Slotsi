@@ -2,10 +2,9 @@ using System;
 using Microsoft.Maui.Controls;
 using slotsi_citas.Models;
 using slotsi_citas.ViewModel;
+using slotsi_citas.Services;
 
 namespace slotsi_citas.Pages;
-using slotsi_citas.ViewModel;
-using slotsi_citas.Services;
 
 public partial class RegistroUsuariosPage : ContentPage
 {
@@ -14,10 +13,7 @@ public partial class RegistroUsuariosPage : ContentPage
     public RegistroUsuariosPage()
     {
         InitializeComponent();
-
-        BindingContext = new UsuarioBasicoViewModel(
-          Application.Current.Handler.MauiContext.Services.GetService<UsuarioService>()
-          );
+        BindingContext = new RegistroUsuariosViewModel();
     }
 
     public RegistroUsuariosPage(RegistroUsuariosViewModel viewModel) : this()

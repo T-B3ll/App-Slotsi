@@ -18,6 +18,9 @@ namespace slotsi_citas.ViewModel
         private string _textoBusqueda = string.Empty;
         private string? _letraSeleccionada = null;
 
+        private bool _cargandoUsuarios = false;
+        private readonly HashSet<string> _usuariosEnActualizacion = new();
+
         public ObservableCollection<Usuario> Usuarios { get; set; }
         public ObservableCollection<InicialLetraModel> Iniciales { get; set; }
 
@@ -60,15 +63,18 @@ namespace slotsi_citas.ViewModel
                     await Application.Current.MainPage.DisplayAlert("Slotsi", "Registrar nuevo usuario seleccionado", "OK");
             });
 
-            CambiarEstadoCommand = new Command<Usuario>(async (usuario) => await OnCambiarEstado(usuario));
-            VerDetallesUsuarioCommand = new Command<Usuario>(async (usuario) => await OnVerDetallesUsuario(usuario));
+            CambiarEstadoCommand = new Command<Usuario>(OnCambiarEstadoComando);
+            VerDetallesUsuarioCommand = new Command<Usuario>(OnVerDetallesUsuarioComando);
         }
 
         public async Task CargarUsuariosBDAsync()
         {
+            if (_cargandoUsuarios) return;
+            _cargandoUsuarios = true;
+
             try
             {
-                var datos = await _mongoService.ObtenerUsuariosAsync();
+                var datos = await Task.Run(async () => await _mongoService.ObtenerUsuariosAsync());
                 _listaCompletaUsuarios = datos ?? new List<Usuario>();
 
                 MainThread.BeginInvokeOnMainThread(() =>
@@ -78,33 +84,74 @@ namespace slotsi_citas.ViewModel
             }
             catch (Exception ex)
             {
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    if (Application.Current?.MainPage != null)
-                        await Application.Current.MainPage.DisplayAlert("Error MongoDB", ex.Message, "OK");
-                });
+                System.Diagnostics.Debug.WriteLine($"[ERROR CARGAR USUARIOS]: {ex.Message}");
+            }
+            finally
+            {
+                _cargandoUsuarios = false;
             }
         }
 
-        private async Task OnCambiarEstado(Usuario? usuario)
+        private async void OnCambiarEstadoComando(Usuario? usuario)
         {
             if (usuario == null || string.IsNullOrEmpty(usuario.Id)) return;
 
-            bool nuevoEstado = !usuario.EstaActivo;
-            bool actualizado = await _mongoService.ActualizarEstadoUsuarioAsync(usuario.Id, nuevoEstado);
+            // Si este usuario ya está en proceso, ignorar
+            if (_usuariosEnActualizacion.Contains(usuario.Id)) return;
 
-            if (actualizado)
+            _usuariosEnActualizacion.Add(usuario.Id);
+
+            try
             {
-                usuario.EstaActivo = nuevoEstado;
-                AplicarFiltros();
+                bool nuevoEstado = !usuario.EstaActivo;
+
+                string accion = nuevoEstado ? "activar" : "desactivar";
+                string titulo = nuevoEstado ? "Activar Usuario" : "Desactivar Usuario";
+                string mensaje = $"¿Estás seguro de que deseas {accion} a {usuario.NombreCompleto}?";
+
+                bool confirmar = await Application.Current.MainPage.DisplayAlert(titulo, mensaje, "Sí", "Cancelar");
+
+                if (!confirmar)
+                {
+                    return;
+                }
+            
+                bool actualizado = await Task.Run(async () =>
+                    await _mongoService.ActualizarEstadoUsuarioAsync(usuario.Id, nuevoEstado));
+
+                if (actualizado)
+                {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        usuario.EstaActivo = nuevoEstado;
+                        // Refrescar solo el item en la lista
+                        var index = Usuarios.IndexOf(usuario);
+                        if (index >= 0)
+                        {
+                            Usuarios[index] = usuario;
+                        }
+                    });
+                }
+                else
+                {
+                    MainThread.BeginInvokeOnMainThread(async () =>
+                    {
+                        if (Application.Current?.MainPage != null)
+                            await Application.Current.MainPage.DisplayAlert("Error", "No se pudo actualizar el estado en MongoDB", "OK");
+                    });
+                }
             }
-            else if (Application.Current?.MainPage != null)
+            catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "No se pudo actualizar el estado en MongoDB", "OK");
+                System.Diagnostics.Debug.WriteLine($"[ERROR CAMBIAR ESTADO]: {ex.Message}");
+            }
+            finally
+            {
+                _usuariosEnActualizacion.Remove(usuario.Id);
             }
         }
 
-        private async Task OnVerDetallesUsuario(Usuario? usuario)
+        private async void OnVerDetallesUsuarioComando(Usuario? usuario)
         {
             if (usuario == null || Application.Current?.MainPage == null) return;
 
@@ -140,13 +187,9 @@ namespace slotsi_citas.ViewModel
             if (item == null) return;
 
             if (_letraSeleccionada == item.Letra)
-            {
                 _letraSeleccionada = null;
-            }
             else
-            {
                 _letraSeleccionada = item.Letra;
-            }
 
             foreach (var inicial in Iniciales)
             {
@@ -175,11 +218,16 @@ namespace slotsi_citas.ViewModel
                     (!string.IsNullOrEmpty(u.Cedula) && u.Cedula.Contains(busqueda, StringComparison.OrdinalIgnoreCase)));
             }
 
-            Usuarios.Clear();
-            foreach (var usr in resultado)
+            var listaFiltrada = resultado.ToList();
+
+            MainThread.BeginInvokeOnMainThread(() =>
             {
-                Usuarios.Add(usr);
-            }
+                Usuarios.Clear();
+                foreach (var usr in listaFiltrada)
+                {
+                    Usuarios.Add(usr);
+                }
+            });
         }
     }
 }

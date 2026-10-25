@@ -6,14 +6,13 @@
     xmlns:pages="clr-namespace:slotsi_citas.Pages"
     Title="Slotsi"
     FlyoutBehavior="Flyout"
-    BackgroundColor="#2563EB"
-    FlyoutBackgroundColor="White">
+    FlyoutBackgroundColor="#FFFFFF">
 
     <Shell.ItemTemplate>
         <DataTemplate>
             <Grid ColumnDefinitions="44, *" HeightRequest="50" Padding="16,0">
                 <Image Grid.Column="0" Source="{Binding Icon}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="22" HeightRequest="22"/>
-                <Label Grid.Column="1" Text="{Binding Title}" TextColor="#1E293B"  FontSize="14" FontAttributes="Bold" VerticalOptions="Center" Margin="8,0,0,0"/>
+                <Label Grid.Column="1" Text="{Binding Title}" TextColor="#1E293B" FontSize="14" FontAttributes="Bold" VerticalOptions="Center" Margin="8,0,0,0"/>
             </Grid>
         </DataTemplate>
     </Shell.ItemTemplate>
@@ -27,7 +26,7 @@
         </Grid>
     </Shell.FlyoutHeader>
 
-    <FlyoutItem Title="Pago de la suscripcion" Route="PagoSuscripcionPage">
+    <FlyoutItem Title="Pago de la suscripción" Route="PagoSuscripcionPage">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
@@ -69,6 +68,14 @@
         <ShellContent ContentTemplate="{DataTemplate pages:SeleccionarCitaPage}" />
     </FlyoutItem>
 
+    <!-- NUEVO: Acceso directo a la pantalla de horarios -->
+    <FlyoutItem Title="Horarios Disponibles" Route="HorariosDisponiblesPage">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8B5;" Color="#2563EB" Size="22" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:HorariosDisponiblesPage}" />
+    </FlyoutItem>
+
     <FlyoutItem Title="Trabajadores" Route="ListaTrabajadores">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FB;" Color="#2563EB" Size="22" />
@@ -90,13 +97,13 @@
         <ShellContent ContentTemplate="{DataTemplate pages:DueñosNegociosPage}"/>
     </FlyoutItem>
 
-
-    <FlyoutItem Title="Editar pefil" Route="EditarPerfilPage">
+    <FlyoutItem Title="Editar perfil" Route="EditarPerfilPage">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FD;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:EditarPerfilPage}" />
     </FlyoutItem>
+
     <Shell.FlyoutFooter>
         <Grid Padding="16,10,16,20" BackgroundColor="White">
             <Button x:Name="botonCerrarSesion"

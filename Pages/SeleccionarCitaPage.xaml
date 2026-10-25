@@ -174,17 +174,61 @@
                             </HorizontalStackLayout>
                         </Grid>
 
-                        <!-- Fila Fecha -->
-                        <VerticalStackLayout Spacing="2">
-                            <Label Text="Fecha" FontSize="12" TextColor="#64748B"/>
-                            <Label Text="{Binding FechaTextoResumen}" FontAttributes="Bold" TextColor="#0F172A"/>
-                        </VerticalStackLayout>
+                        <!-- Fila Fecha interactiva -->
+                        <Border BackgroundColor="#F8FAFC" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12,8">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding IrAHorariosCommand}"/>
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="Fecha" FontSize="11" TextColor="#64748B"/>
+                                    <Label Text="{Binding FechaTextoResumen}" FontAttributes="Bold" FontSize="13" TextColor="#0F172A"/>
+                                </VerticalStackLayout>
+                                <Label Grid.Column="1" Text="&#xE3C9;" FontFamily="MaterialIcons" FontSize="18" TextColor="#2563EB" VerticalOptions="Center"/>
+                            </Grid>
+                        </Border>
 
-                        <!-- Fila Horario -->
-                        <VerticalStackLayout Spacing="2">
-                            <Label Text="Horario" FontSize="12" TextColor="#64748B"/>
-                            <Label Text="{Binding HorarioTextoResumen}" FontAttributes="Bold" TextColor="#0F172A"/>
-                        </VerticalStackLayout>
+                        <!-- Fila Horario interactiva -->
+                        <Border BackgroundColor="#F8FAFC" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12,8">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding IrAHorariosCommand}"/>
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="Horario" FontSize="11" TextColor="#64748B"/>
+                                    <Label Text="{Binding HorarioTextoResumen}" FontAttributes="Bold" FontSize="13" TextColor="#0F172A"/>
+                                </VerticalStackLayout>
+                                <Border Grid.Column="1" 
+                                        BackgroundColor="#EFF6FF" 
+                                        Stroke="#DBEAFE" 
+                                        StrokeThickness="1" 
+                                        StrokeShape="RoundRectangle 8" 
+                                        Padding="10,4"
+                                        VerticalOptions="Center">
+                                    <Label Text="{Binding TextoBotonHorario}" FontSize="11" FontAttributes="Bold" TextColor="#2563EB"/>
+                                </Border>
+                            </Grid>
+                        </Border>
+
+                        <!-- Aviso destacado si no se ha seleccionado horario aún -->
+                        <Border IsVisible="{Binding NoTieneHorarioSeleccionado}"
+                                BackgroundColor="#EFF6FF" 
+                                Stroke="#93C5FD" 
+                                StrokeThickness="1" 
+                                StrokeShape="RoundRectangle 10" 
+                                Padding="12,10">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding IrAHorariosCommand}"/>
+                            </Border.GestureRecognizers>
+                            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+                                <Label Grid.Column="0" Text="&#xE916;" FontFamily="MaterialIcons" FontSize="22" TextColor="#2563EB" VerticalOptions="Center"/>
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+                                    <Label Text="Toca para elegir tu horario" FontSize="12" FontAttributes="Bold" TextColor="#1E40AF"/>
+                                    <Label Text="Ver horarios disponibles según el negocio" FontSize="10" TextColor="#3B82F6"/>
+                                </VerticalStackLayout>
+                                <Label Grid.Column="2" Text="→" FontSize="18" FontAttributes="Bold" TextColor="#2563EB" VerticalOptions="Center"/>
+                            </Grid>
+                        </Border>
 
                         <!-- Fila Servicio(s) -->
                         <Grid ColumnDefinitions="Auto, *, Auto">
@@ -207,7 +251,7 @@
                 Command="{Binding ConfirmarCitaCommand}"
                 IsEnabled="True" 
                 BackgroundColor="#2563EB" 
-                TextColor="White"
+                TextColor="White" 
                 FontAttributes="Bold" 
                 FontSize="15" 
                 CornerRadius="12" 
@@ -218,18 +262,33 @@
         <!-- ROW 3: Barra Inferior de Navegación -->
         <Grid Grid.Row="3" ColumnDefinitions="*, *, *, *" BackgroundColor="#FFFFFF" HeightRequest="60" Padding="0,6">
             <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding NavegarInicioCommand}"/>
+                </VerticalStackLayout.GestureRecognizers>
                 <Image Source="home.png" HeightRequest="22" WidthRequest="22"/>
                 <Label Text="Inicio" FontSize="11" TextColor="#2563EB" FontAttributes="Bold"/>
             </VerticalStackLayout>
+
             <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding NavegarCitasCommand}"/>
+                </VerticalStackLayout.GestureRecognizers>
                 <Image Source="calendar.png" HeightRequest="22" WidthRequest="22"/>
                 <Label Text="Citas" FontSize="11" TextColor="#6B7280"/>
             </VerticalStackLayout>
+
             <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding NavegarSucursalCommand}"/>
+                </VerticalStackLayout.GestureRecognizers>
                 <Image Source="location.png" HeightRequest="22" WidthRequest="22"/>
                 <Label Text="Sucursal" FontSize="11" TextColor="#6B7280"/>
             </VerticalStackLayout>
+
             <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding NavegarPerfilCommand}"/>
+                </VerticalStackLayout.GestureRecognizers>
                 <Image Source="profile.png" HeightRequest="22" WidthRequest="22"/>
                 <Label Text="Perfil" FontSize="11" TextColor="#6B7280"/>
             </VerticalStackLayout>

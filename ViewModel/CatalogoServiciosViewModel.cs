@@ -1,4 +1,4 @@
-﻿using Microsoft.Maui.ApplicationModel;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Storage;
 using slotsi_citas.Models;
@@ -180,9 +180,16 @@ namespace slotsi_citas.ViewModel
 
             if (NegocioActual != null)
             {
+                CitaSession.NegocioActual = NegocioActual;
+                CitaSession.NegocioId = NegocioActual.Id ?? string.Empty;
                 CitaSession.DireccionCliente = string.IsNullOrEmpty(NegocioActual.DireccionNegocio)
                     ? "Matagalpa, Nicaragua"
                     : NegocioActual.DireccionNegocio;
+
+                if (!string.IsNullOrEmpty(NegocioActual.Id))
+                {
+                    Preferences.Set("NegocioSeleccionadoId", NegocioActual.Id);
+                }
             }
 
             string serviciosIdsJson = string.Join(",", _serviciosSeleccionados.Select(s => s.Id));
@@ -196,7 +203,7 @@ namespace slotsi_citas.ViewModel
 
             if (Shell.Current != null)
             {
-                await Shell.Current.GoToAsync("SeleccionarCitaPage", parametrosNavegacion);
+                await Shell.Current.GoToAsync("CalendarioPage", parametrosNavegacion);
             }
         }
 

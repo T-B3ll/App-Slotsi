@@ -15,6 +15,9 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
+
+        builder.Services.AddTransient<HorariosDisponiblesPage>();
+        builder.Services.AddTransient<HorariosDisponiblesViewModel>();
         builder
             .UseMauiApp<App>()
             .ConfigureSyncfusionToolkit()
@@ -88,6 +91,12 @@ public static class MauiProgram
         builder.Services.AddTransient<EditarPerfilViewModel>();
         builder.Services.AddTransient<RecuperarContrasenaViewModel>();
 
+        builder.Services.AddTransient<HorariosDisponiblesPage>();
+        builder.Services.AddTransient<HorariosDisponiblesViewModel>();
+
+        builder.Services.AddTransient<LoginPage>();
+        builder.Services.AddTransient<Cita_UsuarioPage>();
+        builder.Services.AddTransient<CentroCalificaciones>();
         builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<CrearResena>();
         builder.Services.AddTransient<RegistroUsuarioBasico>();

@@ -2,155 +2,286 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
+             xmlns:models="clr-namespace:slotsi_citas.Models"
              x:Class="slotsi_citas.Pages.CalendarioPage"
              x:Name="PageRoot"
-             Title="Calendario"
-             BackgroundColor="White">
+             Title="Calendario de citas..."
+             BackgroundColor="#FFFFFF"
+             Shell.NavBarIsVisible="False"
+             NavigationPage.HasNavigationBar="False">
 
+    <Grid RowDefinitions="Auto, *, Auto">
 
-    <Grid RowDefinitions="Auto, Auto, Auto, *, Auto">
+        <!-- HEADER AZUL (Diseño Imagen 4) -->
+        <Grid Grid.Row="0" BackgroundColor="#2563EB" Padding="16, 12, 16, 16">
+            <VerticalStackLayout Spacing="12">
 
-        <!-- 1. Título principal -->
-        <Label Grid.Row="0"
-               Text="Calendario"
-               FontSize="24"
-               FontAttributes="Bold"
-               TextColor="#2F6BFF"
-               HorizontalOptions="Center"
-               Margin="0,15,0,15" />
+                <!-- Fila Título con botón volver -->
+                <Grid ColumnDefinitions="Auto, *, Auto">
+                    <Label Grid.Column="0" 
+                           Text="&#xE5C4;" 
+                           FontFamily="MaterialIcons" 
+                           FontSize="24" 
+                           TextColor="White" 
+                           VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding VolverCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
 
-        <!-- 2. Navegador de Fecha y Botón Hoy -->
-        <Grid Grid.Row="1" ColumnDefinitions="Auto, Auto, *, Auto" Padding="20,0" Margin="0,0,0,15">
-            <Label Grid.Column="0" Text="&lt;" FontSize="18" FontAttributes="Bold" TextColor="#1C1C1E" VerticalOptions="Center">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding AnterioresCommand}" />
-                </Label.GestureRecognizers>
-            </Label>
+                    <Label Grid.Column="1"
+                           Text="Calendario de citas..."
+                           FontSize="20"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
 
-            <Label Grid.Column="1"
-                   Text="{Binding RangoFecha}"
-                   FontSize="16"
-                   FontAttributes="Bold"
-                   TextColor="#1C1C1E"
-                   VerticalOptions="Center"
-                   Margin="10,0" />
+                    <!-- Espaciador para centrar título -->
+                    <BoxView Grid.Column="2" WidthRequest="24" Color="Transparent"/>
+                </Grid>
 
-            <Label Grid.Column="2" Text="&gt;" FontSize="18" FontAttributes="Bold" TextColor="#1C1C1E" VerticalOptions="Center">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding SiguientesCommand}" />
-                </Label.GestureRecognizers>
-            </Label>
+                <!-- Fila Selector de Fecha y Botón Hoy -->
+                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12" Margin="4,0,4,0">
 
-            <!-- Botón Hoy -->
-            <Border Grid.Column="3"
-                    BackgroundColor="#2F6BFF"
-                    StrokeThickness="0"
-                    StrokeShape="RoundRectangle 12"
-                    Padding="16,6">
-                <Border.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding HoyCommand}" />
-                </Border.GestureRecognizers>
-                <Label Text="Hoy" TextColor="White" FontAttributes="Bold" FontSize="13" />
-            </Border>
+                    <!-- Caja Blanca con la Fecha y DatePicker superpuesto -->
+                    <Border Grid.Column="0"
+                            BackgroundColor="#FFFFFF"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 8"
+                            HeightRequest="42"
+                            Padding="12,0">
+                        <Grid>
+                            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                <Label Grid.Column="0" 
+                                       Text="{Binding TextoFechaSeleccionada}" 
+                                       FontSize="13" 
+                                       FontAttributes="Bold" 
+                                       TextColor="#111827" 
+                                       VerticalOptions="Center"
+                                       MaxLines="1"/>
+                                <Image Grid.Column="1" 
+                                       Source="calendar.png" 
+                                       HeightRequest="16" 
+                                       WidthRequest="16" 
+                                       VerticalOptions="Center"
+                                       Margin="6,0,0,0"/>
+                            </Grid>
+
+                            <!-- DatePicker transparente para permitir abrir el calendario nativo al tocar la caja -->
+                            <DatePicker Date="{Binding FechaSeleccionada, Mode=TwoWay}"
+                                        Opacity="0.01"
+                                        HorizontalOptions="Fill"
+                                        VerticalOptions="Fill"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Botón Blanco "Hoy" -->
+                    <Border Grid.Column="1"
+                            BackgroundColor="#FFFFFF"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 8"
+                            HeightRequest="42"
+                            Padding="16,0">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding HoyCommand}"/>
+                        </Border.GestureRecognizers>
+                        <Label Text="Hoy" 
+                               TextColor="#111827" 
+                               FontAttributes="Bold" 
+                               FontSize="13" 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center"/>
+                    </Border>
+                </Grid>
+
+            </VerticalStackLayout>
         </Grid>
 
-        <!-- 3. Franja de días de la semana -->
-        <StackLayout Grid.Row="2">
-            <BoxView HeightRequest="1" BackgroundColor="#E5E5EA" />
-            <CollectionView ItemsSource="{Binding DiasSemana}" HorizontalScrollBarVisibility="Never" Margin="10,10">
+        <!-- CUERPO PRINCIPAL: LISTA DE HORARIOS (Diseño Imagen 4) -->
+        <Grid Grid.Row="1" BackgroundColor="#FFFFFF">
+
+            <!-- Indicador de Carga -->
+            <ActivityIndicator IsRunning="{Binding EstaCargando}"
+                               IsVisible="{Binding EstaCargando}"
+                               Color="#2563EB"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"/>
+
+            <!-- Vista cuando el Negocio está cerrado este día -->
+            <VerticalStackLayout IsVisible="{Binding EstaCerradoElDia}"
+                                 VerticalOptions="Center"
+                                 HorizontalOptions="Center"
+                                 Padding="30"
+                                 Spacing="12">
+                <Border BackgroundColor="#FEF2F2"
+                        Stroke="#FEE2E2"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 16"
+                        Padding="20">
+                    <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                        <Label Text="&#xE88F;" 
+                               FontFamily="MaterialIcons" 
+                               FontSize="36" 
+                               TextColor="#DC2626" 
+                               HorizontalOptions="Center"/>
+                        <Label Text="Negocio Cerrado" 
+                               FontSize="16" 
+                               FontAttributes="Bold" 
+                               TextColor="#991B1B" 
+                               HorizontalOptions="Center"/>
+                        <Label Text="{Binding MensajeCerrado}" 
+                               FontSize="13" 
+                               TextColor="#B91C1C" 
+                               HorizontalTextAlignment="Center"/>
+                        <Label Text="Por favor selecciona otra fecha disponible." 
+                               FontSize="12" 
+                               TextColor="#6B7280" 
+                               HorizontalTextAlignment="Center"
+                               Margin="0,4,0,0"/>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Lista de Horarios generados según la BD de Negocios -->
+            <CollectionView ItemsSource="{Binding RangosHorarios}"
+                            IsVisible="{Binding EstaAbiertoElDia}"
+                            Margin="16,12"
+                            VerticalScrollBarVisibility="Never">
                 <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="12" />
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <StackLayout WidthRequest="38" HorizontalOptions="Center">
-                            <Label Text="{Binding LetraDia}"
+                    <DataTemplate x:DataType="models:RangoHorario">
+                        <Grid ColumnDefinitions="75, *">
+
+                            <!-- Columna Hora (ej. 8:00 AM, 1:00 PM) -->
+                            <Label Grid.Column="0"
+                                   Text="{Binding HoraDisplay}"
                                    FontSize="13"
                                    FontAttributes="Bold"
-                                   TextColor="#1C1C1E"
-                                   HorizontalOptions="Center" />
-                            <Border StrokeThickness="0"
-                                    BackgroundColor="{Binding ColorFondoNumero}"
-                                    StrokeShape="RoundRectangle 18"
-                                    WidthRequest="34"
-                                    HeightRequest="34"
-                                    Margin="0,4,0,0"
-                                    HorizontalOptions="Center">
-                                <Label Text="{Binding NumeroDia}"
-                                       FontSize="15"
+                                   TextColor="#1F2937"
+                                   VerticalOptions="Center"/>
+
+                            <!-- Columna Tarjeta de Acción / Estado -->
+                            <!-- CASO 1: DISPONIBLE (Agendar cita) -->
+                            <Border Grid.Column="1"
+                                    IsVisible="{Binding EsDisponible}"
+                                    BackgroundColor="#FFFFFF"
+                                    Stroke="#E5E7EB"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 12"
+                                    HeightRequest="48"
+                                    Padding="16,0">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer 
+                                        Command="{Binding BindingContext.AgendarHorarioCommand, Source={x:Reference PageRoot}}"
+                                        CommandParameter="{Binding .}"/>
+                                </Border.GestureRecognizers>
+
+                                <Label Text="{Binding EstadoTexto}"
+                                       TextColor="#111827"
+                                       FontSize="13"
                                        FontAttributes="Bold"
-                                       TextColor="{Binding ColorTextoNumero}"
-                                       HorizontalTextAlignment="Center"
-                                       VerticalTextAlignment="Center" />
+                                       VerticalOptions="Center"/>
                             </Border>
-                        </StackLayout>
+
+                            <!-- CASO 2: NO DISPONIBLE (Pausa / Descanso del negocio) -->
+                            <Border Grid.Column="1"
+                                    IsVisible="{Binding EsNoDisponible}"
+                                    BackgroundColor="#F1F5F9"
+                                    Stroke="#E2E8F0"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 12"
+                                    HeightRequest="48"
+                                    Padding="0">
+                                <Grid ColumnDefinitions="4, *">
+                                    <BoxView Grid.Column="0" 
+                                             Color="#64748B" 
+                                             CornerRadius="12,0,0,12"/>
+                                    <VerticalStackLayout Grid.Column="1" 
+                                                         Padding="14,0" 
+                                                         VerticalOptions="Center" 
+                                                         Spacing="1">
+                                        <Label Text="No disponible"
+                                               TextColor="#334155"
+                                               FontSize="12"
+                                               FontAttributes="Bold"/>
+                                        <Label Text="{Binding DetallePausa}"
+                                               TextColor="#64748B"
+                                               FontSize="10"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+
+                            <!-- CASO 3: OCUPADO (Cita agendada en la BD) -->
+                            <Border Grid.Column="1"
+                                    IsVisible="{Binding EsOcupado}"
+                                    BackgroundColor="#FEF2F2"
+                                    Stroke="#FEE2E2"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 12"
+                                    HeightRequest="48"
+                                    Padding="0">
+                                <Grid ColumnDefinitions="4, *">
+                                    <BoxView Grid.Column="0" 
+                                             Color="#EF4444" 
+                                             CornerRadius="12,0,0,12"/>
+                                    <VerticalStackLayout Grid.Column="1" 
+                                                         Padding="14,0" 
+                                                         VerticalOptions="Center" 
+                                                         Spacing="1">
+                                        <Label Text="No disponible"
+                                               TextColor="#991B1B"
+                                               FontSize="12"
+                                               FontAttributes="Bold"/>
+                                        <Label Text="(Ocupado)"
+                                               TextColor="#DC2626"
+                                               FontSize="10"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+
+                        </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-            <BoxView HeightRequest="1" BackgroundColor="#E5E5EA" />
-        </StackLayout>
 
-        <!-- 4. Lista Dinámica de Horarios (Sin la propiedad Padding en CollectionView) -->
-        <CollectionView Grid.Row="3" 
-                        ItemsSource="{Binding RangosHorarios}" 
-                        Margin="15,10"
-                        VerticalScrollBarVisibility="Never">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Grid ColumnDefinitions="70, *" Margin="0,5">
-                        <!-- Columna con la Hora -->
-                        <Label Grid.Column="0" 
-                               Text="{Binding HoraDisplay}" 
-                               TextColor="#1C1C1E" 
-                               FontSize="13" 
-                               FontAttributes="Bold"
-                               VerticalOptions="Center" />
+        </Grid>
 
-                        <!-- Tarjeta con la acción/estado -->
-                        <Border Grid.Column="1"
-                                BackgroundColor="#F8F9FA"
-                                Stroke="#E5E5EA"
-                                StrokeThickness="1"
-                                StrokeShape="RoundRectangle 12"
-                                Padding="15,12">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer 
-                                    Command="{Binding BindingContext.SeleccionarHorarioCommand, Source={x:Reference PageRoot}}" 
-                                    CommandParameter="{Binding .}" />
-                            </Border.GestureRecognizers>
+        <!-- BARRA INFERIOR DE NAVEGACIÓN -->
+        <Grid Grid.Row="2" ColumnDefinitions="*, *, *, *" BackgroundColor="#FFFFFF" HeightRequest="56" Padding="0,4">
+            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding NavegarInicioCommand}"/>
+                </VerticalStackLayout.GestureRecognizers>
+                <Image Source="home.png" HeightRequest="20" WidthRequest="20"/>
+                <Label Text="Inicio" FontSize="11" TextColor="#6B7280"/>
+            </VerticalStackLayout>
 
-                            <Label Text="{Binding EstadoTexto}" 
-                                   TextColor="#2F6BFF" 
-                                   FontSize="14" 
-                                   FontAttributes="Bold" />
-                        </Border>
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding NavegarCitasCommand}"/>
+                </VerticalStackLayout.GestureRecognizers>
+                <Image Source="calendar.png" HeightRequest="20" WidthRequest="20"/>
+                <Label Text="Citas" FontSize="11" TextColor="#2563EB" FontAttributes="Bold"/>
+            </VerticalStackLayout>
 
-        <Grid Grid.Row="4" ColumnDefinitions="*, *, *, *" BackgroundColor="#F9F9F9" Padding="0,10,0,15">
-            <BoxView Grid.ColumnSpan="4" HeightRequest="1" BackgroundColor="#E5E5EA" VerticalOptions="Start" />
+            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding NavegarSucursalCommand}"/>
+                </VerticalStackLayout.GestureRecognizers>
+                <Image Source="location.png" HeightRequest="20" WidthRequest="20"/>
+                <Label Text="Sucursal" FontSize="11" TextColor="#6B7280"/>
+            </VerticalStackLayout>
 
-            <StackLayout Grid.Column="0" HorizontalOptions="Center">
-                <Image Source="home_icon.png" WidthRequest="22" HeightRequest="22" />
-                <Label Text="Inicio" FontSize="11" TextColor="#8E8E93" HorizontalOptions="Center" Margin="0,2,0,0" />
-            </StackLayout>
-
-            <StackLayout Grid.Column="1" HorizontalOptions="Center">
-                <Image Source="calendar_icon.png" WidthRequest="22" HeightRequest="22" />
-                <Label Text="Citas" FontSize="11" TextColor="#2F6BFF" FontAttributes="Bold" HorizontalOptions="Center" Margin="0,2,0,0" />
-            </StackLayout>
-
-            <StackLayout Grid.Column="2" HorizontalOptions="Center">
-                <Image Source="location_icon.png" WidthRequest="22" HeightRequest="22" />
-                <Label Text="Sucursal" FontSize="11" TextColor="#8E8E93" HorizontalOptions="Center" Margin="0,2,0,0" />
-            </StackLayout>
-
-            <StackLayout Grid.Column="3" HorizontalOptions="Center">
-                <Image Source="profile_icon.png" WidthRequest="22" HeightRequest="22" />
-                <Label Text="Perfil" FontSize="11" TextColor="#8E8E93" HorizontalOptions="Center" Margin="0,2,0,0" />
-            </StackLayout>
+            <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
+                <VerticalStackLayout.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding NavegarPerfilCommand}"/>
+                </VerticalStackLayout.GestureRecognizers>
+                <Image Source="profile.png" HeightRequest="20" WidthRequest="20"/>
+                <Label Text="Perfil" FontSize="11" TextColor="#6B7280"/>
+            </VerticalStackLayout>
         </Grid>
 
     </Grid>
