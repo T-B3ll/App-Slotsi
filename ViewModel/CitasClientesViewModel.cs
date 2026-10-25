@@ -94,7 +94,7 @@ namespace slotsi_citas.ViewModel
         public ICommand NavegarSucursalCommand { get; }
         public ICommand NavegarPerfilCommand { get; }
 
-        public CitasClientesViewModel(MongoService mongoService)
+        public CitasClienteViewModel(MongoService mongoService)
         {
             _mongoService = mongoService;
 
