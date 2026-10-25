@@ -12,7 +12,7 @@ public partial class ReportesMenuPage : ContentPage
     private async void OnTopServiciosTapped(object sender, TappedEventArgs e)
     {
 
-
+        await Shell.Current.GoToAsync(nameof(ReporteTopServiciosPage));
     }
 
     private async void OnDemandaSemanalTapped(object sender, TappedEventArgs e)

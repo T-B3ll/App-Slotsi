@@ -25,5 +25,15 @@ namespace slotsi_citas.Services
         {
             await PostAsync<CitaDto>("api/citas", cita);
         }
+
+        public async Task<List<TopServicioDto>> ObtenerTopServiciosAsync(string negocioId, string periodo = "semana")
+        {
+            return await GetAsync<List<TopServicioDto>>($"api/citas/reportes/top-servicios?negocioId={negocioId}&periodo={periodo}");
+        }
+
+        public async Task<List<DemandaSemanalDto>> ObtenerDemandaSemanalAsync(string negocioId, string periodo = "semana")
+        {
+            return await GetAsync<List<DemandaSemanalDto>>($"api/citas/reportes/demanda-semanal?negocioId={negocioId}&periodo={periodo}");
+        }
     }
 }

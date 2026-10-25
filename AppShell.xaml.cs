@@ -23,6 +23,8 @@ namespace slotsi_citas
             Routing.RegisterRoute(nameof(HorariosDisponiblesPage), typeof(HorariosDisponiblesPage));
             Routing.RegisterRoute(nameof(ReportesMenuPage), typeof(ReportesMenuPage));
 
+            Routing.RegisterRoute(nameof(ReporteTopServiciosPage), typeof(ReporteTopServiciosPage));
+
         }
         private async void OnCerrarSesionClicked(object sender, EventArgs e)
         {
