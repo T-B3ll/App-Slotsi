@@ -16,6 +16,12 @@
                        Aspect="AspectFit"
                        Margin="0,0,0,40"/>
 
+                <ActivityIndicator IsRunning="{Binding IsBusy}"
+                   IsVisible="{Binding IsBusy}"
+                   Color="#2563EB"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,15"/>
+
 
                 <Label Text="Iniciar Sesión" 
                        FontSize="28" 
@@ -24,7 +30,7 @@
                        HorizontalOptions="Start"
                        Margin="0,0,0,30"/>
 
-                <Label Text="Usuario o correo electrónico" 
+                <Label Text="Correo electrónico" 
                        FontSize="14" 
                        TextColor="#4B5563" 
                        Margin="0,0,0,8"/>
@@ -36,14 +42,8 @@
                        HeightRequest="56"
                        HasShadow="False"
                        Margin="0,0,0,20">
-                    <Entry Placeholder="Ej: Jose Jose  o Pepe@correo.com" 
-                           Text="{Binding Email}" 
-                           Keyboard="Default"
-                           FontSize="16"
-                           TextColor="#111827" 
-                           PlaceholderColor="#9CA3AF"
-                           BackgroundColor="Transparent"
-                           VerticalOptions="Center"/>
+                    <Entry Placeholder="Ej: pepe@correo.com" Text="{Binding Email}" 
+                           Keyboard="Email" FontSize="16" TextColor="#111827" PlaceholderColor="#9CA3AF" BackgroundColor="Transparent" VerticalOptions="Center"/>
                 </Frame>
 
 

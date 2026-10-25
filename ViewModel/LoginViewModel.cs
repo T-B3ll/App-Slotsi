@@ -1,19 +1,19 @@
 ﻿using Microsoft.Maui.Controls;
+using Microsoft.Maui.Storage;
 using slotsi_citas.Models;
 using slotsi_citas.Services;
+using slotsi_citas.Services.Api;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using Microsoft.Maui.Storage;
 
 namespace slotsi_citas.ViewModel
 {
     public class LoginViewModel : INotifyPropertyChanged
     {
+        private readonly IAuthApiService _auth;
         private readonly UsuarioService _usuarioService;
         private readonly NegocioService _negocioService;
         private string _email;
@@ -43,8 +43,9 @@ namespace slotsi_citas.ViewModel
         // COMANDO DE INICIO DE SESIÓN
         public ICommand LoginCommand { get; }
 
-        public LoginViewModel(UsuarioService usuarioService, NegocioService negocioService)
+        public LoginViewModel(IAuthApiService auth, UsuarioService usuarioService, NegocioService negocioService)
         {
+            _auth = auth;
             _usuarioService = usuarioService;
             _negocioService = negocioService;
             LoginCommand = new Command(async () => await ExecuteLogin());
@@ -76,73 +77,46 @@ namespace slotsi_citas.ViewModel
             }
         }
 
-        private string EncriptarPassword(string password)
+        private async Task ValidarYEntrarAsync(string email, string password)
         {
-            using var sha256 = SHA256.Create();
-            byte[] bytes = Encoding.UTF8.GetBytes(password);
-            byte[] hash = sha256.ComputeHash(bytes);
+            var correo = email.Trim().ToLowerInvariant();
 
-            StringBuilder sb = new StringBuilder();
-            foreach (byte b in hash)
-            {
-                sb.Append(b.ToString("x2"));
-            }
-            return sb.ToString();
-        }
-
-        private async Task ValidarYEntrarAsync(string identificador, string password)
-        {
-            Usuario usuario = null;
-            var textoLimpio = identificador?.Trim().ToLower() ?? string.Empty;
-
-            System.Diagnostics.Debug.WriteLine($"🔍 [LOGIN] Buscando: '{textoLimpio}'");
-
+            // 1) Login contra la API: valida credenciales y guarda el token JWT en la sesión.
             try
             {
-       
-                usuario = await _usuarioService.ObtenerPorCorreoAsync(textoLimpio);
-
-               
-                if (usuario == null)
-                {
-                    System.Diagnostics.Debug.WriteLine($"⚠️ [LOGIN] No por correo. Buscando por nombre...");
-                    usuario = await _usuarioService.ObtenerPorIdentificadorAsync(identificador);
-                }
+                await _auth.IniciarSesionAsync(correo, password);
             }
-            catch (Exception apiEx)
+            catch (ApiException ex)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ [LOGIN] Error API: {apiEx.Message}");
-                await Application.Current.MainPage.DisplayAlert("Error", "No se pudo conectar al servidor.", "OK");
+                // 401 con "Correo o Contraseña incorrectas", error de red, etc.
+                await Application.Current.MainPage.DisplayAlert("No se pudo iniciar sesión", ex.Message, "OK");
+                return;
+            }
+
+            // 2) Datos del usuario (la petición ya viaja con el token).
+            Usuario? usuario;
+            try
+            {
+                usuario = await _usuarioService.ObtenerPorCorreoAsync(correo);
+            }
+            catch (ApiException ex)
+            {
+                await _auth.CerrarSesionAsync();
+                await Application.Current.MainPage.DisplayAlert("Error", ex.Message, "OK");
                 return;
             }
 
             if (usuario == null)
             {
-                System.Diagnostics.Debug.WriteLine($"❌ [LOGIN] Usuario NO encontrado.");
-                await Application.Current.MainPage.DisplayAlert("Error", "Usuario/Correo o contraseña incorrectos", "OK");
+                await _auth.CerrarSesionAsync();
+                await Application.Current.MainPage.DisplayAlert("Error", "No se encontró el usuario.", "OK");
                 return;
             }
 
-            System.Diagnostics.Debug.WriteLine($"✅ [LOGIN] Encontrado: {usuario.NombreCompleto} (Tipo: {usuario.TipoUsuario})");
+            System.Diagnostics.Debug.WriteLine($"✅ [LOGIN] Entró: {usuario.NombreCompleto} (Tipo: {usuario.TipoUsuario})");
 
-           
-            string passwordEncriptada = EncriptarPassword(password);
-            System.Diagnostics.Debug.WriteLine($"🔐 [LOGIN] Hash App: '{passwordEncriptada}'");
-            System.Diagnostics.Debug.WriteLine($"💾 [LOGIN] Hash BD:   '{usuario.Contrasena}'");
+            Password = string.Empty;
 
-            bool coinciden = !string.IsNullOrEmpty(usuario.Contrasena) &&
-                             usuario.Contrasena == passwordEncriptada;
-
-            if (!coinciden)
-            {
-                System.Diagnostics.Debug.WriteLine($"❌ [LOGIN] Contraseña INCORRECTA.");
-                await Application.Current.MainPage.DisplayAlert("Error", "Usuario/Correo o contraseña incorrectos", "OK");
-                return;
-            }
-
-            System.Diagnostics.Debug.WriteLine($"🎉 [LOGIN] ¡ÉXITO! Guardando sesión...");
-
-           
             string idUsuarioString = usuario.Id?.ToString() ?? "";
             Preferences.Set("UsuarioId", idUsuarioString);
             Preferences.Set("UsuarioIdSesion", idUsuarioString);
@@ -164,10 +138,7 @@ namespace slotsi_citas.ViewModel
                 }
             }
 
-
-            Application.Current.MainPage = new AppShell();
-   
-
+            Application.Current.MainPage = new AppShell(_auth);
 
             string ruta = usuario.TipoUsuario ? "//catalogoservicios" : "//dueñosnegocios";
 
@@ -180,7 +151,6 @@ namespace slotsi_citas.ViewModel
             catch (Exception navEx)
             {
                 System.Diagnostics.Debug.WriteLine($"⚠️ [LOGIN] Error navegando: {navEx.Message}");
-                
                 await Shell.Current.GoToAsync("//Inicio");
             }
         }

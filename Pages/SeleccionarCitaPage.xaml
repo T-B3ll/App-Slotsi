@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:slotsi_citas.ViewModels"
+             xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
              xmlns:models="clr-namespace:slotsi_citas.Models"
              x:Class="slotsi_citas.Pages.SeleccionarCitaPage"  
              x:Name="PageRoot"
@@ -215,6 +215,7 @@
                 Margin="16,8,16,8"/>
 
 
+        <!-- ROW 3: Barra Inferior de Navegación -->
         <Grid Grid.Row="3" ColumnDefinitions="*, *, *, *" BackgroundColor="#FFFFFF" HeightRequest="60" Padding="0,6">
             <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
                 <Image Source="home.png" HeightRequest="22" WidthRequest="22"/>

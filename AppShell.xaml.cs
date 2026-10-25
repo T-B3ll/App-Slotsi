@@ -1,19 +1,21 @@
-﻿using slotsi_citas.Pages;
-using Microsoft.Maui.Storage;
+﻿using Microsoft.Maui.Storage;
+using slotsi_citas.Pages;
+using slotsi_citas.Services.Api;
 
 namespace slotsi_citas
 {
     public partial class AppShell : Shell
     {
-        public AppShell()
+        private readonly IAuthApiService _auth;
+        public AppShell(IAuthApiService auth)
         {
             InitializeComponent();
+            _auth = auth;
             Routing.RegisterRoute(nameof(NuevoTrabajador), typeof(NuevoTrabajador));
             Routing.RegisterRoute(nameof(CatalogoCliente), typeof(CatalogoCliente));
             Routing.RegisterRoute(nameof(DueñosNegociosPage), typeof(DueñosNegociosPage));
             Routing.RegisterRoute(nameof(SeleccionarCitaPage), typeof(SeleccionarCitaPage));
             Routing.RegisterRoute(nameof(SeleccionarCitaPage), typeof(SeleccionarCitaPage));
-            Routing.RegisterRoute(nameof(Cita_ClientePage), typeof(Cita_ClientePage));
             Routing.RegisterRoute(nameof(Cita_UsuarioPage), typeof(Cita_UsuarioPage));
             Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
             Routing.RegisterRoute(nameof(CrearResena), typeof(CrearResena));
@@ -33,8 +35,7 @@ namespace slotsi_citas
             }
             finally
             {
-                var loginPage = serviceProvider.GetRequiredService<Pages.LoginPage>();
-                Application.Current.MainPage = new NavigationPage(loginPage);
+                botonCerrarSesion.IsEnabled = true;
             }
         }
     }

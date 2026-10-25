@@ -57,7 +57,7 @@ namespace slotsi_citas.Services
                 var collection = _database.GetCollection<Servicios>("Servicios");
                 var lista = await collection.Find(_ => true).ToListAsync();
 
-                if (lista == null || lista.Count == 0)
+                if (lista == null || !lista.Any())
                 {
                     var collectionMin = _database.GetCollection<Servicios>("servicios");
                     lista = await collectionMin.Find(_ => true).ToListAsync();
