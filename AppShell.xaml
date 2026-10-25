@@ -98,17 +98,17 @@
         <ShellContent ContentTemplate="{DataTemplate pages:EditarPerfilPage}" />
     </FlyoutItem>
     <Shell.FlyoutFooter>
-        <Border BackgroundColor="#FEF2F2" Margin="16,10,16,20" Padding="12" Stroke="#FEE2E2" StrokeShape="RoundRectangle 10">
-            <Border.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnCerrarSesionClicked"/>
-            </Border.GestureRecognizers>
-            <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
-                <Image Source="{FontImageSource FontFamily=MaterialIcons, Glyph='&#xE8AC;', Color=#DC2626, Size=22}"/>
-                <Label Text="Cerrar Sesión" TextColor="#DC2626" FontAttributes="Bold" FontSize="14" VerticalOptions="Center"/>
-            </HorizontalStackLayout>
-        </Border>
-    </Shell.FlyoutFooter>   
+        <Grid Padding="16,10,16,20" BackgroundColor="White">
+            <Button x:Name="botonCerrarSesion"
+                    Text="Cerrar Sesión"
+                    FontSize="14"
+                    FontAttributes="Bold"
+                    BackgroundColor="#EF4444"
+                    TextColor="White"
+                    HeightRequest="44"
+                    CornerRadius="10"
+                    Clicked="OnCerrarSesionClicked"/>
+        </Grid>
+    </Shell.FlyoutFooter>
 
-    
-    
 </Shell>

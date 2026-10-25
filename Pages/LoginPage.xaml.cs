@@ -32,10 +32,9 @@
         {
             await Navigation.PushAsync(new OpcionRegistrosU());
         }
-        private void OnTogglePasswordVisibility(object sender, EventArgs e)
-        {
-
-
+       private void OnTogglePasswordVisibility(object sender, EventArgs e)
+       {
+        PasswordEntry.IsPassword = !PasswordEntry.IsPassword;
         }
 
-    }
+}

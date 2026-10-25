@@ -8,25 +8,47 @@ namespace Slotsi.Api.Repositories;
 
 public class UsuarioRepository : IUsuarioRepository
 {
+    private readonly IMongoCollection<TokenRevocadoEntity> _revocados;
+
     private readonly IMongoCollection<UsuarioEntity> _usuarios;
 
     public UsuarioRepository(IMongoClient cliente, IOptions<MongoDbSettings> opciones)
     {
         var settings = opciones.Value;
-        _usuarios = cliente
-            .GetDatabase(settings.DatabaseName)
-            .GetCollection<UsuarioEntity>(settings.UsuariosCollection);
+        var db = cliente.GetDatabase(settings.DatabaseName);
+        _usuarios = db.GetCollection<UsuarioEntity>(settings.UsuariosCollection);
+        _revocados = db.GetCollection<TokenRevocadoEntity>(settings.TokensRevocadosCollection);
     }
 
-  
+    public async Task AsegurarIndicesAsync(CancellationToken ct = default)
+    {
+        await _usuarios.Indexes.CreateOneAsync(new CreateIndexModel<UsuarioEntity>(
+        Builders<UsuarioEntity>.IndexKeys.Ascending(u => u.Correo),
+        new CreateIndexOptions { Unique = true }), cancellationToken: ct);
+        await _revocados.Indexes.CreateOneAsync(new CreateIndexModel<TokenRevocadoEntity>(
+        Builders<TokenRevocadoEntity>.IndexKeys.Ascending(t => t.ExpiraEn),
+        new CreateIndexOptions { ExpireAfter = TimeSpan.Zero }), cancellationToken: ct);
+    }
+
     public Task<List<UsuarioEntity>> ObtenerTodosAsync(CancellationToken ct = default) =>
         _usuarios.Find(_ => true).ToListAsync(ct);
 
     public async Task<UsuarioEntity?> ObtenerPorIdAsync(string id, CancellationToken ct = default) =>
         await _usuarios.Find(u => u.Id == id).FirstOrDefaultAsync(ct);
 
-    public Task CrearAsync(UsuarioEntity usuario, CancellationToken ct = default) =>
-        _usuarios.InsertOneAsync(usuario, cancellationToken: ct);
+    public async Task<bool> CrearAsync(UsuarioEntity usuario, CancellationToken ct = default)
+    {
+        try
+        {
+            await _usuarios.InsertOneAsync(usuario, cancellationToken: ct);
+            return true;
+        }
+        catch (MongoWriteException ex) when (ex.WriteError.Category == ServerErrorCategory.DuplicateKey)
+        {
+            return false;
+        }
+    }
+
 
     public async Task<bool> ActualizarAsync(UsuarioEntity usuario, CancellationToken ct = default)
     {
@@ -60,4 +82,12 @@ public class UsuarioRepository : IUsuarioRepository
 
         return await _usuarios.Find(filtro).FirstOrDefaultAsync(ct);
     }
+
+    public Task RevocarTokenAsync(string jti, DateTime expiraEn, CancellationToken ct = default) =>
+ _revocados.ReplaceOneAsync(t => t.Jti == jti,
+ new TokenRevocadoEntity { Jti = jti, ExpiraEn = expiraEn },
+ new ReplaceOptions { IsUpsert = true }, ct);
+    public async Task<bool> TokenRevocadoAsync(string jti, CancellationToken ct = default) =>
+    await _revocados.Find(t => t.Jti == jti).AnyAsync(ct);
+
 }
