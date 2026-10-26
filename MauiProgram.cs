@@ -131,7 +131,6 @@ public static class MauiProgram
     private static void ConfigurarClienteApi(HttpClient cliente)
     {
         cliente.BaseAddress = ApiConfiguracion.UrlBase;
-        // Si el servidor no responde, falla en 10 segundos en lugar de los 100 por defecto.
         cliente.Timeout = TimeSpan.FromSeconds(10);
     }
 }
