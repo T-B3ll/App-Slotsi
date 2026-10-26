@@ -23,8 +23,8 @@ public static class CitaMappings
         Estado = entity.Estado,
         MetodoPago = entity.MetodoPago,
         Notas = entity.Notas,
-        ClienteNombre = entity.ClienteNombre,
-        ClienteTelefono = entity.ClienteTelefono
+        ClienteNombre = entity.Cliente?.Nombre ?? entity.ClienteNombre ?? string.Empty,
+        ClienteTelefono = entity.Cliente?.Telefono ?? entity.ClienteTelefono ?? string.Empty
     };
 
     public static CitaEntity ToEntity(this CitaDto dto, string? id = null)
@@ -46,8 +46,11 @@ public static class CitaMappings
             Estado = dto.Estado,
             MetodoPago = dto.MetodoPago,
             Notas = dto.Notas,
-            ClienteNombre = dto.ClienteNombre,
-            ClienteTelefono = dto.ClienteTelefono
+            Cliente = new ClienteInfo
+            {
+                Nombre = dto.ClienteNombre,
+                Telefono = dto.ClienteTelefono
+            }
         };
     }
 }

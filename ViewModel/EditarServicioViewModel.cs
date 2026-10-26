@@ -1,15 +1,16 @@
-﻿using Microsoft.Maui.Controls;
-using Microsoft.Maui.Storage;
-using slotsi_citas.Models;
+﻿using slotsi_citas.Models;
 using slotsi_citas.Services;
+using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Windows.Input;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Storage;
 using Slotsi.Shared.Dtos;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace slotsi_citas.ViewModel
 {
@@ -41,12 +42,11 @@ namespace slotsi_citas.ViewModel
 
         private string _nombre = string.Empty;
         public string Nombre { get => _nombre; set { _nombre = value; OnPropertyChanged(); } }
+        private string _precioTexto = string.Empty;
+        public string PrecioTexto { get => _precioTexto; set { _precioTexto = value; OnPropertyChanged(); } }
 
-        private decimal _precio;
-        public decimal Precio { get => _precio; set { _precio = value; OnPropertyChanged(); } }
-
-        private int _duracionMinutos = 30;
-        public int DuracionMinutos { get => _duracionMinutos; set { _duracionMinutos = value; OnPropertyChanged(); } }
+        private string _duracionTexto = string.Empty;
+        public string DuracionTexto { get => _duracionTexto; set { _duracionTexto = value; OnPropertyChanged(); } }
 
         private string _categoria = string.Empty;
         public string Categoria { get => _categoria; set { _categoria = value; OnPropertyChanged(); } }
@@ -79,8 +79,8 @@ namespace slotsi_citas.ViewModel
             {
                 Id = servicio.Id ?? string.Empty;
                 Nombre = servicio.Nombre;
-                Precio = servicio.Precio;
-                DuracionMinutos = servicio.DuracionMinutos;
+                PrecioTexto = servicio.Precio.ToString("0.##", CultureInfo.InvariantCulture);
+                DuracionTexto = servicio.DuracionMinutos.ToString(CultureInfo.InvariantCulture);
                 Categoria = servicio.Categoria;
                 Descripcion = servicio.Descripcion;
                 DisponibleDomicilio = servicio.DisponibleDomicilio;
@@ -155,13 +155,49 @@ namespace slotsi_citas.ViewModel
             }
         }
 
+        private List<string> Validar(out decimal precio, out int duracion)
+        {
+            var errores = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(Nombre))
+                errores.Add("Nombre del servicio");
+
+            if (!decimal.TryParse(PrecioTexto, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out precio) || precio <= 0)
+                errores.Add("Precio (debe ser mayor que 0)");
+
+            if (!int.TryParse(DuracionTexto, NumberStyles.None, CultureInfo.InvariantCulture, out duracion) || duracion <= 0)
+                errores.Add("Duración en minutos (debe ser mayor que 0)");
+
+            if (string.IsNullOrWhiteSpace(Categoria))
+                errores.Add("Categoría");
+
+            if (string.IsNullOrWhiteSpace(Descripcion))
+                errores.Add("Descripción");
+
+            if (string.IsNullOrWhiteSpace(Foto))
+                errores.Add("Foto del servicio");
+
+            if (!Colaboradores.Any(c => c.IsSeleccionado))
+                errores.Add("Al menos un colaborador habilitado");
+
+            return errores;
+        }
+
         private async Task GuardarCambiosAsync()
         {
-            if (string.IsNullOrWhiteSpace(Nombre))
+            var errores = Validar(out var precio, out var duracion);
+            if (errores.Count > 0)
             {
-                await Application.Current.MainPage.DisplayAlert("Atención", "El nombre del servicio es obligatorio.", "OK");
+                await Application.Current.MainPage.DisplayAlert(
+                    "Faltan datos",
+                    "Completa los siguientes campos:\n\n• " + string.Join("\n• ", errores),
+                    "OK");
                 return;
             }
+
+            var nombre = Nombre.Trim();
+            var categoria = Categoria.Trim();
+            var descripcion = Descripcion.Trim();
 
             var colaboradoresSeleccionados = Colaboradores
                 .Where(c => c.IsSeleccionado)
@@ -181,11 +217,11 @@ namespace slotsi_citas.ViewModel
                     var nuevoServicio = new Servicios
                     {
                         NegocioId = _negocioId,
-                        Nombre = Nombre,
-                        Precio = Precio,
-                        DuracionMinutos = DuracionMinutos,
-                        Categoria = Categoria,
-                        Descripcion = Descripcion,
+                        Nombre = nombre,
+                        Precio = precio,
+                        DuracionMinutos = duracion,
+                        Categoria = categoria,
+                        Descripcion = descripcion,
                         DisponibleDomicilio = DisponibleDomicilio,
                         Foto = Foto,
                         Activo = true,
@@ -205,11 +241,11 @@ namespace slotsi_citas.ViewModel
                     {
                         Id = Id,
                         NegocioId = _negocioId,
-                        Nombre = Nombre,
-                        Precio = Precio,
-                        DuracionMinutos = DuracionMinutos,
-                        Categoria = Categoria,
-                        Descripcion = Descripcion,
+                        Nombre = nombre,
+                        Precio = precio,
+                        DuracionMinutos = duracion,
+                        Categoria = categoria,
+                        Descripcion = descripcion,
                         DisponibleDomicilio = DisponibleDomicilio,
                         Foto = Foto,
                         Activo = _servicioOriginal?.Activo ?? true,
@@ -225,11 +261,11 @@ namespace slotsi_citas.ViewModel
 
                     if (_servicioOriginal != null)
                     {
-                        _servicioOriginal.Nombre = Nombre;
-                        _servicioOriginal.Precio = Precio;
-                        _servicioOriginal.DuracionMinutos = DuracionMinutos;
-                        _servicioOriginal.Categoria = Categoria;
-                        _servicioOriginal.Descripcion = Descripcion;
+                        _servicioOriginal.Nombre = nombre;
+                        _servicioOriginal.Precio = precio;
+                        _servicioOriginal.DuracionMinutos = duracion;
+                        _servicioOriginal.Categoria = categoria;
+                        _servicioOriginal.Descripcion = descripcion;
                         _servicioOriginal.DisponibleDomicilio = DisponibleDomicilio;
                         _servicioOriginal.Foto = Foto;
                         _servicioOriginal.ColaboradoresHabilitados = colaboradoresSeleccionados;

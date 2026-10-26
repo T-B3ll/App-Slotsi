@@ -10,6 +10,7 @@
         <VerticalStackLayout Spacing="16">
 
             <Label Text="Selecciona la cita que deseas calificar" FontAttributes="Bold" FontSize="15" TextColor="#1F2937"/>
+            <ActivityIndicator IsRunning="{Binding EstaCargando}" IsVisible="{Binding EstaCargando}" Color="#2563EB" />
 
             <CollectionView ItemsSource="{Binding CitasElegibles}" HeightRequest="130">
                 <CollectionView.ItemsLayout>

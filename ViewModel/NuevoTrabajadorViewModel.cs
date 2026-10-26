@@ -299,21 +299,73 @@ namespace slotsi_citas.ViewModels
                 .ToList();
         }
 
+        /// <summary>
+        /// Revisa los campos obligatorios (los que tienen * en la pantalla).
+        /// Devuelve la lista de lo que falta o está mal (vacía si todo está correcto).
+        /// Para quitar una obligatoriedad, borra su línea.
+        /// </summary>
+        private List<string> Validar()
+        {
+            var errores = new List<string>();
+
+            if (string.IsNullOrWhiteSpace(Nombre))
+                errores.Add("Nombre y apellido");
+
+            if (string.IsNullOrWhiteSpace(Especialidad))
+                errores.Add("Especialidad");
+
+            if (string.IsNullOrWhiteSpace(Telefono))
+                errores.Add("Número telefónico");
+
+            if (string.IsNullOrWhiteSpace(Correo))
+                errores.Add("Correo electrónico");
+            else if (!CorreoValido(Correo.Trim()))
+                errores.Add("Correo electrónico (formato no válido, ej. nombre@gmail.com)");
+
+            if (string.IsNullOrWhiteSpace(Cedula))
+                errores.Add("Número de cédula");
+
+            if (string.IsNullOrWhiteSpace(_archivoProfesionalBase64))
+                errores.Add("Título o certificado profesional");
+
+            var diasLaborales = ListaHorariosUI.Where(h => h.EsLaboral).ToList();
+            if (diasLaborales.Count == 0)
+                errores.Add("Horario de trabajo (activa al menos un día)");
+            else
+                foreach (var h in diasLaborales.Where(h => h.HoraFin <= h.HoraInicio))
+                    errores.Add($"Horario del {h.Dia} (la salida debe ser después de la entrada)");
+
+            return errores;
+        }
+
+        private static bool CorreoValido(string correo)
+        {
+            try
+            {
+                var m = new System.Net.Mail.MailAddress(correo);
+                return m.Address == correo && correo.Split('@').Last().Contains('.');
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
         private async Task GuardarTrabajadorAsync()
         {
-            if (string.IsNullOrWhiteSpace(Nombre) ||
-                string.IsNullOrWhiteSpace(Correo) ||
-                string.IsNullOrWhiteSpace(Telefono) ||
-                string.IsNullOrWhiteSpace(Cedula) ||
-                string.IsNullOrWhiteSpace(Especialidad))
+            var errores = Validar();
+            if (errores.Count > 0)
             {
-                await Shell.Current.DisplayAlert("Campos requeridos", "Debes rellenar todos los campos de información personal. No los dejes en blanco.", "OK");
+                await Shell.Current.DisplayAlert(
+                    "Faltan datos",
+                    "Completa los siguientes campos:\n\n• " + string.Join("\n• ", errores),
+                    "OK");
                 return;
             }
 
             try
             {
-                
+
                 string negocioIdActual = _trabajadorAEditar?.NegocioId ?? Preferences.Get("negocio_id", string.Empty);
 
                 if (string.IsNullOrEmpty(negocioIdActual))

@@ -9,7 +9,7 @@
     <Grid RowDefinitions="Auto, *">
         <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="20,20,20,15" BackgroundColor="#FFFFFF">
             <VerticalStackLayout Grid.Column="0" Spacing="2">
-                <Label Text="Gestión de Catálogo" FontSize="22" FontAttributes="Bold" TextColor="#111827" />
+                <Label Text="Gestión del Catálogo" FontSize="22" FontAttributes="Bold" TextColor="#111827" />
                 <Label Text="{Binding ServiciosActivosCount, StringFormat='{0} servicios activos'}" FontSize="13" TextColor="#6B7280" />
             </VerticalStackLayout>
         </Grid>

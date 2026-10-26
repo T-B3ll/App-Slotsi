@@ -1,9 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using slotsi_citas.Pages;
 using slotsi_citas.Services;
+using slotsi_citas.Services.Api;
+using slotsi_citas.Services.Auth;
 using slotsi_citas.ViewModel;
 using slotsi_citas.ViewModels;
-using slotsi_citas.Services.Api;
 using Supabase;
 using Syncfusion.Maui.Toolkit.Hosting;
 
@@ -46,22 +47,33 @@ public static class MauiProgram
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<SupabaseStorageService>();
 
-        // --- SERVICIOS HTTP (API)
-        builder.Services.AddHttpClient<UsuarioService>(c =>
-            c.BaseAddress = ApiConfiguracion.UrlBase);
+        builder.Services.AddSingleton<ISesionService, SesionService>();
+        builder.Services.AddTransient<AuthHeaderHandler>();
 
-        builder.Services.AddHttpClient<NegocioService>(c =>
-            c.BaseAddress = ApiConfiguracion.UrlBase);
+        // --- SERVICIOS HTTP (API) ---
+        // Todos pasan por AuthHeaderHandler y comparten la misma configuración.
+        builder.Services.AddHttpClient<IAuthApiService, AuthApiService>(ConfigurarClienteApi)
+            .AddHttpMessageHandler<AuthHeaderHandler>();
 
-        builder.Services.AddHttpClient<CatalogoService>(c =>
-            c.BaseAddress = ApiConfiguracion.UrlBase);
+        builder.Services.AddHttpClient<UsuarioService>(ConfigurarClienteApi)
+            .AddHttpMessageHandler<AuthHeaderHandler>();
 
+        builder.Services.AddHttpClient<NegocioService>(ConfigurarClienteApi)
+            .AddHttpMessageHandler<AuthHeaderHandler>();
 
-        builder.Services.AddHttpClient<TrabajadorService>(c =>
-            c.BaseAddress = ApiConfiguracion.UrlBase);
+        builder.Services.AddHttpClient<CatalogoService>(ConfigurarClienteApi)
+            .AddHttpMessageHandler<AuthHeaderHandler>();
 
-        builder.Services.AddHttpClient<CalificacionService>(c =>
-            c.BaseAddress = ApiConfiguracion.UrlBase);
+        builder.Services.AddHttpClient<TrabajadorService>(ConfigurarClienteApi)
+            .AddHttpMessageHandler<AuthHeaderHandler>();
+
+        builder.Services.AddHttpClient<ResumenService>(ConfigurarClienteApi)
+    .AddHttpMessageHandler<AuthHeaderHandler>();
+
+        builder.Services.AddTransient<ResumenViewModel>();
+        builder.Services.AddTransient<Pages.ResumenPage>();
+        builder.Services.AddHttpClient<CalificacionService>(ConfigurarClienteApi)
+            .AddHttpMessageHandler<AuthHeaderHandler>();
 
         builder.Services.AddHttpClient<CitaService>(c =>
           c.BaseAddress = ApiConfiguracion.UrlBase);
@@ -70,7 +82,6 @@ public static class MauiProgram
         builder.Services.AddSingleton<SuscripcionService>();
         builder.Services.AddSingleton<EmailJSService>();
         builder.Services.AddHttpClient<CitaService>(c => c.BaseAddress = ApiConfiguracion.UrlBase);
-        // --- VIEWMODELS ---
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<CitasClienteViewModel>();
         builder.Services.AddTransient<CatalogoServiciosViewModel>();
@@ -87,8 +98,6 @@ public static class MauiProgram
 
         builder.Services.AddTransient<HorariosDisponiblesPage>();
         builder.Services.AddTransient<HorariosDisponiblesViewModel>();
-
-        builder.Services.AddTransient<LoginPage>();
         builder.Services.AddTransient<Cita_UsuarioPage>();
         builder.Services.AddTransient<CentroCalificaciones>();
         builder.Services.AddTransient<LoginPage>();
@@ -109,7 +118,6 @@ public static class MauiProgram
         builder.Services.AddTransient<ReportesMenuPage>();
         builder.Services.AddTransient<ReporteDemandaPage>();
 
-
         builder.Services.AddTransient<DueñosNegociosViewModel>();
         builder.Services.AddTransient<DueñosNegociosPage>();
 
@@ -118,5 +126,12 @@ public static class MauiProgram
 
 
         return builder.Build();
+    }
+
+    private static void ConfigurarClienteApi(HttpClient cliente)
+    {
+        cliente.BaseAddress = ApiConfiguracion.UrlBase;
+        // Si el servidor no responde, falla en 10 segundos en lugar de los 100 por defecto.
+        cliente.Timeout = TimeSpan.FromSeconds(10);
     }
 }

@@ -3,10 +3,12 @@ using Slotsi.Api.Infrastructure;
 using Slotsi.Api.Mapping;
 using Slotsi.Api.Repositories;
 using Slotsi.Shared.Dtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Slotsi.Api.Controllers;
 
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 [Produces("application/json")]
 public class UsuariosController : ControllerBase

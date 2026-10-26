@@ -4,6 +4,7 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:pages="clr-namespace:slotsi_citas.Pages"
+    xmlns:app="clr-namespace:slotsi_citas"
     Title="Slotsi"
     FlyoutBehavior="Flyout"
     FlyoutBackgroundColor="#FFFFFF">
@@ -26,57 +27,63 @@
         </Grid>
     </Shell.FlyoutHeader>
 
-    <FlyoutItem Title="Pago de la suscripción" Route="PagoSuscripcionPage">
+    <FlyoutItem Title="Inicio" Route="ResumenPage" IsVisible="{x:Static app:MenuUsuario.EsDueno}">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#2563EB" Size="22" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:ResumenPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Pago de la suscripción" Route="PagoSuscripcionPage" IsVisible="{x:Static app:MenuUsuario.EsDueno}">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE850;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:PagoSuscripcionPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Citas Barbero" Route="Cita_UsuarioPage">
+    <FlyoutItem Title="Ver citas agendadas" Route="Cita_UsuarioPage" IsVisible="{x:Static app:MenuUsuario.EsCliente}">
         <FlyoutItem.Icon>
-            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FD;" Color="#2563EB" Size="22" />
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE878;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:Cita_UsuarioPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Catálogo de Servicios" Route="catalogoservicios">
+    <FlyoutItem Title="Catálogo de Servicios" Route="catalogoservicios" IsVisible="{x:Static app:MenuUsuario.EsDueno}">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8EF;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:catalogoservicios}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Registro de Usuarios" Route="RegistroUsuariosPage">
+    <FlyoutItem Title="Registro de Usuarios" Route="RegistroUsuariosPage" IsVisible="{x:Static app:MenuUsuario.EsDueno}">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FE;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:RegistroUsuariosPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Calendario" Route="CalendarioPage">
+    <FlyoutItem Title="Calendario" Route="CalendarioPage" IsVisible="{x:Static app:MenuUsuario.EsDueno}">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE916;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:CalendarioPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Seleccionar Cita" Route="SeleccionarCitaPage">
+    <FlyoutItem Title="Seleccionar Cita" Route="SeleccionarCitaPage" IsVisible="{x:Static app:MenuUsuario.EsCliente}">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8B5;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:SeleccionarCitaPage}" />
     </FlyoutItem>
 
-
-    <FlyoutItem Title="Horarios Disponibles" Route="HorariosDisponiblesPage">
+    <FlyoutItem Title="Horarios Disponibles" Route="HorariosDisponiblesPage" IsVisible="{x:Static app:MenuUsuario.EsCliente}">
         <FlyoutItem.Icon>
-            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8B5;" Color="#2563EB" Size="22" />
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE924;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:HorariosDisponiblesPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Trabajadores" Route="ListaTrabajadores">
+    <FlyoutItem Title="Trabajadores" Route="ListaTrabajadores" IsVisible="{x:Static app:MenuUsuario.EsDueno}">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FB;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
@@ -90,9 +97,9 @@
         <ShellContent ContentTemplate="{DataTemplate pages:CentroCalificaciones}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Dueños de Negocio" Route="dueñosnegocios">
+    <FlyoutItem Title="Ver Negocios" Route="dueñosnegocios" IsVisible="{x:Static app:MenuUsuario.EsCliente}">
         <FlyoutItem.Icon>
-            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FB;" Color="#2563EB" Size="22"/>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8D1;" Color="#2563EB" Size="22"/>
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:DueñosNegociosPage}"/>
     </FlyoutItem>
@@ -114,14 +121,16 @@
 
 
     <Shell.FlyoutFooter>
-        <Border BackgroundColor="#FEF2F2" Margin="16,10,16,20" Padding="12" Stroke="#FEE2E2" StrokeShape="RoundRectangle 10">
-            <Border.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnCerrarSesionClicked"/>
-            </Border.GestureRecognizers>
-            <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
-                <Image Source="{FontImageSource FontFamily=MaterialIcons, Glyph='&#xE8AC;', Color=#DC2626, Size=22}"/>
-                <Label Text="Cerrar Sesión" TextColor="#DC2626" FontAttributes="Bold" FontSize="14" VerticalOptions="Center"/>
-            </HorizontalStackLayout>
-        </Border>
+        <Grid Padding="16,10,16,20" BackgroundColor="White">
+            <Button x:Name="botonCerrarSesion"
+                    Text="Cerrar Sesión"
+                    FontSize="14"
+                    FontAttributes="Bold"
+                    BackgroundColor="#EF4444"
+                    TextColor="White"
+                    HeightRequest="44"
+                    CornerRadius="10"
+                    Clicked="OnCerrarSesionClicked"/>
+        </Grid>
     </Shell.FlyoutFooter>
 </Shell>

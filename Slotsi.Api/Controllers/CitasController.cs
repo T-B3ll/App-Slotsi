@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using Slotsi.Api.Infrastructure;
 using Slotsi.Api.Mapping;
 using Slotsi.Api.Repositories;
@@ -12,10 +13,12 @@ namespace Slotsi.Api.Controllers;
 public class CitasController : ControllerBase
 {
     private readonly ICitaRepository _citas;
+    private readonly INegocioRepository _negocio;
 
-    public CitasController(ICitaRepository citas)
+    public CitasController(ICitaRepository citas, INegocioRepository negocio)
     {
         _citas = citas;
+        _negocio = negocio;
     }
 
     [HttpGet]
@@ -51,6 +54,57 @@ public class CitasController : ControllerBase
         await _citas.CrearAsync(entidad, ct);
         var creada = entidad.ToDto();
         return CreatedAtAction(nameof(ObtenerPorId), new { id = creada.Id }, creada);
+    }
+
+    [HttpGet("resumen")]
+    public async Task<ActionResult<ResumenDiaDto>> Resumen(
+    [FromQuery] string negocioId,
+    [FromQuery] DateTime desde,
+    [FromQuery] DateTime hasta,
+    CancellationToken ct)
+    {
+        if (!IdValidator.EsValido(negocioId)) return BadRequest("ID de negocio inválido");
+        if (hasta < desde) return BadRequest("'hasta' no puede ser anterior a 'desde'");
+
+        var citas = await _citas.ObtenerPorRangoAsync(negocioId, desde, hasta, ct);
+
+        var negocio = await _negocio.ObtenerPorIdAsync(negocioId, ct);
+
+        var trabajadores = Math.Max(1, citas.Select(c => c.TrabajadorId)
+                                            .Where(t => t != ObjectId.Empty)
+                                            .Distinct().Count());
+
+        var minutosReservados = citas.Sum(c => c.DuracionMinutos);
+
+        var minutosPorTrabajador = negocio is null
+            ? 0
+            : OcupacionCalculator.MinutosDisponiblesPorTrabajador(negocio, desde, hasta);
+
+        var minutosDisponibles = minutosPorTrabajador * trabajadores;
+
+        var ocupacion = minutosDisponibles == 0
+            ? 0
+            : Math.Min(100, (int)Math.Round(minutosReservados * 100.0 / minutosDisponibles));
+
+        var hoy = DateTime.Today;
+        var serviciosHoy = citas
+           .Where(c => c.FechaHoraInicio.Date == hoy && c.ServicioId != ObjectId.Empty)
+           .Select(c => c.ServicioId)
+           .Distinct()
+           .Count();
+
+        var dto = new ResumenDiaDto
+        {
+            Desde = desde.Date,
+            Hasta = hasta.Date,
+            CitasConfirmadas = citas.Count(c => c.Estado == "Confirmada"),
+            CitasPendientes = citas.Count(c => c.Estado == "Pendiente"),
+            OcupacionPorcentaje = ocupacion,
+            ServiciosActivosHoy = serviciosHoy,
+            Citas = citas.Select(c => c.ToDto()).ToList()
+        };
+
+        return Ok(dto);
     }
 
     [HttpPut("{id}")]

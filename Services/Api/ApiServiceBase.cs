@@ -26,10 +26,9 @@ public abstract class ApiServiceBase
     }
 
 
-    protected async Task<T> PostAsync<T>(string url, object cuerpo)
+    protected async Task PostAsync(string url, object cuerpo)
     {
         using var respuesta = await EnviarAsync(() => _http.PostAsJsonAsync(url, cuerpo));
-        return await LeerCuerpoAsync<T>(respuesta);
     }
 
     protected async Task PutAsync(string url, object cuerpo)
@@ -46,8 +45,6 @@ public abstract class ApiServiceBase
     {
         using var respuesta = await EnviarAsync(() => _http.DeleteAsync(url));
     }
-
-    
 
     private static async Task<HttpResponseMessage> EnviarAsync(
         Func<Task<HttpResponseMessage>> envio, bool permitirNotFound = false)
@@ -94,6 +91,12 @@ public abstract class ApiServiceBase
         }
     }
 
+    protected async Task<T> PostAsync<T>(string url, object cuerpo)
+    {
+        using var respuesta = await EnviarAsync(() => _http.PostAsJsonAsync(url, cuerpo));
+        return await LeerCuerpoAsync<T>(respuesta);
+    }
+
     private static async Task<string> LeerMensajeDeErrorAsync(HttpResponseMessage respuesta)
     {
         try
@@ -103,7 +106,7 @@ public abstract class ApiServiceBase
             var root = doc.RootElement;
 
       
-            if (root.TryGetProperty("errors", out var errorsElement))
+            if (root.TryGetProperty("error", out var errorsElement))
             {
                 var listaErrores = new List<string>();
                 foreach (var prop in errorsElement.EnumerateObject())
@@ -124,6 +127,9 @@ public abstract class ApiServiceBase
                 return titleElement.GetString() ?? "Error de validación.";
         }
         catch { }
+        if (respuesta.StatusCode == HttpStatusCode.Unauthorized)
+            return "Tu sesión no es válida o ha caducado. Inicia sesión de nuevo.";
+
         return $"Error del servidor ({(int)respuesta.StatusCode}).";
     }
 

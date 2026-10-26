@@ -4,8 +4,14 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace Slotsi.Api.Entities;
 
 [BsonIgnoreExtraElements]
-public class CitaEntity
+public class ClienteInfo
 {
+    public string Nombre { get; set; } = string.Empty;
+    public string Telefono { get; set; } = string.Empty;
+}
+[BsonIgnoreExtraElements]public class CitaEntity
+{
+
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public ObjectId Id { get; set; }
@@ -35,7 +41,9 @@ public class CitaEntity
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
     public DateTime FechaActualizacion { get; set; } = DateTime.UtcNow;
 
+    public ClienteInfo? Cliente { get; set; }
 
-    public string ClienteNombre { get; set; } = string.Empty;
-    public string ClienteTelefono { get; set; } = string.Empty;
+    [BsonIgnoreIfNull] public string? ClienteNombre { get; set; }
+    [BsonIgnoreIfNull] public string? ClienteTelefono { get; set; }
 }
+ 

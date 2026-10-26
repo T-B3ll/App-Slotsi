@@ -15,7 +15,23 @@ public class CitaRepository : ICitaRepository
         var settings = opciones.Value;
         _citas = cliente.GetDatabase(settings.DatabaseName).GetCollection<CitaEntity>("Citas");
     }
+    public Task<List<CitaEntity>> ObtenerPorRangoAsync(
+    string negocioId, DateTime desde, DateTime hasta, CancellationToken ct = default)
+    {
+        if (!ObjectId.TryParse(negocioId, out var negocioObjId))
+            return Task.FromResult(new List<CitaEntity>());
 
+        var inicio = desde.Date;
+        var fin = hasta.Date.AddDays(1); // límite superior exclusivo
+
+        return _citas.Find(c =>
+                c.NegocioId == negocioObjId &&
+                c.FechaHoraInicio >= inicio &&
+                c.FechaHoraInicio < fin &&
+                c.Estado != "Cancelada")
+            .SortBy(c => c.FechaHoraInicio)
+            .ToListAsync(ct);
+    }
     public Task<List<CitaEntity>> ObtenerTodasAsync(CancellationToken ct = default) =>
         _citas.Find(_ => true).ToListAsync(ct);
 

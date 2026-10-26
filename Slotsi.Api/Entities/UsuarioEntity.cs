@@ -30,4 +30,10 @@ public class UsuarioEntity
 
     [BsonElement("EstaActivo")]
     public bool EstaActivo { get; set; } = true;
+
+    [BsonElement("resetTokenHash")]
+    public string? ResetTokenHash { get; set; }
+
+    [BsonElement("resetTokenExpira")]
+    public DateTime? ResetTokenExpira { get; set; }
 }

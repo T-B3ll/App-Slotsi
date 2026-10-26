@@ -17,4 +17,7 @@ public class MongoDbSettings
     [Required] public string HistorialPagosCollection { get; set; } = "HistorialPagos";
     [Required] public string PagoSubCollection { get; set; } = "PagoSub";
     [Required] public string RecuperarContrasenaCollection { get; set; } = "RecuperarContrasena";
+
+    [Required]
+    public string TokensRevocadosCollection { get; set; } = "tokens_revocados";
 }

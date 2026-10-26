@@ -5,6 +5,7 @@ namespace slotsi_citas.Services.Api;
 public static class ApiConfiguracion
 {
     public const int Puerto = 5286;
+    public const string IpLocalPc = "192.168.56.1";
 
     public const string IpLocalPc = "192.168.1.34";
 
