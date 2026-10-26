@@ -26,6 +26,7 @@ namespace slotsi_citas.Services
             await PostAsync<CitaDto>("api/citas", cita);
         }
 
+
         public async Task<List<TopServicioDto>> ObtenerTopServiciosAsync(string negocioId, string periodo = "semana")
         {
             return await GetAsync<List<TopServicioDto>>($"api/citas/reportes/top-servicios?negocioId={negocioId}&periodo={periodo}");
@@ -34,6 +35,33 @@ namespace slotsi_citas.Services
         public async Task<List<DemandaSemanalDto>> ObtenerDemandaSemanalAsync(string negocioId, string periodo = "semana")
         {
             return await GetAsync<List<DemandaSemanalDto>>($"api/citas/reportes/demanda-semanal?negocioId={negocioId}&periodo={periodo}");
+        }
+
+        public async Task<bool> EliminarAsync(string id)
+        {
+            try
+            {
+                await DeleteAsync($"api/citas/{id}");
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> ActualizarEstadoAsync(string id, CitaDto cita)
+        {
+            try
+            {
+                await PutAsync($"api/citas/{id}", cita);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+
         }
     }
 }

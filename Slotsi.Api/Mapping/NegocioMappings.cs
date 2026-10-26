@@ -11,10 +11,7 @@ public static class NegocioMappings
         Id = entity.Id.ToString(),
         Nombre = entity.Nombre,
         NombreNegocio = entity.NombreNegocio,
-
-        
         UsuarioId = entity.UsuarioId?.ToString() ?? string.Empty,
-
         NumeroRuc = entity.NumeroRuc,
         DireccionNegocio = entity.DireccionNegocio,
         TipoServicio = entity.TipoServicio,
@@ -22,13 +19,14 @@ public static class NegocioMappings
         UrlDocumentoTitulo = entity.UrlDocumentoTitulo,
         Categoria = entity.Categoria,
         FechaRegistro = entity.FechaRegistro,
+        // Agregamos validaciones para que no falle si vienen nulos
         Horarios = entity.Horarios?.ToDictionary(
             h => h.Key,
             h => new HorarioDiaDto
             {
-                Apertura = h.Value.Apertura,
-                Cierre = h.Value.Cierre,
-                Pausas = h.Value.Pausas
+                Apertura = h.Value?.Apertura ?? "08:00",
+                Cierre = h.Value?.Cierre ?? "17:00",
+                Pausas = h.Value?.Pausas ?? new List<string>()
             }
         ) ?? new Dictionary<string, HorarioDiaDto>(),
         DiasCerrados = entity.DiasCerrados ?? new List<string>()
@@ -36,7 +34,6 @@ public static class NegocioMappings
 
     public static NegocioEntity ToEntity(this NegocioDto dto, string? id = null)
     {
-        
         ObjectId? usuarioId = null;
         if (!string.IsNullOrWhiteSpace(dto.UsuarioId) &&
             ObjectId.TryParse(dto.UsuarioId, out var parsed))
@@ -63,7 +60,7 @@ public static class NegocioMappings
                 {
                     Apertura = h.Value.Apertura,
                     Cierre = h.Value.Cierre,
-                    Pausas = h.Value.Pausas
+                    Pausas = h.Value.Pausas ?? new List<string>()
                 }
             ) ?? new Dictionary<string, NegocioEntity.HorarioDiaEntity>(),
             DiasCerrados = dto.DiasCerrados ?? new List<string>()
