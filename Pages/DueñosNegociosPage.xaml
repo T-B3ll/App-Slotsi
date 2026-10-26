@@ -11,7 +11,7 @@
         <BackButtonBehavior IsVisible="False" />
     </Shell.BackButtonBehavior>
 
-    <Grid RowDefinitions="Auto, *, Auto">
+    <Grid RowDefinitions="Auto, *">
 
         <Frame Grid.Row="0" BackgroundColor="White" BorderColor="Transparent" CornerRadius="0" Padding="24,20,24,16" HasShadow="False">
             <VerticalStackLayout Spacing="16">
@@ -37,7 +37,6 @@
             </VerticalStackLayout>
         </Frame>
 
-        <!-- CAMBIO: Se eliminó VerticalScrollBarVisibility="Never" -->
         <CollectionView Grid.Row="1" ItemsSource="{Binding ListaDueños}" Margin="16,12,16,12">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
@@ -78,24 +77,5 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <Grid Grid.Row="2" ColumnDefinitions="*,*,*,*" BackgroundColor="White" HeightRequest="65" Padding="0,6,0,0">
-            <BoxView Grid.ColumnSpan="4" HeightRequest="1" Color="#F3F4F6" VerticalOptions="Start"/>
-            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
-                <Image Source="home.png" HeightRequest="22" WidthRequest="22"/>
-                <Label Text="Inicio" FontSize="10" TextColor="#2563EB" FontAttributes="Bold"/>
-            </VerticalStackLayout>
-            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
-                <Image Source="calendar.png" HeightRequest="22" WidthRequest="22"/>
-                <Label Text="Citas" FontSize="10" TextColor="#9CA3AF"/>
-            </VerticalStackLayout>
-            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
-                <Image Source="location.png" HeightRequest="22" WidthRequest="22"/>
-                <Label Text="Sucursal" FontSize="10" TextColor="#9CA3AF"/>
-            </VerticalStackLayout>
-            <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
-                <Image Source="profile.png" HeightRequest="22" WidthRequest="22"/>
-                <Label Text="Perfil" FontSize="10" TextColor="#9CA3AF"/>
-            </VerticalStackLayout>
-        </Grid>
     </Grid>
 </ContentPage>
