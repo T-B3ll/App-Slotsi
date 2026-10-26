@@ -12,241 +12,138 @@
 
     <Grid RowDefinitions="Auto, *, Auto">
 
-        <!-- HEADER AZUL (Diseño Imagen 4) -->
+        <!-- HEADER AZUL -->
         <Grid Grid.Row="0" BackgroundColor="#2563EB" Padding="16, 12, 16, 16">
             <VerticalStackLayout Spacing="12">
 
                 <!-- Fila Título con botón volver -->
                 <Grid ColumnDefinitions="Auto, *, Auto">
-                    <Label Grid.Column="0" 
-                           Text="&#xE5C4;" 
-                           FontFamily="MaterialIcons" 
-                           FontSize="24" 
-                           TextColor="White" 
-                           VerticalOptions="Center">
+                    <Label Grid.Column="0" Text="&#xE5C4;" FontFamily="MaterialIcons" FontSize="24" TextColor="White" VerticalOptions="Center">
                         <Label.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding VolverCommand}"/>
                         </Label.GestureRecognizers>
                     </Label>
 
-                    <Label Grid.Column="1"
-                           Text="Calendario de citas..."
-                           FontSize="20"
-                           FontAttributes="Bold"
-                           TextColor="White"
-                           HorizontalOptions="Center"
-                           VerticalOptions="Center"/>
-
-                    <!-- Espaciador para centrar título -->
+                    <Label Grid.Column="1" Text="Calendario de citas..." FontSize="20" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
                     <BoxView Grid.Column="2" WidthRequest="24" Color="Transparent"/>
                 </Grid>
 
                 <!-- Fila Selector de Fecha y Botón Hoy -->
                 <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12" Margin="4,0,4,0">
-
-                    <!-- Caja Blanca con la Fecha y DatePicker superpuesto -->
-                    <Border Grid.Column="0"
-                            BackgroundColor="#FFFFFF"
-                            StrokeThickness="0"
-                            StrokeShape="RoundRectangle 8"
-                            HeightRequest="42"
-                            Padding="12,0">
+                    <Border Grid.Column="0" BackgroundColor="#FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 8" HeightRequest="42" Padding="12,0">
                         <Grid>
                             <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                                <Label Grid.Column="0" 
-                                       Text="{Binding TextoFechaSeleccionada}" 
-                                       FontSize="13" 
-                                       FontAttributes="Bold" 
-                                       TextColor="#111827" 
-                                       VerticalOptions="Center"
-                                       MaxLines="1"/>
-                                <Image Grid.Column="1" 
-                                       Source="calendar.png" 
-                                       HeightRequest="16" 
-                                       WidthRequest="16" 
-                                       VerticalOptions="Center"
-                                       Margin="6,0,0,0"/>
+                                <Label Grid.Column="0" Text="{Binding TextoFechaSeleccionada}" FontSize="13" FontAttributes="Bold" TextColor="#111827" VerticalOptions="Center" MaxLines="1"/>
+                                <Image Grid.Column="1" Source="calendar.png" HeightRequest="16" WidthRequest="16" VerticalOptions="Center" Margin="6,0,0,0"/>
                             </Grid>
-
-                            <!-- DatePicker transparente para permitir abrir el calendario nativo al tocar la caja -->
-                            <DatePicker Date="{Binding FechaSeleccionada, Mode=TwoWay}"
-                                        Opacity="0.01"
-                                        HorizontalOptions="Fill"
-                                        VerticalOptions="Fill"/>
+                            <DatePicker Date="{Binding FechaSeleccionada, Mode=TwoWay}" Opacity="0.01" HorizontalOptions="Fill" VerticalOptions="Fill"/>
                         </Grid>
                     </Border>
 
-                    <!-- Botón Blanco "Hoy" -->
-                    <Border Grid.Column="1"
-                            BackgroundColor="#FFFFFF"
-                            StrokeThickness="0"
-                            StrokeShape="RoundRectangle 8"
-                            HeightRequest="42"
-                            Padding="16,0">
+                    <Border Grid.Column="1" BackgroundColor="#FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 8" HeightRequest="42" Padding="16,0">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding HoyCommand}"/>
                         </Border.GestureRecognizers>
-                        <Label Text="Hoy" 
-                               TextColor="#111827" 
-                               FontAttributes="Bold" 
-                               FontSize="13" 
-                               HorizontalOptions="Center" 
-                               VerticalOptions="Center"/>
+                        <Label Text="Hoy" TextColor="#111827" FontAttributes="Bold" FontSize="13" HorizontalOptions="Center" VerticalOptions="Center"/>
                     </Border>
                 </Grid>
-
             </VerticalStackLayout>
         </Grid>
 
-        <!-- CUERPO PRINCIPAL: LISTA DE HORARIOS (Diseño Imagen 4) -->
+        <!-- CUERPO PRINCIPAL -->
         <Grid Grid.Row="1" BackgroundColor="#FFFFFF">
+            <ActivityIndicator IsRunning="{Binding EstaCargando}" IsVisible="{Binding EstaCargando}" Color="#2563EB" HorizontalOptions="Center" VerticalOptions="Center"/>
 
-            <!-- Indicador de Carga -->
-            <ActivityIndicator IsRunning="{Binding EstaCargando}"
-                               IsVisible="{Binding EstaCargando}"
-                               Color="#2563EB"
-                               HorizontalOptions="Center"
-                               VerticalOptions="Center"/>
-
-            <!-- Vista cuando el Negocio está cerrado este día -->
-            <VerticalStackLayout IsVisible="{Binding EstaCerradoElDia}"
-                                 VerticalOptions="Center"
-                                 HorizontalOptions="Center"
-                                 Padding="30"
-                                 Spacing="12">
-                <Border BackgroundColor="#FEF2F2"
-                        Stroke="#FEE2E2"
-                        StrokeThickness="1"
-                        StrokeShape="RoundRectangle 16"
-                        Padding="20">
+            <VerticalStackLayout IsVisible="{Binding EstaCerradoElDia}" VerticalOptions="Center" HorizontalOptions="Center" Padding="30" Spacing="12">
+                <Border BackgroundColor="#FEF2F2" Stroke="#FEE2E2" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="20">
                     <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
-                        <Label Text="&#xE88F;" 
-                               FontFamily="MaterialIcons" 
-                               FontSize="36" 
-                               TextColor="#DC2626" 
-                               HorizontalOptions="Center"/>
-                        <Label Text="Negocio Cerrado" 
-                               FontSize="16" 
-                               FontAttributes="Bold" 
-                               TextColor="#991B1B" 
-                               HorizontalOptions="Center"/>
-                        <Label Text="{Binding MensajeCerrado}" 
-                               FontSize="13" 
-                               TextColor="#B91C1C" 
-                               HorizontalTextAlignment="Center"/>
-                        <Label Text="Por favor selecciona otra fecha disponible." 
-                               FontSize="12" 
-                               TextColor="#6B7280" 
-                               HorizontalTextAlignment="Center"
-                               Margin="0,4,0,0"/>
+                        <Label Text="&#xE88F;" FontFamily="MaterialIcons" FontSize="36" TextColor="#DC2626" HorizontalOptions="Center"/>
+                        <Label Text="Negocio Cerrado" FontSize="16" FontAttributes="Bold" TextColor="#991B1B" HorizontalOptions="Center"/>
+                        <Label Text="{Binding MensajeCerrado}" FontSize="13" TextColor="#B91C1C" HorizontalTextAlignment="Center"/>
+                        <Label Text="Por favor selecciona otra fecha disponible." FontSize="12" TextColor="#6B7280" HorizontalTextAlignment="Center" Margin="0,4,0,0"/>
                     </VerticalStackLayout>
                 </Border>
             </VerticalStackLayout>
 
-            <!-- Lista de Horarios generados según la BD de Negocios -->
-            <CollectionView ItemsSource="{Binding RangosHorarios}"
-                            IsVisible="{Binding EstaAbiertoElDia}"
-                            Margin="16,12"
-                            VerticalScrollBarVisibility="Never">
+            <CollectionView ItemsSource="{Binding RangosHorarios}" IsVisible="{Binding EstaAbiertoElDia}" Margin="16,12" VerticalScrollBarVisibility="Never">
                 <CollectionView.ItemsLayout>
                     <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:RangoHorario">
                         <Grid ColumnDefinitions="75, *">
+                            <Label Grid.Column="0" Text="{Binding HoraDisplay}" FontSize="13" FontAttributes="Bold" TextColor="#1F2937" VerticalOptions="Center"/>
 
-                            <!-- Columna Hora (ej. 8:00 AM, 1:00 PM) -->
-                            <Label Grid.Column="0"
-                                   Text="{Binding HoraDisplay}"
-                                   FontSize="13"
-                                   FontAttributes="Bold"
-                                   TextColor="#1F2937"
-                                   VerticalOptions="Center"/>
-
-                            <!-- Columna Tarjeta de Acción / Estado -->
-                            <!-- CASO 1: DISPONIBLE (Agendar cita) -->
-                            <Border Grid.Column="1"
-                                    IsVisible="{Binding EsDisponible}"
-                                    BackgroundColor="#FFFFFF"
-                                    Stroke="#E5E7EB"
-                                    StrokeThickness="1"
-                                    StrokeShape="RoundRectangle 12"
-                                    HeightRequest="48"
-                                    Padding="16,0">
+                            <!-- CASO 1: DISPONIBLE -->
+                            <Border Grid.Column="1" IsVisible="{Binding EsDisponible}" BackgroundColor="#FFFFFF" Stroke="#E5E7EB" StrokeThickness="1" StrokeShape="RoundRectangle 12" HeightRequest="48" Padding="16,0">
                                 <Border.GestureRecognizers>
-                                    <TapGestureRecognizer 
-                                        Command="{Binding BindingContext.AgendarHorarioCommand, Source={x:Reference PageRoot}}"
-                                        CommandParameter="{Binding .}"/>
+                                    <TapGestureRecognizer Command="{Binding BindingContext.AgendarHorarioCommand, Source={x:Reference PageRoot}}" CommandParameter="{Binding .}"/>
                                 </Border.GestureRecognizers>
-
-                                <Label Text="{Binding EstadoTexto}"
-                                       TextColor="#111827"
-                                       FontSize="13"
-                                       FontAttributes="Bold"
-                                       VerticalOptions="Center"/>
+                                <Label Text="{Binding EstadoTexto}" TextColor="#111827" FontSize="13" FontAttributes="Bold" VerticalOptions="Center"/>
                             </Border>
 
-                            <!-- CASO 2: NO DISPONIBLE (Pausa / Descanso del negocio) -->
-                            <Border Grid.Column="1"
-                                    IsVisible="{Binding EsNoDisponible}"
-                                    BackgroundColor="#F1F5F9"
-                                    Stroke="#E2E8F0"
-                                    StrokeThickness="1"
-                                    StrokeShape="RoundRectangle 12"
-                                    HeightRequest="48"
-                                    Padding="0">
+                            <!-- CASO 2: NO DISPONIBLE (PAUSA) -->
+                            <Border Grid.Column="1" IsVisible="{Binding EsNoDisponible}" BackgroundColor="#F1F5F9" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 12" HeightRequest="48" Padding="0">
                                 <Grid ColumnDefinitions="4, *">
-                                    <BoxView Grid.Column="0" 
-                                             Color="#64748B" 
-                                             CornerRadius="12,0,0,12"/>
-                                    <VerticalStackLayout Grid.Column="1" 
-                                                         Padding="14,0" 
-                                                         VerticalOptions="Center" 
-                                                         Spacing="1">
-                                        <Label Text="No disponible"
-                                               TextColor="#334155"
-                                               FontSize="12"
-                                               FontAttributes="Bold"/>
-                                        <Label Text="{Binding DetallePausa}"
-                                               TextColor="#64748B"
-                                               FontSize="10"/>
+                                    <BoxView Grid.Column="0" Color="#64748B" CornerRadius="12,0,0,12"/>
+                                    <VerticalStackLayout Grid.Column="1" Padding="14,0" VerticalOptions="Center" Spacing="1">
+                                        <Label Text="No disponible" TextColor="#334155" FontSize="12" FontAttributes="Bold"/>
+                                        <Label Text="{Binding DetallePausa}" TextColor="#64748B" FontSize="10"/>
                                     </VerticalStackLayout>
                                 </Grid>
                             </Border>
 
                             <!-- CASO 3: OCUPADO (Cita agendada en la BD) -->
-                            <Border Grid.Column="1"
-                                    IsVisible="{Binding EsOcupado}"
-                                    BackgroundColor="#FEF2F2"
-                                    Stroke="#FEE2E2"
-                                    StrokeThickness="1"
-                                    StrokeShape="RoundRectangle 12"
-                                    HeightRequest="48"
-                                    Padding="0">
-                                <Grid ColumnDefinitions="4, *">
-                                    <BoxView Grid.Column="0" 
-                                             Color="#EF4444" 
-                                             CornerRadius="12,0,0,12"/>
-                                    <VerticalStackLayout Grid.Column="1" 
-                                                         Padding="14,0" 
-                                                         VerticalOptions="Center" 
-                                                         Spacing="1">
-                                        <Label Text="No disponible"
-                                               TextColor="#991B1B"
-                                               FontSize="12"
-                                               FontAttributes="Bold"/>
-                                        <Label Text="(Ocupado)"
-                                               TextColor="#DC2626"
-                                               FontSize="10"/>
+                            <Border Grid.Column="1" 
+        IsVisible="{Binding EsOcupado}" 
+        BackgroundColor="#FEF2F2" 
+        Stroke="#FEE2E2" 
+        StrokeThickness="1" 
+        StrokeShape="RoundRectangle 12" 
+        HeightRequest="55" 
+        Padding="0">
+                                <Grid ColumnDefinitions="4, *, Auto">
+                                    <BoxView Grid.Column="0" Color="#EF4444" CornerRadius="12,0,0,12"/>
+
+                                    <VerticalStackLayout Grid.Column="1" Padding="14,0" VerticalOptions="Center" Spacing="1">
+                                        <Label Text="Ocupado" TextColor="#991B1B" FontSize="12" FontAttributes="Bold"/>
+
+                                        <!-- Muestra el nombre SOLO si EsMiCita es verdadero -->
+                                        <Label Text="{Binding Cita.Cliente.Nombre, StringFormat='Cliente: {0}'}" 
+                   TextColor="#DC2626" 
+                   FontSize="10"
+                   IsVisible="{Binding EsMiCita}"/>
                                     </VerticalStackLayout>
+
+                                    <!-- Botones de Acción (SOLO si EsMiCita es verdadero) -->
+                                    <HorizontalStackLayout Grid.Column="2" 
+                               VerticalOptions="Center" 
+                               Spacing="4" 
+                               Padding="0,0,8,0"
+                               IsVisible="{Binding EsMiCita}">
+
+                                        <ImageButton WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent"
+                         Command="{Binding BindingContext.EditarCitaCommand, Source={x:Reference PageRoot}}"
+                         CommandParameter="{Binding .}">
+                                            <ImageButton.Source>
+                                                <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe3c9;" Color="#2563EB" Size="18"/>
+                                            </ImageButton.Source>
+                                        </ImageButton>
+
+                                        <ImageButton WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent"
+                         Command="{Binding BindingContext.EliminarCitaCommand, Source={x:Reference PageRoot}}"
+                         CommandParameter="{Binding .}">
+                                            <ImageButton.Source>
+                                                <FontImageSource FontFamily="MaterialIcons" Glyph="&#xe872;" Color="#EF4444" Size="18"/>
+                                            </ImageButton.Source>
+                                        </ImageButton>
+                                    </HorizontalStackLayout>
                                 </Grid>
                             </Border>
-
                         </Grid>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
-
         </Grid>
 
         <!-- BARRA INFERIOR DE NAVEGACIÓN -->

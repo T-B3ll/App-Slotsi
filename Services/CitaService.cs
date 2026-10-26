@@ -25,5 +25,32 @@ namespace slotsi_citas.Services
         {
             await PostAsync<CitaDto>("api/citas", cita);
         }
+
+        // MÉTODOS PARA EDITAR Y ELIMINAR 
+        public async Task<bool> EliminarAsync(string id)
+        {
+            try
+            {
+                await DeleteAsync($"api/citas/{id}");
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public async Task<bool> ActualizarEstadoAsync(string id, CitaDto cita)
+        {
+            try
+            {
+                await PutAsync($"api/citas/{id}", cita);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }

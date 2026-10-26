@@ -279,11 +279,21 @@ namespace slotsi_citas.ViewModel
         {
             try
             {
-                string? negocioId = await ObtenerNegocioIdDeSesionAsync();
-                if (string.IsNullOrEmpty(negocioId)) return;
+                //  Obtener el ID del negocio que ya que  seleccionamos en memoria/sesión
+                string negocioId = CitaSession.NegocioActual?.Id
+                                   ?? Preferences.Get("NegocioSeleccionadoId", string.Empty);
 
+                if (string.IsNullOrEmpty(negocioId))
+                {
+                    // Si no hay sesión, se intenta buscar (fallback)
+                    negocioId = await ObtenerNegocioIdDeSesionAsync();
+                    if (string.IsNullOrEmpty(negocioId)) return;
+                }
+
+                // 2. Cargar los datos desde la API
                 var resultados = await _catalogoService.ObtenerServiciosPorNegocioAsync(negocioId);
 
+                // 3. Actualizar la UI
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     Servicios.Clear();
@@ -296,7 +306,13 @@ namespace slotsi_citas.ViewModel
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", $"Error al cargar servicios: {ex.Message}", "OK");
+                System.Diagnostics.Debug.WriteLine($"[ERROR CARGAR SERVICIOS]: {ex.Message}");
+
+                // mostrar alerta si denverdad es un error crítico
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", $"Error al cargar servicios: {ex.Message}", "OK");
+                });
             }
         }
 
