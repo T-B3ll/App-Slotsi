@@ -33,11 +33,10 @@ namespace slotsi_citas.Services
             {
                 if (bindable != null)
                 {
-                    // Animación visual de toque
+ 
                     await bindable.FadeTo(0.5, 70, Easing.CubicOut);
                     await bindable.FadeTo(1.0, 90, Easing.CubicIn);
 
-                    // Ejecutar el comando del ViewModel si está asignado
                     if (Command != null && Command.CanExecute(CommandParameter))
                     {
                         Command.Execute(CommandParameter);
