@@ -40,18 +40,13 @@ public static class MauiProgram
         client.InitializeAsync().Wait();
 
         builder.Services.AddSingleton(client);
-
-
         builder.Services.AddSingleton<MongoService>();
-
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<SupabaseStorageService>();
-
         builder.Services.AddSingleton<ISesionService, SesionService>();
         builder.Services.AddTransient<AuthHeaderHandler>();
 
-        // --- SERVICIOS HTTP (API) ---
-        // Todos pasan por AuthHeaderHandler y comparten la misma configuración.
+        // --- SERVICIOS HTTP (API) CON AUTENTICACIÓN Y TIMEOUT AMPLIADO ---
         builder.Services.AddHttpClient<IAuthApiService, AuthApiService>(ConfigurarClienteApi)
             .AddHttpMessageHandler<AuthHeaderHandler>();
 
@@ -68,20 +63,23 @@ public static class MauiProgram
             .AddHttpMessageHandler<AuthHeaderHandler>();
 
         builder.Services.AddHttpClient<ResumenService>(ConfigurarClienteApi)
-    .AddHttpMessageHandler<AuthHeaderHandler>();
+            .AddHttpMessageHandler<AuthHeaderHandler>();
 
-        builder.Services.AddTransient<ResumenViewModel>();
-        builder.Services.AddTransient<Pages.ResumenPage>();
         builder.Services.AddHttpClient<CalificacionService>(ConfigurarClienteApi)
             .AddHttpMessageHandler<AuthHeaderHandler>();
 
-        builder.Services.AddHttpClient<CitaService>(c =>
-          c.BaseAddress = ApiConfiguracion.UrlBase);
+        builder.Services.AddHttpClient<SuscripcionService>(ConfigurarClienteApi)
+    .AddHttpMessageHandler<AuthHeaderHandler>();
 
+        builder.Services.AddHttpClient<CitaService>(ConfigurarClienteApi)
+            .AddHttpMessageHandler<AuthHeaderHandler>();
+
+        // --- OTROS SERVICIOS ---
         builder.Services.AddSingleton<RecuperacionService>();
-        builder.Services.AddSingleton<SuscripcionService>();
+
         builder.Services.AddSingleton<EmailJSService>();
-        builder.Services.AddHttpClient<CitaService>(c => c.BaseAddress = ApiConfiguracion.UrlBase);
+
+        // --- VIEWMODELS ---
         builder.Services.AddTransient<LoginViewModel>();
         builder.Services.AddTransient<CitasClienteViewModel>();
         builder.Services.AddTransient<CatalogoServiciosViewModel>();
@@ -95,9 +93,12 @@ public static class MauiProgram
         builder.Services.AddTransient<CentroReseñasViewModel>();
         builder.Services.AddTransient<EditarPerfilViewModel>();
         builder.Services.AddTransient<RecuperarContrasenaViewModel>();
+        builder.Services.AddTransient<ResumenViewModel>();
+        builder.Services.AddTransient<DueñosNegociosViewModel>();
+        builder.Services.AddTransient<SeleccionarCitaViewModel>();
 
+        // --- PÁGINAS ---
         builder.Services.AddTransient<HorariosDisponiblesPage>();
-        builder.Services.AddTransient<HorariosDisponiblesViewModel>();
         builder.Services.AddTransient<Cita_UsuarioPage>();
         builder.Services.AddTransient<CentroCalificaciones>();
         builder.Services.AddTransient<LoginPage>();
@@ -112,9 +113,9 @@ public static class MauiProgram
         builder.Services.AddTransient<DueñosNegociosPage>();
         builder.Services.AddTransient<PagoSuscripcionPage>();
         builder.Services.AddTransient<EditarPerfilPage>();
-        builder.Services.AddTransient<CatalogoCliente>();
         builder.Services.AddTransient<RecuperarContra>();
         builder.Services.AddTransient<NuevaContra>();
+
         builder.Services.AddTransient<ReportesMenuPage>();
         builder.Services.AddTransient<ReporteDemandaPage>();
 
@@ -122,8 +123,11 @@ public static class MauiProgram
         builder.Services.AddTransient<DueñosNegociosPage>();
 
         builder.Services.AddTransient<SeleccionarCitaViewModel>();
-        builder.Services.AddTransient<SeleccionarCitaPage>();
 
+        builder.Services.AddTransient<ResumenPage>();
+
+        builder.Services.AddTransient<SeleccionarCitaPage>();
+        builder.Services.AddTransient<OpcionRegistrosU>();
 
         return builder.Build();
     }
@@ -131,6 +135,11 @@ public static class MauiProgram
     private static void ConfigurarClienteApi(HttpClient cliente)
     {
         cliente.BaseAddress = ApiConfiguracion.UrlBase;
+
         cliente.Timeout = TimeSpan.FromSeconds(10);
+
+      
+        cliente.Timeout = TimeSpan.FromSeconds(30);
+
     }
 }

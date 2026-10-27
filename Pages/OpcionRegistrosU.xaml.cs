@@ -29,9 +29,14 @@ public partial class OpcionRegistrosU : ContentPage
 
     private async void OnBusinessOwnerSelected(object sender, EventArgs e)
     {
-
-        var pagina = Application.Current.Handler.MauiContext.Services.GetRequiredService<RegistroUsuarioNegocio>();
-
-        await Navigation.PushAsync(pagina);
+        try
+        {
+            var pagina = Application.Current.Handler.MauiContext.Services.GetRequiredService<RegistroUsuarioNegocio>();
+            await Navigation.PushAsync(pagina);
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"No se pudo abrir el registro: {ex.Message}", "OK");
+        }
     }
 }

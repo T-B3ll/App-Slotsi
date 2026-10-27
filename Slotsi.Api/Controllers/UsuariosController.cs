@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 namespace Slotsi.Api.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("api/[controller]")]
 [Produces("application/json")]
 public class UsuariosController : ControllerBase
@@ -20,6 +19,7 @@ public class UsuariosController : ControllerBase
         _usuarios = usuarios;
     }
 
+    [Authorize]
     [HttpGet]
     [ProducesResponseType(typeof(List<UsuarioDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<UsuarioDto>>> Listar(CancellationToken ct)
@@ -28,7 +28,7 @@ public class UsuariosController : ControllerBase
         return Ok(entidades.Select(e => e.ToDto()).ToList());
     }
 
-
+    [AllowAnonymous]
     [HttpGet("correo/{correo}")]
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -41,6 +41,7 @@ public class UsuariosController : ControllerBase
         return entidad is null ? NotFound() : Ok(entidad.ToDto());
     }
 
+    [AllowAnonymous]
     [HttpGet("buscar/{identificador}")]
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -53,7 +54,7 @@ public class UsuariosController : ControllerBase
         return entidad is null ? NotFound() : Ok(entidad.ToDto());
     }
 
-   
+    [Authorize]
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -66,6 +67,7 @@ public class UsuariosController : ControllerBase
         return entidad is null ? NotFound() : Ok(entidad.ToDto());
     }
 
+    [AllowAnonymous]
     [HttpPost]
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
@@ -84,7 +86,7 @@ public class UsuariosController : ControllerBase
         return CreatedAtAction(nameof(ObtenerPorId), new { id = creada.Id }, creada);
     }
 
-
+    [Authorize]
     [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
@@ -97,7 +99,7 @@ public class UsuariosController : ControllerBase
         return existe ? NoContent() : NotFound();
     }
 
-   
+    [Authorize]
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]

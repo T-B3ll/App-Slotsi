@@ -1,91 +1,54 @@
-﻿using MongoDB.Driver;
-using slotsi_citas.Models;
+﻿using slotsi_citas.Services.Api;
+using Slotsi.Shared.Dtos;
 using System;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace slotsi_citas.Services
 {
-    public class SuscripcionService
+    public class SuscripcionService : ApiServiceBase
     {
-
-        private readonly IMongoCollection<SuscripcionActual> _suscripcionesActivas;
-        private readonly IMongoCollection<RegistroPago> _historialPagos;
-
-
-
-        public SuscripcionService()
-        {
-            var client = new MongoClient(MongoDbSettings.ConnectionString);
-            var database = client.GetDatabase(MongoDbSettings.DatabaseName);
-
-            // Conexión a las dos colecciones nuevas
-            _suscripcionesActivas = database.GetCollection<SuscripcionActual>("PagoSub");
-            _historialPagos = database.GetCollection<RegistroPago>("HistorialPagos");
-
-
-        }
+        public SuscripcionService(HttpClient http) : base(http) { }
 
         public async Task<bool> EsActivaAsync(string usuarioId)
         {
-            var sub = await _suscripcionesActivas
-                 .Find(s => s.UsuarioId == usuarioId && s.Estado == "Activa")
-                .FirstOrDefaultAsync();
-
-            return sub != null && sub.ProximoVencimiento > DateTime.UtcNow;
+            try
+            {
+                var sub = await GetOrNullAsync<SuscripcionActivaDto>($"api/suscripcion/activa/{usuarioId}");
+                return sub != null && sub.ProximoVencimiento > DateTime.UtcNow;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task ProcesarPagoExitosoAsync(string usuarioId, decimal monto, string metodoPago)
         {
-            var ahora = DateTime.UtcNow;
-            var proximoPago = ahora.AddMonths(1);
-
-            var nuevoRegistro = new RegistroPago
+            var dto = new PagoDto
             {
                 UsuarioId = usuarioId,
-                FechaPago = ahora,
                 Monto = monto,
-                MetodoPago = metodoPago,
-                EstadoTransaccion = "Completado"
+                MetodoPago = metodoPago
             };
-
-            await _historialPagos.InsertOneAsync(nuevoRegistro);
-
-            var filtro = Builders<SuscripcionActual>.Filter.Eq(s => s.UsuarioId, usuarioId);
-
-
-            var actualizacion = Builders<SuscripcionActual>.Update
-                .Set(s => s.Estado, "Activa")
-                .Set(s => s.FechaUltimoPago, ahora)
-                .Set(s => s.ProximoVencimiento, proximoPago)
-                .Set(s => s.MontoPagado, monto);
-
-
-            await _suscripcionesActivas.UpdateOneAsync(filtro, actualizacion, new UpdateOptions { IsUpsert = true });
-
-        }
-        public async Task<List<RegistroPago>> ObtenerHistorialAsync(string usuarioId)
-        {
-            return await _historialPagos
-                .Find(h => h.UsuarioId == usuarioId)
-                 .SortByDescending(h => h.FechaPago)
-                 .ToListAsync();
+            await PostAsync<object>("api/suscripcion/pagar", dto);
         }
 
-
-        public async Task<SuscripcionActual?> ObtenerSuscripcionActivaAsync(string usuarioId)
+        public async Task<SuscripcionActivaDto?> ObtenerSuscripcionActivaAsync(string usuarioId)
         {
-            return await _suscripcionesActivas
-                .Find(s => s.UsuarioId == usuarioId && s.Estado == "Activa")
-                .FirstOrDefaultAsync();
+            try
+            {
+                return await GetOrNullAsync<SuscripcionActivaDto>($"api/suscripcion/activa/{usuarioId}");
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public async Task<bool> YaPagoEsteMesAsync(string usuarioId)
         {
-                    var sub = await _suscripcionesActivas
-               .Find(s => s.UsuarioId == usuarioId && s.Estado == "Activa")
-               .FirstOrDefaultAsync();
-
-            return sub != null && sub.ProximoVencimiento > DateTime.UtcNow;
+            return await EsActivaAsync(usuarioId);
         }
     }
 }

@@ -22,9 +22,6 @@ namespace slotsi_citas.ViewModel
         private string _textoBoton = "Pagar $12 USD";
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private readonly SuscripcionService _servicioLocal = new SuscripcionService();
-
-
 
         public string NumeroTarjeta
         {
@@ -67,6 +64,7 @@ namespace slotsi_citas.ViewModel
             get => _textoBoton;
             set { _textoBoton = value; OnPropertyChanged(); }
         }
+
         private string _fechaProximoCobro = "Próximo cobro: Pendiente";
         public string FechaProximoCobro
         {
@@ -84,7 +82,6 @@ namespace slotsi_citas.ViewModel
 
         private async Task EjecutarPago()
         {
-       
             if (string.IsNullOrWhiteSpace(NumeroTarjeta) ||
                 string.IsNullOrWhiteSpace(FechaExpiracion) ||
                 string.IsNullOrWhiteSpace(Cvv) ||
@@ -94,14 +91,12 @@ namespace slotsi_citas.ViewModel
                 return;
             }
 
-       
             if (NumeroTarjeta.Length != 16)
             {
                 await Application.Current.MainPage.DisplayAlert("Error", "El número de tarjeta debe tener 16 dígitos.", "OK");
                 return;
             }
 
-        
             var partesFecha = FechaExpiracion.Split('/');
             if (partesFecha.Length != 2 || partesFecha[0].Length != 2 || partesFecha[1].Length != 2)
             {
@@ -116,12 +111,12 @@ namespace slotsi_citas.ViewModel
                 return;
             }
 
-         
             if (Cvv.Length < 3 || Cvv.Length > 4)
             {
                 await Application.Current.MainPage.DisplayAlert("Error", "CVV debe tener 3 o 4 dígitos.", "OK");
                 return;
             }
+
             EstaProcesando = true;
             TextoBoton = "Procesando...";
             ((Command)PagarCommand).ChangeCanExecute();
@@ -134,15 +129,11 @@ namespace slotsi_citas.ViewModel
                 if (string.IsNullOrEmpty(usuarioId))
                     throw new Exception("Sesión no activa.");
 
-                // 1. Procesar pago en MongoDB
                 await _suscripcionService.ProcesarPagoExitosoAsync(
                     usuarioId,
                     monto: 12.00m,
                     metodoPago: MetodoSeleccionado);
 
-                // ✅ 2. AQUÍ ES DONDE PEGAS EL CÓDIGO DE DEBUG (Justo después del pago)
-
-                // Obtener datos guardados al iniciar sesión
                 string correoUsuario = Preferences.Get("UsuarioCorreo", string.Empty);
                 string nombreUsuario = Preferences.Get("UsuarioNombre", "Cliente");
 
@@ -151,7 +142,6 @@ namespace slotsi_citas.ViewModel
                 if (string.IsNullOrEmpty(correoUsuario))
                 {
                     System.Diagnostics.Debug.WriteLine("⚠️ DEBUG: EL CORREO ESTÁ VACÍO. NO SE ENVIARÁ NADA.");
-                    // Alerta temporal para confirmar si entra aquí
                     await Application.Current.MainPage.DisplayAlert("Debug", $"Correo detectado: '{correoUsuario}'", "OK");
                 }
                 else
@@ -161,7 +151,6 @@ namespace slotsi_citas.ViewModel
                     System.Diagnostics.Debug.WriteLine($"📧 DEBUG RESULTADO: {enviado}");
                 }
 
-                // 3. Mostrar alerta de éxito (Solo si todo salió bien)
                 await Application.Current.MainPage.DisplayAlert(
                     "¡Pago Exitoso!",
                     $"Suscripción activa hasta {DateTime.UtcNow.AddMonths(1):dd MMM, yyyy}.",
@@ -189,16 +178,7 @@ namespace slotsi_citas.ViewModel
             NombreTitular = string.Empty;
         }
 
-
-
         protected void OnPropertyChanged([CallerMemberName] string name = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
-
-
-     
     }
-
-
-
-
 }

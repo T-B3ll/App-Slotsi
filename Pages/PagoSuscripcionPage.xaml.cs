@@ -9,18 +9,17 @@ public partial class PagoSuscripcionPage : ContentPage
 {
     private bool _isUpdating = false;
     private PagoSuscripcionViewModel _viewModel;
-    private readonly SuscripcionService _servicioLocal = new SuscripcionService();
+    private readonly SuscripcionService _servicioLocal;
 
-
-    public PagoSuscripcionPage()
+    public PagoSuscripcionPage(PagoSuscripcionViewModel viewModel, SuscripcionService suscripcionService)
     {
         InitializeComponent();
-        _viewModel = new PagoSuscripcionViewModel(new SuscripcionService());
+        _viewModel = viewModel;
+        _servicioLocal = suscripcionService;
         BindingContext = _viewModel;
 
         CargarFechaProximoCobroAsync().ConfigureAwait(false);
     }
-
 
     private void EntryCard_TextChanged(object sender, TextChangedEventArgs e)
     {
@@ -40,17 +39,14 @@ public partial class PagoSuscripcionPage : ContentPage
         {
             _isUpdating = true;
 
-
             EntryCard.Text = formatted;
             EntryCard.CursorPosition = formatted.Length;
-
 
             _viewModel.NumeroTarjeta = digits;
 
             _isUpdating = false;
         });
     }
-
 
     private void EntryExpiry_TextChanged(object sender, TextChangedEventArgs e)
     {
@@ -69,13 +65,11 @@ public partial class PagoSuscripcionPage : ContentPage
             EntryExpiry.Text = formatted;
             EntryExpiry.CursorPosition = formatted.Length;
 
-
             _viewModel.FechaExpiracion = formatted;
 
             _isUpdating = false;
         });
     }
-
 
     private async Task CargarFechaProximoCobroAsync()
     {
@@ -101,7 +95,6 @@ public partial class PagoSuscripcionPage : ContentPage
         }
     }
 
-
     private void OnMetodoPagoClicked(object sender, EventArgs e)
     {
         var btn = (Button)sender;
@@ -117,12 +110,10 @@ public partial class PagoSuscripcionPage : ContentPage
         _viewModel.MetodoSeleccionado = btn.Text;
     }
 
-
     private async void OnPagarClicked(object sender, EventArgs e)
     {
         var usuarioId = Preferences.Get("UsuarioId", string.Empty);
 
-        // Validamos directamente con nuestro servicio local
         bool yaPago = await _servicioLocal.YaPagoEsteMesAsync(usuarioId);
 
         if (yaPago)
@@ -138,8 +129,5 @@ public partial class PagoSuscripcionPage : ContentPage
         {
             _viewModel.PagarCommand.Execute(null);
         }
-
-
-
     }
 }
