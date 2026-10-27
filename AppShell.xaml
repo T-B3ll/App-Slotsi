@@ -7,6 +7,7 @@
     xmlns:app="clr-namespace:slotsi_citas"
     Title="Slotsi"
     FlyoutBehavior="Flyout"
+    BackgroundColor="#2563EB"
     FlyoutBackgroundColor="#FFFFFF">
 
     <Shell.ItemTemplate>
@@ -22,7 +23,7 @@
         <Grid HeightRequest="140" BackgroundColor="#2563EB" Padding="20">
             <VerticalStackLayout VerticalOptions="End" Spacing="4">
                 <Label Text="Slotsi Citas" FontSize="20" FontAttributes="Bold" TextColor="White" />
-                <Label Text="Gestión de Barbería" FontSize="12" TextColor="#E0E7FF" />
+                <Label Text="Modulos disponibles" FontSize="12" TextColor="#E0E7FF" />
             </VerticalStackLayout>
         </Grid>
     </Shell.FlyoutHeader>
@@ -110,6 +111,15 @@
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:EditarPerfilPage}" />
     </FlyoutItem>
+
+
+    <FlyoutItem Title="Reportes" Route="ReportesMenuPage">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8B5;" Color="#2563EB" Size="22" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:ReportesMenuPage}" />
+    </FlyoutItem>
+
 
     <Shell.FlyoutFooter>
         <Grid Padding="16,10,16,20" BackgroundColor="White">

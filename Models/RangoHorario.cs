@@ -13,6 +13,9 @@ namespace slotsi_citas.Models
         public bool EsOcupado { get; set; }
         public bool EsNoDisponible { get; set; }
 
+        // --- NUEVA PROPIEDAD ---
+        public bool EsMiCita { get; set; }
+
         public string EstadoTexto { get; set; } = "Agendar cita";
         public string DetallePausa { get; set; } = string.Empty;
 

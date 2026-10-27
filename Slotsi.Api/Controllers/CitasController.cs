@@ -48,7 +48,7 @@ public class CitasController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<CitaDto>> Crear(CitaDto dto, CancellationToken ct)
+    public async Task<ActionResult<CitaDto>> Crear([FromBody] CitaDto dto, CancellationToken ct)
     {
         var entidad = dto.ToEntity();
         await _citas.CrearAsync(entidad, ct);
@@ -121,5 +121,119 @@ public class CitasController : ControllerBase
         if (!IdValidator.EsValido(id)) return BadRequest("ID inválido");
         var eliminada = await _citas.EliminarAsync(id, ct);
         return eliminada ? NoContent() : NotFound();
+    }
+
+    [HttpGet("reportes/top-servicios")]
+    [ProducesResponseType(typeof(List<TopServicioDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<TopServicioDto>>> ObtenerTopServicios([FromQuery] string? negocioId, [FromQuery] string? periodo, CancellationToken ct)
+    {
+        try
+        {
+            var citas = await _citas.ObtenerTodasAsync(ct);
+
+            if (!string.IsNullOrEmpty(negocioId))
+            {
+                citas = citas.Where(c => c.NegocioId.ToString() == negocioId).ToList();
+            }
+
+            var fechaLimite = DateTime.UtcNow;
+            if (periodo == "semana")
+            {
+                fechaLimite = DateTime.UtcNow.AddDays(-7);
+            }
+            else if (periodo == "mes")
+            {
+                fechaLimite = DateTime.UtcNow.AddMonths(-1);
+            }
+
+            citas = citas.Where(c => c.FechaHoraInicio >= fechaLimite).ToList();
+
+            var citasValidas = citas
+                .Where(c => c.Estado != "Cancelada" && !string.IsNullOrEmpty(c.ServicioNombre))
+                .ToList();
+
+            var serviciosDescompuestos = new List<(string Nombre, int Duracion)>();
+
+            foreach (var cita in citasValidas)
+            {
+                var nombres = cita.ServicioNombre
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s => s.Trim())
+                    .ToList();
+
+                foreach (var nombre in nombres)
+                {
+                    serviciosDescompuestos.Add((nombre, cita.DuracionMinutos));
+                }
+            }
+
+            var topServicios = serviciosDescompuestos
+                .GroupBy(s => s.Nombre)
+                .Select(g => new TopServicioDto
+                {
+                    NombreServicio = g.Key,
+                    TotalCitas = g.Count(),
+                    IngresosTotales = 0,
+                    DuracionMinutos = (int)g.Average(x => x.Duracion)
+                })
+                .OrderByDescending(x => x.TotalCitas)
+                .Take(5)
+                .ToList();
+
+            return Ok(topServicios);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
+        }
+    }
+
+    [HttpGet("reportes/demanda-semanal")]
+    [ProducesResponseType(typeof(List<DemandaSemanalDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<DemandaSemanalDto>>> ObtenerDemandaSemanal([FromQuery] string? negocioId, [FromQuery] string? periodo, CancellationToken ct)
+    {
+        try
+        {
+            var citas = await _citas.ObtenerTodasAsync(ct);
+
+            if (!string.IsNullOrEmpty(negocioId))
+            {
+                citas = citas.Where(c => c.NegocioId.ToString() == negocioId).ToList();
+            }
+
+        
+            var hoyLocal = DateTime.Now.Date; 
+            int diasParaLunes = ((int)hoyLocal.DayOfWeek + 6) % 7;
+            var inicioSemana = hoyLocal.AddDays(-diasParaLunes);
+            var finSemana = inicioSemana.AddDays(7);
+
+           
+            citas = citas.Where(c =>
+            {
+                var fechaLocal = c.FechaHoraInicio.ToLocalTime();
+                return fechaLocal >= inicioSemana && fechaLocal < finSemana;
+            }).ToList();
+
+            var demanda = citas
+                .Where(c => c.Estado != "Cancelada")
+                .GroupBy(c => new
+                {
+                    Dia = c.FechaHoraInicio.ToLocalTime().DayOfWeek,
+                    Hora = c.FechaHoraInicio.ToLocalTime().Hour
+                })
+                .Select(g => new DemandaSemanalDto
+                {
+                    DiaSemana = g.Key.Dia.ToString(),
+                    Hora = g.Key.Hora,
+                    TotalCitas = g.Count()
+                })
+                .ToList();
+
+            return Ok(demanda);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message });
+        }
     }
 }

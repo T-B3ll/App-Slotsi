@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.Maui.Controls;
 using slotsi_citas.ViewModel;
-
+using System.Threading.Tasks;
 
 namespace slotsi_citas.Pages
 {
@@ -16,8 +16,6 @@ namespace slotsi_citas.Pages
             BindingContext = _viewModel;
         }
 
-
-
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
             _viewModel?.ApplyQueryAttributes(query);
@@ -28,7 +26,8 @@ namespace slotsi_citas.Pages
             base.OnAppearing();
             if (_viewModel != null)
             {
-                await _viewModel.InicializarAsync();
+                // se ejecuta la carga en un hilo secundario para no congelar la UI
+                await Task.Run(async () => await _viewModel.InicializarAsync());
             }
         }
     }

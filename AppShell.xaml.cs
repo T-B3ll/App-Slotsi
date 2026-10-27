@@ -1,5 +1,4 @@
-﻿using Microsoft.Maui.Storage;
-using slotsi_citas.Pages;
+﻿using slotsi_citas.Pages;
 using slotsi_citas.Services.Api;
 
 namespace slotsi_citas
@@ -17,26 +16,28 @@ namespace slotsi_citas
             Routing.RegisterRoute(nameof(SeleccionarCitaPage), typeof(SeleccionarCitaPage));
             Routing.RegisterRoute(nameof(SeleccionarCitaPage), typeof(SeleccionarCitaPage));
             Routing.RegisterRoute(nameof(Cita_UsuarioPage), typeof(Cita_UsuarioPage));
-            Routing.RegisterRoute(nameof(LoginPage), typeof(LoginPage));
             Routing.RegisterRoute(nameof(CrearResena), typeof(CrearResena));
             Routing.RegisterRoute(nameof(RegistroUsuariosPage), typeof(RegistroUsuariosPage));
             Routing.RegisterRoute(nameof(RegistroUsuarioNegocio), typeof(RegistroUsuarioNegocio));
             Routing.RegisterRoute(nameof(CatalogoCliente), typeof(CatalogoCliente));
             Routing.RegisterRoute(nameof(CalendarioPage), typeof(CalendarioPage));
             Routing.RegisterRoute(nameof(HorariosDisponiblesPage), typeof(HorariosDisponiblesPage));
+            Routing.RegisterRoute(nameof(ReportesMenuPage), typeof(ReportesMenuPage));
+            Routing.RegisterRoute(nameof(ReporteTopServiciosPage), typeof(ReporteTopServiciosPage));
+            Routing.RegisterRoute(nameof(ReporteDemandaPage), typeof(ReporteDemandaPage));
 
         }
-        private async void OnCerrarSesionClicked(object sender, EventArgs e)
+        private async void OnCerrarSesionClicked(object? sender, EventArgs e)
         {
             botonCerrarSesion.IsEnabled = false;
+            FlyoutIsPresented = false;
             try
             {
-                await _auth.CerrarSesionAsync(); // revoca el token y borra la sesión local[cite: 18]
-                await Shell.Current.GoToAsync(nameof(LoginPage));
+                await _auth.CerrarSesionAsync();
             }
             finally
             {
-                botonCerrarSesion.IsEnabled = true;
+                NavigationAuth.IrALogin();
             }
         }
     }

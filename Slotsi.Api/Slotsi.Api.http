@@ -1,6 +1,95 @@
-@Slotsi.Api_HostAddress = http://localhost:5286
+@host = http://localhost:5286
 
-GET {{Slotsi.Api_HostAddress}}/weatherforecast/
+### ==================== PRUEBAS CORRECTAS ====================
+
+### Listar todos los negocios (200 OK)
+GET {{host}}/api/negocios
 Accept: application/json
 
-###
+### Crear un negocio válido (201 Created)
+# @name crearNegocio
+POST {{host}}/api/negocios
+Content-Type: application/json
+
+{
+  "nombre": "Dueño Prueba",
+  "nombreNegocio": "Barbería Test",
+  "usuarioId": "6ab59dce7557e344b191bd42",
+  "numeroRuc": "J123456789",
+  "direccionNegocio": "Calle Falsa 123",
+  "tipoServicio": "Sede",
+  "categoria": "Barbería"
+}
+
+### Guardar el ID del negocio creado
+@negocioId = {{crearNegocio.response.body.$.id}}
+
+### Crear una cita válida (201 Created)
+# @name crearCita
+POST {{host}}/api/citas
+Content-Type: application/json
+
+{
+  "negocioId": "{{negocioId}}",
+  "clienteId": "6ade2382743125224ae9ad9e",
+  "fechaHoraInicio": "2026-10-26T09:00:00Z",
+  "fechaHoraFin": "2026-10-26T10:00:00Z",
+  "duracionMinutos": 60,
+  "servicioNombre": "Corte de Cabello",
+  "precio": 150,
+  "estado": "Confirmada",
+  "clienteNombre": "Rodolfo",
+  "clienteTelefono": "88888888"
+}
+
+### Listar citas por fecha (200 OK)
+GET {{host}}/api/citas?fecha=2026-10-26
+Accept: application/json
+
+### Reporte Top Servicios (200 OK)
+GET {{host}}/api/citas/reportes/top-servicios?negocioId={{negocioId}}&periodo=semana
+Accept: application/json
+
+### Reporte Demanda Semanal (200 OK)
+GET {{host}}/api/citas/reportes/demanda-semanal?negocioId={{negocioId}}&periodo=semana
+Accept: application/json
+
+### ==================== PRUEBAS DE ERROR ====================
+
+### Error 400: ID inválido (formato incorrecto)
+GET {{host}}/api/citas/abc
+Accept: application/json
+
+### Error 400: Cuerpo inválido (falta el título)
+POST {{host}}/api/citas
+Content-Type: application/json
+
+{
+  "negocioId": "{{negocioId}}",
+  "clienteId": "6ade2382743125224ae9ad9e",
+  "fechaHoraInicio": "2026-10-26T09:00:00Z",
+  "fechaHoraFin": "2026-10-26T10:00:00Z"
+}
+
+### Error 404: Recurso no encontrado (ID válido pero inexistente)
+GET {{host}}/api/citas/000000000000000000000000
+Accept: application/json
+
+### Error 400: Categoría inexistente al crear cita
+POST {{host}}/api/citas
+Content-Type: application/json
+
+{
+  "negocioId": "000000000000000000000000",
+  "clienteId": "6ade2382743125224ae9ad9e",
+  "fechaHoraInicio": "2026-10-26T09:00:00Z",
+  "fechaHoraFin": "2026-10-26T10:00:00Z",
+  "duracionMinutos": 60,
+  "servicioNombre": "Corte",
+  "precio": 100
+}
+
+### Error 415: Falta Content-Type
+POST {{host}}/api/citas
+Accept: application/json
+# (Sin Content-Type, el cuerpo no se lee)

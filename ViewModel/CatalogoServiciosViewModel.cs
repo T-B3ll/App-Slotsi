@@ -278,28 +278,37 @@ namespace slotsi_citas.ViewModel
         public async Task CargarServiciosAsync()
         {
             try
-            {
-                string? negocioId = await ObtenerNegocioIdDeSesionAsync();
-                if (string.IsNullOrEmpty(negocioId)) return;
+            {         
+                string negocioId = Preferences.Get("negocio_id", string.Empty);
+
+                if (string.IsNullOrEmpty(negocioId))
+                {
+                    negocioId = await ObtenerNegocioIdDeSesionAsync() ?? string.Empty;
+                    if (string.IsNullOrEmpty(negocioId)) return;
+                    Preferences.Set("negocio_id", negocioId);
+                }
 
                 var resultados = await _catalogoService.ObtenerServiciosPorNegocioAsync(negocioId);
+
+                System.Diagnostics.Debug.WriteLine($"[SERVICIOS] negocioId={negocioId}, cantidad={resultados.Count}");
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     Servicios.Clear();
                     foreach (var serv in resultados)
-                    {
                         Servicios.Add(serv);
-                    }
                     ServiciosActivosCount = Servicios.Count(s => s.Activo);
                 });
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", $"Error al cargar servicios: {ex.Message}", "OK");
+                System.Diagnostics.Debug.WriteLine($"[ERROR CARGAR SERVICIOS]: {ex.Message}");
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    await Application.Current!.MainPage!.DisplayAlert("Error", $"Error al cargar servicios: {ex.Message}", "OK");
+                });
             }
         }
-
         public async Task CambiarEstadoActivoAsync(Servicios servicio)
         {
             if (servicio == null) return;

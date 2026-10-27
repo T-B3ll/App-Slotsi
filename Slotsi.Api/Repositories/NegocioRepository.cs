@@ -56,7 +56,7 @@ public class NegocioRepository : INegocioRepository
     {
         if (!ObjectId.TryParse(usuarioId, out var usuarioOid)) return null;
 
-       
+        
         try
         {
             return await _negocios

@@ -147,7 +147,15 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 
-	  <MauiXaml Update="Pages\ResumenPage.xaml">
+	  <MauiXaml Update="Pages\ReporteDemandaPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+
+	  <MauiXaml Update="Pages\ReportesMenuPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+
+	  <MauiXaml Update="Pages\ReporteTopServiciosPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Pages\SeleccionarCitaPage.xaml">

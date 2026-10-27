@@ -115,7 +115,17 @@ public static class MauiProgram
         builder.Services.AddTransient<EditarPerfilPage>();
         builder.Services.AddTransient<RecuperarContra>();
         builder.Services.AddTransient<NuevaContra>();
+
         builder.Services.AddTransient<ResumenPage>();
+
+        builder.Services.AddTransient<ReportesMenuPage>();
+        builder.Services.AddTransient<ReporteDemandaPage>();
+
+        builder.Services.AddTransient<DueñosNegociosViewModel>();
+        builder.Services.AddTransient<DueñosNegociosPage>();
+
+        builder.Services.AddTransient<SeleccionarCitaViewModel>();
+
         builder.Services.AddTransient<SeleccionarCitaPage>();
         builder.Services.AddTransient<OpcionRegistrosU>();
 
@@ -125,7 +135,11 @@ public static class MauiProgram
     private static void ConfigurarClienteApi(HttpClient cliente)
     {
         cliente.BaseAddress = ApiConfiguracion.UrlBase;
+
       
         cliente.Timeout = TimeSpan.FromSeconds(30);
+
+        cliente.Timeout = TimeSpan.FromSeconds(10);
+
     }
 }
