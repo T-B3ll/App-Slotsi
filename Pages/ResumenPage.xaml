@@ -5,7 +5,7 @@
              x:Class="slotsi_citas.Pages.ResumenPage"
              x:DataType="vm:ResumenViewModel"
              Title="Resumen del Día"
-             Shell.NavBarIsVisible="False"
+             Shell.NavBarIsVisible="True"
              BackgroundColor="#F8FAFC">
 
     <RefreshView Command="{Binding CargarCommand}"
