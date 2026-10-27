@@ -137,7 +137,7 @@ public static class MauiProgram
         cliente.BaseAddress = ApiConfiguracion.UrlBase;
 
       
-        cliente.Timeout = TimeSpan.FromSeconds(30);
+       
 
         cliente.Timeout = TimeSpan.FromSeconds(10);
 

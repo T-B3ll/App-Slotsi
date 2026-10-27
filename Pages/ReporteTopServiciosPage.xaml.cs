@@ -13,12 +13,14 @@ namespace slotsi_citas.Pages;
 public partial class ReporteTopServiciosPage : ContentPage
 {
     private readonly CitaService _citaService;
+    private readonly NegocioService _negocioService;
     private string _periodoActual = "semana";
 
-    public ReporteTopServiciosPage(CitaService citaService)
+    public ReporteTopServiciosPage(CitaService citaService, NegocioService negocioService)
     {
         InitializeComponent();
         _citaService = citaService;
+        _negocioService = negocioService;
         _ = CargarReporteAsync();
     }
 
@@ -27,6 +29,21 @@ public partial class ReporteTopServiciosPage : ContentPage
         try
         {
             string negocioId = Preferences.Get("NegocioSeleccionadoId", string.Empty);
+
+            if (string.IsNullOrEmpty(negocioId))
+            {
+                string usuarioId = Preferences.Get("UsuarioId", string.Empty);
+                if (!string.IsNullOrEmpty(usuarioId))
+                {
+                    var negocio = await _negocioService.ObtenerPorUsuarioIdAsync(usuarioId);
+                    if (negocio != null && !string.IsNullOrEmpty(negocio.Id))
+                    {
+                        negocioId = negocio.Id;
+                        Preferences.Set("NegocioSeleccionadoId", negocioId);
+                        Preferences.Set("negocio_id", negocioId);
+                    }
+                }
+            }
 
             if (string.IsNullOrEmpty(negocioId))
             {
@@ -114,7 +131,8 @@ public partial class ReporteTopServiciosPage : ContentPage
                     Grid.SetColumn(citasLabel, 1);
                     rowGrid.Children.Add(citasLabel);
 
-                    var duracionLabel = new Label { Text = $"{item.DuracionMinutos} min", FontSize = 13, TextColor = Colors.DarkGray, HorizontalOptions = LayoutOptions.End, VerticalOptions = LayoutOptions.Center }; Grid.SetColumn(duracionLabel, 2);
+                    var duracionLabel = new Label { Text = $"{item.DuracionMinutos} min", FontSize = 13, TextColor = Colors.DarkGray, HorizontalOptions = LayoutOptions.End, VerticalOptions = LayoutOptions.Center };
+                    Grid.SetColumn(duracionLabel, 2);
                     rowGrid.Children.Add(duracionLabel);
 
                     var separator = new BoxView { HeightRequest = 1, Color = Color.FromArgb("#E5E7EB") };
@@ -140,24 +158,20 @@ public partial class ReporteTopServiciosPage : ContentPage
     private async void OnSemanaClicked(object sender, EventArgs e)
     {
         _periodoActual = "semana";
-
         BtnSemana.BackgroundColor = Color.FromArgb("#2563EB");
         BtnSemana.TextColor = Colors.White;
         BtnMes.BackgroundColor = Colors.Transparent;
         BtnMes.TextColor = Color.FromArgb("#4B5563");
-
         await CargarReporteAsync();
     }
 
     private async void OnMesClicked(object sender, EventArgs e)
     {
         _periodoActual = "mes";
-
         BtnMes.BackgroundColor = Color.FromArgb("#2563EB");
         BtnMes.TextColor = Colors.White;
         BtnSemana.BackgroundColor = Colors.Transparent;
         BtnSemana.TextColor = Color.FromArgb("#4B5563");
-
         await CargarReporteAsync();
     }
 }
