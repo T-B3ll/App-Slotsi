@@ -68,13 +68,15 @@ public static class MauiProgram
         builder.Services.AddHttpClient<CalificacionService>(ConfigurarClienteApi)
             .AddHttpMessageHandler<AuthHeaderHandler>();
 
-        // ✅ CitaService CON AuthHeaderHandler (¡Le faltaba!)
+        builder.Services.AddHttpClient<SuscripcionService>(ConfigurarClienteApi)
+    .AddHttpMessageHandler<AuthHeaderHandler>();
+
         builder.Services.AddHttpClient<CitaService>(ConfigurarClienteApi)
             .AddHttpMessageHandler<AuthHeaderHandler>();
 
         // --- OTROS SERVICIOS ---
         builder.Services.AddSingleton<RecuperacionService>();
-        builder.Services.AddSingleton<SuscripcionService>();
+
         builder.Services.AddSingleton<EmailJSService>();
 
         // --- VIEWMODELS ---
@@ -115,6 +117,7 @@ public static class MauiProgram
         builder.Services.AddTransient<NuevaContra>();
         builder.Services.AddTransient<ResumenPage>();
         builder.Services.AddTransient<SeleccionarCitaPage>();
+        builder.Services.AddTransient<OpcionRegistrosU>();
 
         return builder.Build();
     }
@@ -122,7 +125,7 @@ public static class MauiProgram
     private static void ConfigurarClienteApi(HttpClient cliente)
     {
         cliente.BaseAddress = ApiConfiguracion.UrlBase;
-        // ✅ Aumentado a 30 segundos para dar tiempo a que la API conecte con MongoDB Atlas
+      
         cliente.Timeout = TimeSpan.FromSeconds(30);
     }
 }

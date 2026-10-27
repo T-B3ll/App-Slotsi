@@ -8,13 +8,11 @@
     <ScrollView VerticalScrollBarVisibility="Never">
         <VerticalStackLayout Padding="24" Spacing="20" MaximumWidthRequest="480" HorizontalOptions="Center">
 
-
             <VerticalStackLayout Spacing="4">
                 <Label Text="Pago de Suscripción" FontSize="24" FontAttributes="Bold" TextColor="#111827"/>
                 <Label Text="Activa tu plan mensual para acceder a todas las funciones." 
                        FontSize="14" TextColor="#6B7280" LineBreakMode="WordWrap"/>
             </VerticalStackLayout>
-
 
             <Border Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="#FFFFFF" Padding="20">
                 <Border.StrokeShape>
@@ -32,10 +30,8 @@
                 </Grid>
             </Border>
 
-
             <Label Text="Método de Pago" FontSize="13" TextColor="#6B7280"/>
             <HorizontalStackLayout Spacing="12">
-
 
                 <Button x:Name="BtnDebito" 
                         Text="Débito" 
@@ -43,11 +39,9 @@
                         CornerRadius="12" HeightRequest="45" Padding="16,0" FontSize="14"
                         Clicked="OnMetodoPagoClicked">
                     <Button.ImageSource>
-
                         <FileImageSource File="card.png"/>
                     </Button.ImageSource>
                 </Button>
-
 
                 <Button x:Name="BtnCredito" 
                         Text="Crédito" 
@@ -61,7 +55,6 @@
                 </Button>
 
             </HorizontalStackLayout>
-
 
             <VerticalStackLayout Spacing="16">
 
@@ -85,7 +78,6 @@
                     </Border>
                 </VerticalStackLayout>
 
-
                 <Grid ColumnDefinitions="*, *" ColumnSpacing="12">
                     <VerticalStackLayout Grid.Column="0" Spacing="6">
                         <Label Text="Vencimiento" FontSize="13" TextColor="#6B7280"/>
@@ -105,7 +97,6 @@
                                    TextColor="#111827"
                                    PlaceholderColor="#9CA3AF"/>
 
-
                         </Border>
                     </VerticalStackLayout>
                     <VerticalStackLayout Grid.Column="1" Spacing="6">
@@ -119,18 +110,16 @@
                                    Placeholder="123" 
                                    FontSize="16" 
                                    HeightRequest="50" 
-                                    Text="{Binding Cvv, Mode=TwoWay}"
+                                   Text="{Binding Cvv, Mode=TwoWay}"
                                    BackgroundColor="Transparent" 
                                    MaxLength="4"
                                    Keyboard="Numeric"
                                    TextColor="#111827"
                                    PlaceholderColor="#9CA3AF"/>
 
-
                         </Border>
                     </VerticalStackLayout>
                 </Grid>
-
 
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Nombre del titular" FontSize="13" TextColor="#6B7280"/>
@@ -150,10 +139,6 @@
                 </VerticalStackLayout>
 
             </VerticalStackLayout>
-
-
-
-
 
             <Button x:Name="BtnPagar" 
                     Text="Pagar $12 USD" BackgroundColor="#2563EB" TextColor="White" 
