@@ -6,9 +6,7 @@ public static class ApiConfiguracion
 {
     public const int Puerto = 5286;
 
-    public const string IpLocalPc = "172.16.137.93";
-
-    public const string IpLocalPc = "192.168.1.34";
+    public const string IpLocalPc = "10.211.143.124";
 
 
     public static Uri UrlBase
