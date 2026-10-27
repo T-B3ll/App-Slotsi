@@ -13,7 +13,6 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. Configuración y validación del Patrón Options (Mongo y JWT)
 builder.Services.AddOptions<MongoDbSettings>()
     .Bind(builder.Configuration.GetSection(MongoDbSettings.SectionName))
     .ValidateDataAnnotations()
@@ -24,7 +23,6 @@ builder.Services.AddOptions<JwtSetting>()
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
-// 2. Cliente de MongoDB como Singleton seguro entre hilos
 builder.Services.AddSingleton<IMongoClient>(sp =>
 {
     var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
@@ -33,7 +31,7 @@ builder.Services.AddSingleton<IMongoClient>(sp =>
     return new MongoClient(clientSettings);
 });
 
-// 3. Registro de Repositorios y Servicios propios de Slotsi
+
 builder.Services.AddSingleton<IPasswordHasher<UsuarioEntity>, PasswordHasher<UsuarioEntity>>();
 builder.Services.AddSingleton<TokenService>();
 builder.Services.AddSingleton<ITrabajadorRepository, TrabajadoreRepository>();
@@ -43,7 +41,6 @@ builder.Services.AddSingleton<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddSingleton<INegocioRepository, NegocioRepository>();
 builder.Services.AddSingleton<ICitaRepository, CitaRepository>();
 
-// 4. Configuración de Autenticación JWT y validación de tokens revocados
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer();
 
@@ -51,7 +48,7 @@ builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSc
     .Configure<IOptions<JwtSetting>>((opciones, jwt) =>
     {
         var settings = jwt.Value;
-        // Conserva los nombres originales de los claims ("sub", "jti", "email"...)
+
         opciones.MapInboundClaims = false;
         opciones.TokenValidationParameters = new TokenValidationParameters
         {
@@ -67,7 +64,7 @@ builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationSc
         };
         opciones.Events = new JwtBearerEvents
         {
-            // Rechaza tokens cerrados o revocados (Logout)
+    
             OnTokenValidated = async contexto =>
             {
                 var jti = contexto.Principal?.FindFirst("jti")?.Value;
@@ -87,20 +84,17 @@ builder.Services.AddOpenApi(opciones => opciones.AddDocumentTransformer<BearerSe
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// 6. Manejo de excepciones globales
 builder.Services.AddExceptionHandler<MongoExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
-// 7. Asegurar índices en MongoDB al arrancar la API
 await app.Services.GetRequiredService<IUsuarioRepository>().AsegurarIndicesAsync();
 
 app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
-    // Documento OpenAPI y Scalar
     app.MapOpenApi();
     app.MapScalarApiReference(options =>
     {
@@ -122,7 +116,6 @@ else
     app.UseHttpsRedirection();
 }
 
-// 8. Pipeline de autenticación y autorización (¡Orden crucial!)
 app.UseAuthentication();
 app.UseAuthorization();
 

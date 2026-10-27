@@ -1,11 +1,6 @@
 ﻿using slotsi_citas.Services.Auth;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace slotsi_citas.Services.Api
 {
@@ -13,23 +8,24 @@ namespace slotsi_citas.Services.Api
     {
         private readonly ISesionService _sesion;
         public AuthHeaderHandler(ISesionService sesion) => _sesion = sesion;
+
         protected override async Task<HttpResponseMessage> SendAsync(
-        HttpRequestMessage request, CancellationToken cancellationToken)
+            HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var token = _sesion.Token;
             if (token is not null)
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             var respuesta = await base.SendAsync(request, cancellationToken);
-            // Sin token adjunto, un 401 es "credenciales incorrectas" del login: no se toca la sesión.
-            if (token is not null && respuesta.StatusCode == HttpStatusCode.Unauthorized)
+
+            if (token is not null
+                && respuesta.StatusCode == HttpStatusCode.Unauthorized
+                && request.RequestUri?.AbsolutePath.EndsWith("/logout") != true)
             {
                 _sesion.Cerrar();
-                MainThread.BeginInvokeOnMainThread(async () =>
-                {
-                    if (Shell.Current is not null)
-                        await Shell.Current.GoToAsync("//login");
-                });
+                NavigationAuth.IrALogin();
             }
+
             return respuesta;
         }
     }
