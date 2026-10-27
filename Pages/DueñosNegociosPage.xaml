@@ -11,7 +11,7 @@
         <BackButtonBehavior IsVisible="False" />
     </Shell.BackButtonBehavior>
 
-    <Grid RowDefinitions="Auto, *">
+    <Grid RowDefinitions="Auto, Auto, *">
 
         <Frame Grid.Row="0" BackgroundColor="White" BorderColor="Transparent" CornerRadius="0" Padding="24,20,24,16" HasShadow="False">
             <VerticalStackLayout Spacing="16">
@@ -32,12 +32,13 @@
                         <Button x:Name="BtnTodos" Text="Todos" BackgroundColor="#2563EB" TextColor="White" CornerRadius="20" HeightRequest="38" Padding="20,0" FontSize="13" FontAttributes="Bold" Clicked="OnFilterClicked"/>
                         <Button x:Name="BtnSalones" Text="Salones" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="38" Padding="20,0" FontSize="13" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnFilterClicked"/>
                         <Button x:Name="BtnBarberia" Text="Barbería" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="38" Padding="20,0" FontSize="13" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnFilterClicked"/>
+                        <Button x:Name="BtnMejorCalificados" Text="★ Mejores calificados" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="38" Padding="20,0" FontSize="13" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnOrdenCalificacionClicked"/>
                     </HorizontalStackLayout>
                 </ScrollView>
             </VerticalStackLayout>
         </Frame>
-
-        <CollectionView Grid.Row="1" ItemsSource="{Binding ListaDueños}" Margin="16,12,16,12">
+        <Label x:Name="LblResultados" Grid.Row="1" Margin="24,12,24,0" FontSize="14" TextColor="#6B7280"/>
+        <CollectionView Grid.Row="2" ItemsSource="{Binding ListaDueños}" Margin="16,12,16,12">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
             </CollectionView.ItemsLayout>
@@ -45,34 +46,40 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border BackgroundColor="White" Stroke="#E5E7EB" StrokeThickness="1" Padding="16">
+                        <VerticalStackLayout Spacing="6">
+                            <HorizontalStackLayout Spacing="6">
+                                <Label Text="★" TextColor="#F59E0B" FontSize="14"/>
+                                <Label Text="{Binding PromedioCalificacion, StringFormat='{0:F1}'}" FontAttributes="Bold" FontSize="13" TextColor="#111827"/>
+                                <Label Text="{Binding TotalResenas, StringFormat='({0} reseñas)'}" FontSize="12" TextColor="#6B7280"/>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="6">
+                          
+                            </HorizontalStackLayout>
+                            <Grid ColumnDefinitions="56, *, Auto" ColumnSpacing="14">
+                                <Border Grid.Column="0" StrokeShape="RoundRectangle 28" BackgroundColor="#EFF6FF" HeightRequest="56" WidthRequest="56" StrokeThickness="0">
+                                    <Grid>
+                                        <Image Source="{Binding UrlFotoPerfil}" Aspect="AspectFill" />
+                                        <Label Text="{Binding Nombre}" TextColor="#2563EB" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                    </Grid>
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
+                                    <Label Text="{Binding NombreNegocio}" FontSize="16" FontAttributes="Bold" TextColor="#111827"/>
+                                    <Label Text="{Binding DireccionNegocio}" FontSize="13" TextColor="#6B7280"/>
+                                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                        <Label Text="{Binding Categoria}" FontSize="12" TextColor="#6B7280" VerticalOptions="Center"/>
+                                        <Label Text="✔ Verificado" FontSize="11" FontAttributes="Bold" TextColor="#10B981" VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                                <Label Grid.Column="2" Text="›" FontSize="28" TextColor="#D1D5DB" VerticalOptions="Center" FontAttributes="Bold"/>
+                            </Grid>
+                        </VerticalStackLayout>
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnNegocioTapped" CommandParameter="{Binding .}" />
                         </Border.GestureRecognizers>
-
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="16"/>
                         </Border.StrokeShape>
-
-                        <Grid ColumnDefinitions="56, *, Auto" ColumnSpacing="14">
-                            <Border Grid.Column="0" StrokeShape="RoundRectangle 28" BackgroundColor="#EFF6FF" HeightRequest="56" WidthRequest="56" StrokeThickness="0">
-                                <Grid>
-                                    <Image Source="{Binding UrlFotoPerfil}" Aspect="AspectFill" />
-                                    <Label Text="{Binding Nombre}" TextColor="#2563EB" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
-                                </Grid>
-                            </Border>
-
-                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
-                                <Label Text="{Binding NombreNegocio}" FontSize="16" FontAttributes="Bold" TextColor="#111827"/>
-                                <Label Text="{Binding DireccionNegocio}" FontSize="13" TextColor="#6B7280"/>
-                                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                                    <Label Text="{Binding Categoria}" FontSize="12" TextColor="#6B7280" VerticalOptions="Center"/>
-                                    <Label Text="✔ Verificado" FontSize="11" FontAttributes="Bold" TextColor="#10B981" VerticalOptions="Center"/>
-                                </HorizontalStackLayout>
-                            </VerticalStackLayout>
-
-                            <Label Grid.Column="2" Text="›" FontSize="28" TextColor="#D1D5DB" VerticalOptions="Center" FontAttributes="Bold"/>
-                        </Grid>
-                    </Border>
+                        </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

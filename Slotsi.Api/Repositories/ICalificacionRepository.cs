@@ -9,5 +9,7 @@ namespace Slotsi.Api.Repositories
         Task<(double Promedio, int Total)> ObtenerPromedioNegocioAsync(string negocioId, CancellationToken ct = default);
         Task CrearAsync(CalificacionEntity calificacion, CancellationToken ct = default);
         Task<bool> EliminarAsync(string id, CancellationToken ct = default);
+
+        Task<Dictionary<string, (double Promedio, int Total)>> ObtenerPromediosPorNegocioAsync(CancellationToken ct = default);
     }
 }

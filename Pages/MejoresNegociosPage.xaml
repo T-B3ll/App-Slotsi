@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="slotsi_citas.Pages.MejoresNegociosPage"
+             Title="Mejor Calificados"
+             BackgroundColor="#F3F4F6">
+    <Grid RowDefinitions="Auto, Auto, *">
+
+        <!-- Filtros -->
+        <VerticalStackLayout Grid.Row="0" BackgroundColor="White" Padding="20,12,20,14" Spacing="10">
+            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                <HorizontalStackLayout Spacing="10">
+                    <Button x:Name="BtnTodos" Text="Todos" BackgroundColor="#2563EB" TextColor="White" CornerRadius="20" HeightRequest="38" Padding="20,0" FontSize="13" FontAttributes="Bold" Clicked="OnCategoriaClicked"/>
+                    <Button x:Name="BtnSalones" Text="Salones" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="38" Padding="20,0" FontSize="13" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnCategoriaClicked"/>
+                    <Button x:Name="BtnBarberia" Text="Barbería" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="38" Padding="20,0" FontSize="13" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnCategoriaClicked"/>
+                    <Button x:Name="BtnSpa" Text="Spa" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="38" Padding="20,0" FontSize="13" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnCategoriaClicked"/>
+                </HorizontalStackLayout>
+            </ScrollView>
+
+            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                <HorizontalStackLayout Spacing="10">
+                    <Button x:Name="BtnTop10" ClassId="10" Text="Top 10" BackgroundColor="#2563EB" TextColor="White" CornerRadius="20" HeightRequest="34" Padding="16,0" FontSize="12" FontAttributes="Bold" Clicked="OnTopClicked"/>
+                    <Button x:Name="BtnTop20" ClassId="20" Text="Top 20" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="34" Padding="16,0" FontSize="12" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnTopClicked"/>
+                    <Button x:Name="BtnTop50" ClassId="50" Text="Top 50" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="34" Padding="16,0" FontSize="12" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnTopClicked"/>
+                    <Button x:Name="BtnTop100" ClassId="100" Text="Top 100" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="34" Padding="16,0" FontSize="12" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnTopClicked"/>
+                </HorizontalStackLayout>
+            </ScrollView>
+        </VerticalStackLayout>
+
+        <Label Grid.Row="1" Text="{Binding TextoResultados}" Margin="24,12,24,0" FontSize="14" FontAttributes="Bold" TextColor="#6B7280"/>
+
+        <!-- Lista -->
+        <CollectionView Grid.Row="2" ItemsSource="{Binding Ranking}" SelectionMode="None" Margin="16,12,16,12">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.EmptyView>
+                <Label Text="Aún no hay negocios calificados en esta categoría." HorizontalTextAlignment="Center" TextColor="#9CA3AF" Margin="0,40,0,0"/>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border BackgroundColor="White" Stroke="#E5E7EB" StrokeThickness="1" Padding="16">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="16"/>
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnNegocioTapped" CommandParameter="{Binding .}"/>
+                        </Border.GestureRecognizers>
+
+                        <Grid ColumnDefinitions="56, *, Auto" ColumnSpacing="14">
+                            <Border Grid.Column="0" StrokeShape="RoundRectangle 28" BackgroundColor="#EFF6FF" HeightRequest="56" WidthRequest="56" StrokeThickness="0">
+                                <Grid>
+                                    <Label Text="{Binding Iniciales}" TextColor="#2563EB" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                    <Image Source="{Binding UrlFotoPerfil}" Aspect="AspectFill"/>
+                                </Grid>
+                            </Border>
+
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
+                                <Label Text="{Binding Titulo}" FontSize="16" FontAttributes="Bold" TextColor="#111827"/>
+                                <Label Text="{Binding NombreNegocio}" FontSize="13" TextColor="#6B7280"/>
+                                <HorizontalStackLayout Spacing="6">
+                                    <Label Text="{Binding Estrellas}" TextColor="#F59E0B" FontSize="13" VerticalOptions="Center"/>
+                                    <Label Text="{Binding PromedioTexto}" FontAttributes="Bold" FontSize="13" TextColor="#111827" VerticalOptions="Center"/>
+                                    <Label Text="{Binding ResenasTexto}" FontSize="12" TextColor="#6B7280" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="6">
+                                    <Border BackgroundColor="#F3F4F6" StrokeThickness="0" Padding="8,2">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="6"/>
+                                        </Border.StrokeShape>
+                                        <Label Text="{Binding Categoria}" FontSize="11" TextColor="#4B5563"/>
+                                    </Border>
+                                    <Border BackgroundColor="#D1FAE5" StrokeThickness="0" Padding="8,2">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="6"/>
+                                        </Border.StrokeShape>
+                                        <Label Text="✔ Verificado" FontSize="11" FontAttributes="Bold" TextColor="#059669"/>
+                                    </Border>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+
+                            <Label Grid.Column="2" Text="›" FontSize="28" TextColor="#D1D5DB" VerticalOptions="Center" FontAttributes="Bold"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <ActivityIndicator Grid.Row="2" IsRunning="{Binding Cargando}" IsVisible="{Binding Cargando}" Color="#2563EB" HorizontalOptions="Center" VerticalOptions="Center"/>
+    </Grid>
+</ContentPage>

@@ -15,10 +15,14 @@ public class NegociosController : ControllerBase
 {
     private readonly INegocioRepository _negocios;
 
-    public NegociosController(INegocioRepository negocios)
+    private readonly ICalificacionRepository _calificaciones;
+
+    public NegociosController(INegocioRepository negocios, ICalificacionRepository calificaciones)
     {
         _negocios = negocios;
+        _calificaciones = calificaciones;
     }
+
 
     [HttpGet]
     [ProducesResponseType(typeof(List<NegocioDto>), StatusCodes.Status200OK)]
@@ -27,29 +31,17 @@ public class NegociosController : ControllerBase
         try
         {
             var entidades = await _negocios.ObtenerTodosAsync(ct);
-            var dtos = entidades.Select(e => new NegocioDto
+            var promedios = await _calificaciones.ObtenerPromediosPorNegocioAsync(ct);
+
+            var dtos = entidades.Select(e =>
             {
-                Id = e.Id.ToString(),
-                UsuarioId = e.UsuarioId?.ToString() ?? string.Empty,
-                Nombre = e.Nombre ?? string.Empty,
-                NombreNegocio = e.NombreNegocio ?? string.Empty,
-                UrlDocumentoTitulo = e.UrlDocumentoTitulo ?? string.Empty,
-                NumeroRuc = e.NumeroRuc ?? string.Empty,
-                DireccionNegocio = e.DireccionNegocio ?? string.Empty,
-                TipoServicio = e.TipoServicio ?? string.Empty,
-                UrlFotoPerfil = e.UrlFotoPerfil ?? string.Empty,
-                Categoria = e.Categoria ?? string.Empty,
-                FechaRegistro = e.FechaRegistro,
-                Horarios = e.Horarios?.ToDictionary(
-                    h => h.Key,
-                    h => new HorarioDiaDto
-                    {
-                        Apertura = h.Value?.Apertura ?? "",
-                        Cierre = h.Value?.Cierre ?? "",
-                        Pausas = h.Value?.Pausas ?? new List<string>()
-                    }
-                ) ?? new Dictionary<string, HorarioDiaDto>(),
-                DiasCerrados = e.DiasCerrados ?? new List<string>()
+                var dto = e.ToDto();
+                if (promedios.TryGetValue(dto.Id!, out var p))
+                {
+                    dto.PromedioCalificacion = p.Promedio;
+                    dto.TotalResenas = p.Total;
+                }
+                return dto;
             }).ToList();
 
             return Ok(dtos);
