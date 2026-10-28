@@ -36,5 +36,11 @@ namespace slotsi_citas.Pages
                 }
             }
         }
+
+
+        private void OnMenuClicked(object sender, EventArgs e)
+        {
+            Shell.Current.FlyoutIsPresented = true;
+        }
     }
 }

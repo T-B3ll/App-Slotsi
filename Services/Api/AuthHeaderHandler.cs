@@ -7,7 +7,6 @@ namespace slotsi_citas.Services.Api
     public class AuthHeaderHandler : DelegatingHandler
     {
         private readonly ISesionService _sesion;
-
         public AuthHeaderHandler(ISesionService sesion) => _sesion = sesion;
 
         protected override async Task<HttpResponseMessage> SendAsync(

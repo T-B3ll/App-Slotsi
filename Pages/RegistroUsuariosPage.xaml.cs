@@ -10,14 +10,10 @@ public partial class RegistroUsuariosPage : ContentPage
 {
     private RegistroUsuariosViewModel? ViewModel => BindingContext as RegistroUsuariosViewModel;
 
-    public RegistroUsuariosPage()
+    // ÚNICO CONSTRUCTOR: Recibe el ViewModel con el UsuarioService ya inyectado
+    public RegistroUsuariosPage(RegistroUsuariosViewModel viewModel)
     {
         InitializeComponent();
-        BindingContext = new RegistroUsuariosViewModel();
-    }
-
-    public RegistroUsuariosPage(RegistroUsuariosViewModel viewModel) : this()
-    {
         BindingContext = viewModel;
     }
 

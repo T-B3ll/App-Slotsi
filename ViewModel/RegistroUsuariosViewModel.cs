@@ -13,7 +13,7 @@ namespace slotsi_citas.ViewModel
 {
     public class RegistroUsuariosViewModel : BindableObject
     {
-        private readonly MongoService _mongoService;
+        private readonly UsuarioService _usuarioService;
         private List<Usuario> _listaCompletaUsuarios = new();
         private string _textoBusqueda = string.Empty;
         private string? _letraSeleccionada = null;
@@ -43,9 +43,10 @@ namespace slotsi_citas.ViewModel
         public ICommand CambiarEstadoCommand { get; }
         public ICommand VerDetallesUsuarioCommand { get; }
 
-        public RegistroUsuariosViewModel()
+        // Constructor con inyección de dependencias
+        public RegistroUsuariosViewModel(UsuarioService usuarioService)
         {
-            _mongoService = new MongoService();
+            _usuarioService = usuarioService;
             Usuarios = new ObservableCollection<Usuario>();
             Iniciales = new ObservableCollection<InicialLetraModel>();
 
@@ -74,7 +75,8 @@ namespace slotsi_citas.ViewModel
 
             try
             {
-                var datos = await Task.Run(async () => await _mongoService.ObtenerUsuariosAsync());
+                // Llamamos a la API en segundo plano
+                var datos = await Task.Run(async () => await _usuarioService.ObtenerTodosAsync());
                 _listaCompletaUsuarios = datos ?? new List<Usuario>();
 
                 MainThread.BeginInvokeOnMainThread(() =>
@@ -85,6 +87,11 @@ namespace slotsi_citas.ViewModel
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[ERROR CARGAR USUARIOS]: {ex.Message}");
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    if (Application.Current?.MainPage != null)
+                        await Application.Current.MainPage.DisplayAlert("Error", $"No se pudieron cargar los usuarios: {ex.Message}", "OK");
+                });
             }
             finally
             {
@@ -95,8 +102,6 @@ namespace slotsi_citas.ViewModel
         private async void OnCambiarEstadoComando(Usuario? usuario)
         {
             if (usuario == null || string.IsNullOrEmpty(usuario.Id)) return;
-
-            // Si este usuario ya está en proceso, ignorar
             if (_usuariosEnActualizacion.Contains(usuario.Id)) return;
 
             _usuariosEnActualizacion.Add(usuario.Id);
@@ -111,39 +116,29 @@ namespace slotsi_citas.ViewModel
 
                 bool confirmar = await Application.Current.MainPage.DisplayAlert(titulo, mensaje, "Sí", "Cancelar");
 
-                if (!confirmar)
-                {
-                    return;
-                }
-            
-                bool actualizado = await Task.Run(async () =>
-                    await _mongoService.ActualizarEstadoUsuarioAsync(usuario.Id, nuevoEstado));
+                if (!confirmar) return;
 
-                if (actualizado)
+                // Llamamos a la API
+                await Task.Run(async () => await _usuarioService.CambiarEstadoAsync(usuario.Id, nuevoEstado));
+
+                MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    MainThread.BeginInvokeOnMainThread(() =>
+                    usuario.EstaActivo = nuevoEstado;
+                    var index = Usuarios.IndexOf(usuario);
+                    if (index >= 0)
                     {
-                        usuario.EstaActivo = nuevoEstado;
-                        // Refrescar solo el item en la lista
-                        var index = Usuarios.IndexOf(usuario);
-                        if (index >= 0)
-                        {
-                            Usuarios[index] = usuario;
-                        }
-                    });
-                }
-                else
-                {
-                    MainThread.BeginInvokeOnMainThread(async () =>
-                    {
-                        if (Application.Current?.MainPage != null)
-                            await Application.Current.MainPage.DisplayAlert("Error", "No se pudo actualizar el estado en MongoDB", "OK");
-                    });
-                }
+                        Usuarios[index] = usuario;
+                    }
+                });
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[ERROR CAMBIAR ESTADO]: {ex.Message}");
+                MainThread.BeginInvokeOnMainThread(async () =>
+                {
+                    if (Application.Current?.MainPage != null)
+                        await Application.Current.MainPage.DisplayAlert("Error al actualizar", ex.Message, "OK");
+                });
             }
             finally
             {

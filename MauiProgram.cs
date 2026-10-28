@@ -69,14 +69,13 @@ public static class MauiProgram
             .AddHttpMessageHandler<AuthHeaderHandler>();
 
         builder.Services.AddHttpClient<SuscripcionService>(ConfigurarClienteApi)
-    .AddHttpMessageHandler<AuthHeaderHandler>();
+            .AddHttpMessageHandler<AuthHeaderHandler>();
 
         builder.Services.AddHttpClient<CitaService>(ConfigurarClienteApi)
             .AddHttpMessageHandler<AuthHeaderHandler>();
 
         // --- OTROS SERVICIOS ---
         builder.Services.AddSingleton<RecuperacionService>();
-
         builder.Services.AddSingleton<EmailJSService>();
 
         // --- VIEWMODELS ---
@@ -94,14 +93,16 @@ public static class MauiProgram
         builder.Services.AddTransient<EditarPerfilViewModel>();
         builder.Services.AddTransient<RecuperarContrasenaViewModel>();
 
+        // --- AQUÍ FALTABA EL REGISTRO DE REGISTROUSUARIOSVIEWMODEL ---
+        builder.Services.AddTransient<RegistroUsuariosViewModel>();
+
         builder.Services.AddTransient<ResumenViewModel>();
         builder.Services.AddTransient<DueñosNegociosViewModel>();
         builder.Services.AddTransient<SeleccionarCitaViewModel>();
-
-   
         builder.Services.AddTransient<MejoresNegociosViewModel>();
         builder.Services.AddTransient<MejoresNegociosPage>();
 
+        // --- PAGES ---
         builder.Services.AddTransient<HorariosDisponiblesPage>();
         builder.Services.AddTransient<Cita_UsuarioPage>();
         builder.Services.AddTransient<CentroCalificaciones>();
@@ -119,19 +120,12 @@ public static class MauiProgram
         builder.Services.AddTransient<EditarPerfilPage>();
         builder.Services.AddTransient<RecuperarContra>();
         builder.Services.AddTransient<NuevaContra>();
-
+        builder.Services.AddTransient<ResumenPage>();
         builder.Services.AddTransient<ReportesMenuPage>();
         builder.Services.AddTransient<ReporteDemandaPage>();
-
-        builder.Services.AddTransient<DueñosNegociosViewModel>();
-        builder.Services.AddTransient<DueñosNegociosPage>();
-
-        builder.Services.AddTransient<SeleccionarCitaViewModel>();
-
-        builder.Services.AddTransient<ResumenPage>();
-
         builder.Services.AddTransient<SeleccionarCitaPage>();
         builder.Services.AddTransient<OpcionRegistrosU>();
+        builder.Services.AddTransient<RegistroUsuariosPage>(); // Asegúrate de que esta página también esté registrada
 
         return builder.Build();
     }
@@ -140,10 +134,6 @@ public static class MauiProgram
     {
         cliente.BaseAddress = ApiConfiguracion.UrlBase;
 
-        cliente.Timeout = TimeSpan.FromSeconds(10);
-
-      
         cliente.Timeout = TimeSpan.FromSeconds(30);
-
     }
 }

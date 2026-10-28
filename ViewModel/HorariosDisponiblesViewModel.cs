@@ -55,7 +55,7 @@ namespace slotsi_citas.ViewModel
             _citaService = citaService;
             _negocioService = negocioService;
 
-            VolverCommand = new Microsoft.Maui.Controls.Command(async () => await Shell.Current.GoToAsync(".."));
+            VolverCommand = new Microsoft.Maui.Controls.Command(async () => await Shell.Current.GoToAsync("//dueñosnegocios"));
             HoyCommand = new Microsoft.Maui.Controls.Command(() => FechaSeleccionada = DateTime.Today);
             SeleccionarHorarioCommand = new Microsoft.Maui.Controls.Command<RangoHorario>(OnSeleccionarHorario);
 

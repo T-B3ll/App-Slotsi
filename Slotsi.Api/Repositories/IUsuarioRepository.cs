@@ -16,7 +16,6 @@ public interface IUsuarioRepository
     Task<UsuarioEntity?> ObtenerPorCorreoAsync(string correo, CancellationToken ct = default);
     Task<UsuarioEntity?> BuscarPorTextoAsync(string texto, CancellationToken ct = default);
 
-
-
+    Task<bool> CambiarEstadoAsync(string id, bool activo, CancellationToken ct = default);
 
 }
