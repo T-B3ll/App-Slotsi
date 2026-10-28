@@ -20,17 +20,11 @@ public partial class RecuperarContra : ContentPage
 
     private async void OnEnviarCodigoClicked(object sender, EventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(EntryCorreo.Text))
-        {
-            await DisplayAlert("Error", "Ingresa tu correo.", "OK");
-            return;
-        }
+        if (string.IsNullOrWhiteSpace(EntryCorreo.Text)) return;
 
         try
         {
             var correo = EntryCorreo.Text.Trim().ToLower();
-
-            // 1. Pedimos el token a la API (El token se guarda en la colección Usuarios)
             var respuesta = await _authService.SolicitarRestablecimientoAsync(correo);
 
             if (string.IsNullOrEmpty(respuesta.Token))
@@ -39,19 +33,8 @@ public partial class RecuperarContra : ContentPage
                 return;
             }
 
-         
-            var enviado = await _emailService.EnviarCodigoPorEmail(correo, respuesta.Token);
-
-            if (enviado)
-            {
-                EntryCodigo.Text = string.Empty; 
-                await DisplayAlert("Éxito", $"Código enviado a {correo}. Revisa tu Gmail.", "OK");
-                EntryCodigo.Focus();
-            }
-            else
-            {
-                await DisplayAlert("Error", "El correo no pudo ser enviado. Intenta de nuevo.", "OK");
-            }
+            await DisplayAlert("Token Generado", $"Token: {respuesta.Token}", "OK");
+            EntryCodigo.Text = respuesta.Token;
         }
         catch (Exception ex)
         {

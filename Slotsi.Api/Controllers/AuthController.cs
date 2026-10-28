@@ -33,9 +33,6 @@ namespace Slotsi.Api.Controllers
 
         [HttpPost("registro")]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
         public async Task<IActionResult> Registrar(RegistrarUsuarioDto dto, CancellationToken ct)
         {
             var usuario = new UsuarioEntity
@@ -55,8 +52,6 @@ namespace Slotsi.Api.Controllers
 
         [HttpPost("login")]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(TokenDto), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
         public async Task<ActionResult<TokenDto>> Login(LoginDto dto, CancellationToken ct)
         {
             var usuario = await _usuarios.ObtenerPorCorreoAsync(Normalizar(dto.Email), ct);
@@ -66,14 +61,12 @@ namespace Slotsi.Api.Controllers
             {
                 if (EsHashLegado(usuario.Contrasena))
                 {
-                    // Usuario creado con el esquema viejo (SHA-256 en hexadecimal).
                     valido = CryptographicOperations.FixedTimeEquals(
                         Encoding.UTF8.GetBytes(Sha256Hex(dto.Contrasena)),
                         Encoding.UTF8.GetBytes(usuario.Contrasena.ToLowerInvariant()));
 
                     if (valido)
                     {
-                        // Migra al hasher actual para que no vuelva a usarse el hash viejo.
                         usuario.Contrasena = _hasher.HashPassword(usuario, dto.Contrasena);
                         await _usuarios.ActualizarAsync(usuario, ct);
                     }
@@ -95,11 +88,8 @@ namespace Slotsi.Api.Controllers
             return Ok(new TokenDto { Token = token, ExpiraEn = expira });
         }
 
-        /// <summary>Cierra la sesión: el token actual deja de ser válido.</summary>
         [HttpPost("logout")]
         [Authorize]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public async Task<IActionResult> Logout(CancellationToken ct)
         {
             var jti = User.FindFirst("jti")?.Value;
@@ -110,15 +100,8 @@ namespace Slotsi.Api.Controllers
             return NoContent();
         }
 
-        /// <summary>Solicita un token para restablecer la contraseña.</summary>
-        /// <remarks>
-        /// La respuesta es siempre la misma exista o no el email. No hay servicio de correo:
-        /// en Development el token se devuelve en la respuesta; en otros entornos debería
-        /// enviarse por email.
-        /// </remarks>
         [HttpPost("olvide-contrasena")]
         [AllowAnonymous]
-        [ProducesResponseType(typeof(SolicitudRestablecimientoRespuestaDto), StatusCodes.Status200OK)]
         public async Task<ActionResult<SolicitarRestablecimientoDto>> OlvideContraseña(
             SolicitarRestablecimientoDto dto, CancellationToken ct)
         {
@@ -132,47 +115,54 @@ namespace Slotsi.Api.Controllers
                 return Ok(respuesta);
 
             var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
-            usuario.ResetTokenHash = Hash(token);
+
+            usuario.ResetTokenHash = token;
             usuario.ResetTokenExpira = DateTime.UtcNow.Add(VigenciaTokenReset);
             await _usuarios.ActualizarAsync(usuario, ct);
+
+            System.Diagnostics.Debug.WriteLine($"[API-OLVIDE] Token generado: '{token}'");
+            System.Diagnostics.Debug.WriteLine($"[API-OLVIDE] Token guardado en BD: '{usuario.ResetTokenHash}'");
 
             if (_env.IsDevelopment())
                 respuesta.Token = token;
 
             return Ok(respuesta);
-
         }
 
-        /// <summary>Establece una nueva contraseña con el token recibido.</summary>
         [HttpPost("restablecer-contrasena")]
         [AllowAnonymous]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> RestablecerContraseña(RestablecerContrasenaDto dto, CancellationToken ct)
         {
             var usuario = await _usuarios.ObtenerPorCorreoAsync(Normalizar(dto.Email), ct);
 
-            var valido = usuario?.ResetTokenHash is not null && usuario.ResetTokenExpira > DateTime.UtcNow
-                && CryptographicOperations.FixedTimeEquals(Encoding.UTF8.GetBytes(usuario.ResetTokenHash),
-                Encoding.UTF8.GetBytes(Hash(dto.Token)));
+            System.Diagnostics.Debug.WriteLine($"[API-RESTABLECER] Token que llegó de la App: '{dto.Token.ToUpperInvariant()}'");
+            System.Diagnostics.Debug.WriteLine($"[API-RESTABLECER] Token en BD: '{usuario?.ResetTokenHash}'");
+
+            var valido = usuario?.ResetTokenHash is not null
+                && usuario.ResetTokenExpira > DateTime.UtcNow
+                && CryptographicOperations.FixedTimeEquals(
+                    Encoding.UTF8.GetBytes(usuario.ResetTokenHash),
+                    Encoding.UTF8.GetBytes(dto.Token.ToUpperInvariant()));
 
             if (!valido)
+            {
+                System.Diagnostics.Debug.WriteLine("[API-RESTABLECER] ERROR: Los tokens no coinciden o el token expiró.");
                 return Problem(title: "Token invalido", detail: "El token es incorrecto o ha caducado.",
                     statusCode: StatusCodes.Status400BadRequest);
+            }
 
             usuario!.Contrasena = _hasher.HashPassword(usuario, dto.NuevaContrasena);
             usuario.ResetTokenHash = null;
             usuario.ResetTokenExpira = null;
             await _usuarios.ActualizarAsync(usuario, ct);
+
+            System.Diagnostics.Debug.WriteLine("[API-RESTABLECER] ÉXITO: Contraseña actualizada.");
             return NoContent();
         }
 
         private static string Normalizar(string Email) => Email.Trim().ToLowerInvariant();
-
         private static string Hash(string valor) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(valor)));
-
         private static bool EsHashLegado(string valor) => valor.Length == 64 && valor.All(Uri.IsHexDigit);
-
         private static string Sha256Hex(string valor) =>
             Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(valor))).ToLowerInvariant();
     }

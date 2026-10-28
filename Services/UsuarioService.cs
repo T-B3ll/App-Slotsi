@@ -65,19 +65,7 @@ public class UsuarioService : ApiServiceBase
 
     public async Task CambiarEstadoAsync(string id, bool estaActivo)
     {
-        try
-        {
-            await PatchAsync($"/api/usuarios/{id}/estado", new { EstaActivo = estaActivo });
-        }
-        catch (ApiException ex)
-        {
-            
-            throw new Exception($"Error de la API: {ex.Message}");
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Error de conexión: {ex.Message}");
-        }
+        await PatchAsync($"/api/usuarios/{id}/estado", new { EstaActivo = estaActivo });
     }
 
 
