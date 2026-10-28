@@ -12,11 +12,13 @@ namespace slotsi_citas.Pages;
 public partial class ReporteDemandaPage : ContentPage
 {
     private readonly CitaService _citaService;
+    private readonly NegocioService _negocioService;
 
-    public ReporteDemandaPage(CitaService citaService)
+    public ReporteDemandaPage(CitaService citaService, NegocioService negocioService)
     {
         InitializeComponent();
         _citaService = citaService;
+        _negocioService = negocioService;
         _ = CargarReporteAsync();
     }
 
@@ -25,6 +27,22 @@ public partial class ReporteDemandaPage : ContentPage
         try
         {
             string negocioId = Preferences.Get("NegocioSeleccionadoId", string.Empty);
+
+            if (string.IsNullOrEmpty(negocioId))
+            {
+                string usuarioId = Preferences.Get("UsuarioId", string.Empty);
+                if (!string.IsNullOrEmpty(usuarioId))
+                {
+                    var negocio = await _negocioService.ObtenerPorUsuarioIdAsync(usuarioId);
+                    if (negocio != null && !string.IsNullOrEmpty(negocio.Id))
+                    {
+                        negocioId = negocio.Id;
+                        Preferences.Set("NegocioSeleccionadoId", negocioId);
+                        Preferences.Set("negocio_id", negocioId);
+                    }
+                }
+            }
+
             if (string.IsNullOrEmpty(negocioId))
             {
                 await DisplayAlert("Aviso", "No se encontró un negocio asociado a tu cuenta.", "OK");

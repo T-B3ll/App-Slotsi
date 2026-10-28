@@ -129,8 +129,15 @@ namespace slotsi_citas.ViewModel
                     AplicarFiltrosCliente();
                 });
             }
+            catch (TaskCanceledException)
+            {
+             
+                await Application.Current.MainPage.DisplayAlert("Tiempo de espera agotado",
+                    "La conexión con el servidor tardó demasiado o se perdió. Verifica tu red WiFi (o la IP de tu PC) e intenta de nuevo.", "OK");
+            }
             catch (Exception ex)
             {
+                
                 await Application.Current.MainPage.DisplayAlert("Error", $"Error al cargar servicios activos: {ex.Message}", "OK");
             }
         }

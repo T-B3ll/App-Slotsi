@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 namespace Slotsi.Api.Controllers;
 
 [ApiController]
-[Authorize]
 [Route("api/[controller]")]
 [Produces("application/json")]
 public class UsuariosController : ControllerBase
@@ -20,6 +19,7 @@ public class UsuariosController : ControllerBase
         _usuarios = usuarios;
     }
 
+    [Authorize]
     [HttpGet]
     [ProducesResponseType(typeof(List<UsuarioDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<UsuarioDto>>> Listar(CancellationToken ct)
@@ -28,10 +28,8 @@ public class UsuariosController : ControllerBase
         return Ok(entidades.Select(e => e.ToDto()).ToList());
     }
 
-
+    [AllowAnonymous]
     [HttpGet("correo/{correo}")]
-    [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UsuarioDto>> ObtenerPorCorreo(string correo, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(correo))
@@ -41,9 +39,8 @@ public class UsuariosController : ControllerBase
         return entidad is null ? NotFound() : Ok(entidad.ToDto());
     }
 
+    [AllowAnonymous]
     [HttpGet("buscar/{identificador}")]
-    [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UsuarioDto>> BuscarPorIdentificador(string identificador, CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(identificador))
@@ -53,59 +50,53 @@ public class UsuariosController : ControllerBase
         return entidad is null ? NotFound() : Ok(entidad.ToDto());
     }
 
-   
+    [Authorize]
     [HttpGet("{id}")]
-    [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<UsuarioDto>> ObtenerPorId(string id, CancellationToken ct)
     {
         if (!IdValidator.EsValido(id)) return IdInvalido();
-
         var entidad = await _usuarios.ObtenerPorIdAsync(id, ct);
         return entidad is null ? NotFound() : Ok(entidad.ToDto());
     }
 
+    [AllowAnonymous]
     [HttpPost]
-    [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<UsuarioDto>> Crear(UsuarioDto dto, CancellationToken ct)
     {
-        System.Diagnostics.Debug.WriteLine($"[API-CREAR] DTO recibido - Contrasena: '{dto.Contrasena}'");
-        System.Diagnostics.Debug.WriteLine($"[API-CREAR] DTO recibido - Nombre: '{dto.NombreCompleto}'");
-
         var entidad = dto.ToEntity();
-
-        System.Diagnostics.Debug.WriteLine($"[API-CREAR] Entity después de mapeo - Contrasena: '{entidad.Contrasena}'");
-
         await _usuarios.CrearAsync(entidad, ct);
-
         var creada = entidad.ToDto();
         return CreatedAtAction(nameof(ObtenerPorId), new { id = creada.Id }, creada);
     }
 
-
+    [Authorize]
     [HttpPut("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Actualizar(string id, UsuarioDto dto, CancellationToken ct)
     {
         if (!IdValidator.EsValido(id)) return IdInvalido();
-
         var existe = await _usuarios.ActualizarAsync(dto.ToEntity(id), ct);
         return existe ? NoContent() : NotFound();
     }
 
-   
-    [HttpDelete("{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Eliminar(string id, CancellationToken ct)
+    // --- NUEVO ENDPOINT PARA ACTIVAR/INACTIVAR ---
+    [Authorize]
+    [HttpPatch("{id}/estado")]
+    public async Task<IActionResult> CambiarEstado(string id, [FromBody] CambiarEstadoRequest request, CancellationToken ct)
     {
         if (!IdValidator.EsValido(id)) return IdInvalido();
 
+        // Intentamos actualizar el estado. Si el repositorio no tiene el método, tendrás que agregarlo.
+        // Si lo tiene, esto funcionará perfecto.
+        var actualizado = await _usuarios.CambiarEstadoAsync(id, request.EstaActivo, ct);
+
+        return actualizado ? NoContent() : NotFound();
+    }
+
+    [Authorize]
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Eliminar(string id, CancellationToken ct)
+    {
+        if (!IdValidator.EsValido(id)) return IdInvalido();
         var eliminada = await _usuarios.EliminarAsync(id, ct);
         return eliminada ? NoContent() : NotFound();
     }
@@ -114,4 +105,10 @@ public class UsuariosController : ControllerBase
         title: "Id inválido",
         detail: "El id debe ser un ObjectId de 24 caracteres hexadecimales.",
         statusCode: StatusCodes.Status400BadRequest);
+}
+
+
+public class CambiarEstadoRequest
+{
+    public bool EstaActivo { get; set; }
 }

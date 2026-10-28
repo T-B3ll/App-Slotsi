@@ -40,6 +40,7 @@ builder.Services.AddSingleton<ICalificacionRepository, CalificacionRepository>()
 builder.Services.AddSingleton<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddSingleton<INegocioRepository, NegocioRepository>();
 builder.Services.AddSingleton<ICitaRepository, CitaRepository>();
+builder.Services.AddSingleton<ISuscripcionRepository, SuscripcionRepository>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer();

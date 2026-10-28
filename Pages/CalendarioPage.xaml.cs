@@ -26,9 +26,13 @@ namespace slotsi_citas.Pages
             base.OnAppearing();
             if (_viewModel != null)
             {
-                // se ejecuta la carga en un hilo secundario para no congelar la UI
                 await Task.Run(async () => await _viewModel.InicializarAsync());
             }
+        }
+
+        private void OnMenuClicked(object sender, EventArgs e)
+        {
+            Shell.Current.FlyoutIsPresented = true;
         }
     }
 }

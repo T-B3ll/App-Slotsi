@@ -11,7 +11,7 @@ public class UsuarioDto
     public string NombreCompleto { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "El correo es obligatorio")]
-    [EmailAddress]
+  
     [StringLength(150)]
     public string Correo { get; set; } = string.Empty;
 

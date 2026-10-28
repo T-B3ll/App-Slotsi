@@ -48,16 +48,15 @@ public class NegociosController : ControllerBase
         }
         catch (Exception ex)
         {
-           
             return StatusCode(500, new { error = "Error interno al leer los negocios en la base de datos." });
         }
     }
+
     [HttpGet("usuario/{usuarioId}")]
     [ProducesResponseType(typeof(NegocioDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<NegocioDto>> ObtenerPorUsuario(string usuarioId, CancellationToken ct)
     {
- 
         usuarioId = usuarioId?.Trim();
 
         if (!IdValidator.EsValido(usuarioId)) return BadRequest("ID de usuario inválido");
@@ -80,6 +79,7 @@ public class NegociosController : ControllerBase
     }
 
     [HttpPost]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(NegocioDto), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<NegocioDto>> Crear(NegocioDto dto, CancellationToken ct)
