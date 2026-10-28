@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Threading.Tasks;
 using slotsi_citas.Services.Auth;
-using System.Threading.Tasks;
-using slotsi_citas.Services.Api;
 using Slotsi.Shared.Dtos;
-
 
 namespace slotsi_citas.Services.Api
 {
@@ -32,7 +26,6 @@ namespace slotsi_citas.Services.Api
             }
             catch (ApiException)
             {
-                //sin conexion o token ya invalido: igualmente se cierra la sesion actual
             }
             finally
             {
@@ -46,5 +39,13 @@ namespace slotsi_citas.Services.Api
 
         public Task RestablecerContrasenaAsync(RestablecerContrasenaDto dto) =>
             PostAsync("api/auth/restablecer-contrasena", dto);
+
+        public Task ValidarTokenAsync(string email, string token) =>
+            PostAsync("api/auth/validar-token", new RestablecerContrasenaDto
+            {
+                Email = email,
+                Token = token.ToUpperInvariant(),
+                NuevaContrasena = "Temporal123!"
+            });
     }
 }

@@ -20,7 +20,11 @@ public partial class RecuperarContra : ContentPage
 
     private async void OnEnviarCodigoClicked(object sender, EventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(EntryCorreo.Text)) return;
+        if (string.IsNullOrWhiteSpace(EntryCorreo.Text))
+        {
+            await DisplayAlert("Error", "Ingresa tu correo.", "OK");
+            return;
+        }
 
         try
         {
@@ -33,8 +37,18 @@ public partial class RecuperarContra : ContentPage
                 return;
             }
 
-            await DisplayAlert("Token Generado", $"Token: {respuesta.Token}", "OK");
-            EntryCodigo.Text = respuesta.Token;
+            var enviado = await _emailService.EnviarCodigoPorEmail(correo, respuesta.Token);
+
+            if (enviado)
+            {
+                EntryCodigo.Text = string.Empty;
+                await DisplayAlert("Éxito", $"Código enviado a {correo}. Revisa tu Gmail.", "OK");
+                EntryCodigo.Focus();
+            }
+            else
+            {
+                await DisplayAlert("Error", "El correo no pudo ser enviado. Intenta de nuevo.", "OK");
+            }
         }
         catch (Exception ex)
         {
@@ -50,7 +64,22 @@ public partial class RecuperarContra : ContentPage
             return;
         }
 
-        
-        await Navigation.PushAsync(new NuevaContra(EntryCorreo.Text.Trim().ToLower(), EntryCodigo.Text.Trim()));
+        try
+        {
+            var correo = EntryCorreo.Text.Trim().ToLower();
+            var token = EntryCodigo.Text.Trim();
+
+            await _authService.ValidarTokenAsync(correo, token);
+
+            await Navigation.PushAsync(new NuevaContra(correo, token));
+        }
+        catch (ApiException ex)
+        {
+            await DisplayAlert("codigo  inválido", ex.Message, "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", ex.Message, "OK");
+        }
     }
 }

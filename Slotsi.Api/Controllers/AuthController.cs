@@ -160,6 +160,24 @@ namespace Slotsi.Api.Controllers
             return NoContent();
         }
 
+        [HttpPost("validar-token")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ValidarToken(RestablecerContrasenaDto dto, CancellationToken ct)
+        {
+            var usuario = await _usuarios.ObtenerPorCorreoAsync(Normalizar(dto.Email), ct);
+
+            var valido = usuario?.ResetTokenHash is not null
+                && usuario.ResetTokenExpira > DateTime.UtcNow
+                && CryptographicOperations.FixedTimeEquals(
+                    Encoding.UTF8.GetBytes(usuario.ResetTokenHash),
+                    Encoding.UTF8.GetBytes(dto.Token.ToUpperInvariant()));
+
+            if (!valido)
+                return BadRequest("Token inválido o expirado.");
+
+            return Ok();
+        }
+
         private static string Normalizar(string Email) => Email.Trim().ToLowerInvariant();
         private static string Hash(string valor) => Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(valor)));
         private static bool EsHashLegado(string valor) => valor.Length == 64 && valor.All(Uri.IsHexDigit);
