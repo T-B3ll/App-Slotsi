@@ -22,5 +22,7 @@ namespace slotsi_citas.Services.Api
         Task<SolicitudRestablecimientoRespuestaDto> SolicitarRestablecimientoAsync(string email);
 
         Task RestablecerContrasenaAsync(RestablecerContrasenaDto dto);
+
+
     }
 }
