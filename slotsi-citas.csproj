@@ -132,6 +132,9 @@
 	  <MauiXaml Update="Pages\ListaTrabajadores.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Pages\MejoresNegociosPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Pages\NuevoTrabajador.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

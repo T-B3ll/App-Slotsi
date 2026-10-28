@@ -18,8 +18,6 @@ namespace slotsi_citas.Services
         }
 
   
-      
-      
         public async Task<Usuario> LoginAsync(string email, string password)
         {
             try

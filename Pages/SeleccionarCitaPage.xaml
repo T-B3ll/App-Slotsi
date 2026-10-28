@@ -6,7 +6,7 @@
              x:Class="slotsi_citas.Pages.SeleccionarCitaPage"  
              x:Name="PageRoot"
              BackgroundColor="#F8FAFC"
-             Shell.NavBarIsVisible="False"
+             Shell.NavBarIsVisible="True"
              NavigationPage.HasNavigationBar="False">
 
     <Grid RowDefinitions="Auto, *, Auto, Auto">

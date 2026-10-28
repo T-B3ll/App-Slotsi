@@ -93,11 +93,15 @@ public static class MauiProgram
         builder.Services.AddTransient<CentroReseñasViewModel>();
         builder.Services.AddTransient<EditarPerfilViewModel>();
         builder.Services.AddTransient<RecuperarContrasenaViewModel>();
+
         builder.Services.AddTransient<ResumenViewModel>();
         builder.Services.AddTransient<DueñosNegociosViewModel>();
         builder.Services.AddTransient<SeleccionarCitaViewModel>();
 
-        // --- PÁGINAS ---
+   
+        builder.Services.AddTransient<MejoresNegociosViewModel>();
+        builder.Services.AddTransient<MejoresNegociosPage>();
+
         builder.Services.AddTransient<HorariosDisponiblesPage>();
         builder.Services.AddTransient<Cita_UsuarioPage>();
         builder.Services.AddTransient<CentroCalificaciones>();

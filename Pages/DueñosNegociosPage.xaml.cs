@@ -6,6 +6,9 @@ namespace slotsi_citas.Pages;
 
 public partial class DueñosNegociosPage : ContentPage
 {
+    private bool _ordenarPorCalificacion = false;
+    private string _categoriaActual = "todos";
+    private string _textoBusqueda = "";
     private List<Negocio> _todosLosNegocios = new();
     private DueñosNegociosViewModel? _viewModel;
 
@@ -18,73 +21,94 @@ public partial class DueñosNegociosPage : ContentPage
 
     private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
     {
-        string textoOriginal = e.NewTextValue ?? "";
-        string texto = NormalizarTexto(textoOriginal);
-
-        BtnLimpiarBusqueda.IsVisible = !string.IsNullOrEmpty(textoOriginal);
-
-        if (_todosLosNegocios == null || !_todosLosNegocios.Any())
-            return;
-
-        var resultados = _todosLosNegocios.Where(n =>
-        {
-            string nombre = NormalizarTexto(n.NombreNegocio ?? n.Nombre ?? "");
-            string categoria = NormalizarTexto(n.Categoria ?? "");
-
-            return nombre.Contains(texto) || categoria.Contains(texto);
-        }).ToList();
-
-        ActualizarLista(resultados);
+        string original = e.NewTextValue ?? "";
+        _textoBusqueda = NormalizarTexto(original);
+        BtnLimpiarBusqueda.IsVisible = !string.IsNullOrEmpty(original);
+        AplicarFiltros();
     }
 
     private void OnClearSearchClicked(object sender, EventArgs e)
     {
-        EntryBusqueda.TextChanged -= OnSearchTextChanged;
-        EntryBusqueda.Text = "";
-        BtnLimpiarBusqueda.IsVisible = false;
-        ActualizarLista(_todosLosNegocios);
-        EntryBusqueda.TextChanged += OnSearchTextChanged;
+        EntryBusqueda.Text = ""; // dispara OnSearchTextChanged y resetea todo
     }
 
     private void OnFilterClicked(object sender, EventArgs e)
     {
         if (sender is not Button btn) return;
 
-        BtnTodos.BackgroundColor = Colors.White; BtnTodos.TextColor = Color.FromArgb("#4B5563");
-        BtnSalones.BackgroundColor = Colors.White; BtnSalones.TextColor = Color.FromArgb("#4B5563");
-        BtnBarberia.BackgroundColor = Colors.White; BtnBarberia.TextColor = Color.FromArgb("#4B5563");
-
+        foreach (var b in new[] { BtnTodos, BtnSalones, BtnBarberia })
+        {
+            b.BackgroundColor = Colors.White;
+            b.TextColor = Color.FromArgb("#4B5563");
+        }
         btn.BackgroundColor = Color.FromArgb("#2563EB");
         btn.TextColor = Colors.White;
 
-        IEnumerable<Negocio> resultados;
+        _categoriaActual = NormalizarTexto(btn.Text);
+        AplicarFiltros();
+    }
 
-       
-        string categoriaBoton = NormalizarTexto(btn.Text);
+    private void OnOrdenCalificacionClicked(object sender, EventArgs e)
+    {
+        _ordenarPorCalificacion = !_ordenarPorCalificacion;
 
-        if (categoriaBoton == "todos")
+        BtnMejorCalificados.BackgroundColor = _ordenarPorCalificacion
+            ? Color.FromArgb("#2563EB") : Colors.White;
+        BtnMejorCalificados.TextColor = _ordenarPorCalificacion
+            ? Colors.White : Color.FromArgb("#4B5563");
+
+        AplicarFiltros();
+    }
+
+    private void AplicarFiltros()
+    {
+        var query = _todosLosNegocios
+            .Where(n => CoincideCategoria(n) && CoincideBusqueda(n));
+
+        if (_ordenarPorCalificacion)
         {
-            resultados = _todosLosNegocios;
+            query = query
+                .OrderByDescending(n => n.PromedioCalificacion)
+                .ThenByDescending(n => n.TotalResenas)
+                .ThenBy(n => n.NombreNegocio);
         }
-        else
+
+        var resultados = query.ToList();
+
+        LblResultados.Text = $"{resultados.Count} negocios encontrados";
+        ActualizarLista(resultados);
+    }
+
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+        if (_viewModel == null) return;
+
+        await _viewModel.CargarNegociosAsync();          // ya incluye los promedios
+        _todosLosNegocios = _viewModel.ListaDueños.ToList();
+        AplicarFiltros();
+    }
+    private bool CoincideCategoria(Negocio n)
+    {
+        if (_categoriaActual == "todos") return true;
+        if (string.IsNullOrEmpty(n.Categoria)) return false;
+
+        string cat = NormalizarTexto(n.Categoria);
+        return _categoriaActual switch
         {
-            resultados = _todosLosNegocios.Where(n =>
-            {
-                if (n.Categoria == null) return false;
-                string cat = NormalizarTexto(n.Categoria);
+            "salones" => cat.Contains("salon") || cat.Contains("belleza") || cat.Contains("estetica"),
+            "barberia" => cat.Contains("barber"),
+            "spa" => cat.Contains("spa"),
+            _ => cat.Contains(_categoriaActual)
+        };
+    }
 
-                if (categoriaBoton == "salones")
-                    return cat.Contains("salon") || cat.Contains("belleza") || cat.Contains("estetica");
-
-           
-                if (categoriaBoton == "barberia")
-                    return cat.Contains("barberia") || cat.Contains("barber");
-
-                return cat.Contains(categoriaBoton);
-            });
-        }
-
-        ActualizarLista(resultados.ToList());
+    private bool CoincideBusqueda(Negocio n)
+    {
+        if (string.IsNullOrEmpty(_textoBusqueda)) return true;
+        string nombre = NormalizarTexto(n.NombreNegocio ?? n.Nombre ?? "");
+        string categoria = NormalizarTexto(n.Categoria ?? "");
+        return nombre.Contains(_textoBusqueda) || categoria.Contains(_textoBusqueda);
     }
 
     private async void OnNegocioSeleccionado(object sender, SelectionChangedEventArgs e)
@@ -130,16 +154,6 @@ public partial class DueñosNegociosPage : ContentPage
         });
     }
 
-    protected override async void OnAppearing()
-    {
-        base.OnAppearing();
-
-        if (_viewModel != null)
-        {
-            await _viewModel.CargarNegociosAsync(); 
-            _todosLosNegocios = _viewModel.ListaDueños.ToList();
-        }
-    }
     private async void OnNegocioTapped(object sender, EventArgs e)
     {
         try

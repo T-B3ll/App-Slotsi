@@ -278,44 +278,37 @@ namespace slotsi_citas.ViewModel
         public async Task CargarServiciosAsync()
         {
             try
-            {
-                //  Obtener el ID del negocio que ya que  seleccionamos en memoria/sesión
-                string negocioId = CitaSession.NegocioActual?.Id
-                                   ?? Preferences.Get("NegocioSeleccionadoId", string.Empty);
+            {         
+                string negocioId = Preferences.Get("negocio_id", string.Empty);
 
                 if (string.IsNullOrEmpty(negocioId))
                 {
-                    // Si no hay sesión, se intenta buscar (fallback)
-                    negocioId = await ObtenerNegocioIdDeSesionAsync();
+                    negocioId = await ObtenerNegocioIdDeSesionAsync() ?? string.Empty;
                     if (string.IsNullOrEmpty(negocioId)) return;
+                    Preferences.Set("negocio_id", negocioId);
                 }
 
-                // 2. Cargar los datos desde la API
                 var resultados = await _catalogoService.ObtenerServiciosPorNegocioAsync(negocioId);
 
-                // 3. Actualizar la UI
+                System.Diagnostics.Debug.WriteLine($"[SERVICIOS] negocioId={negocioId}, cantidad={resultados.Count}");
+
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     Servicios.Clear();
                     foreach (var serv in resultados)
-                    {
                         Servicios.Add(serv);
-                    }
                     ServiciosActivosCount = Servicios.Count(s => s.Activo);
                 });
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"[ERROR CARGAR SERVICIOS]: {ex.Message}");
-
-                // mostrar alerta si denverdad es un error crítico
                 MainThread.BeginInvokeOnMainThread(async () =>
                 {
-                    await Application.Current.MainPage.DisplayAlert("Error", $"Error al cargar servicios: {ex.Message}", "OK");
+                    await Application.Current!.MainPage!.DisplayAlert("Error", $"Error al cargar servicios: {ex.Message}", "OK");
                 });
             }
         }
-
         public async Task CambiarEstadoActivoAsync(Servicios servicio)
         {
             if (servicio == null) return;
