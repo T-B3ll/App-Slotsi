@@ -4,6 +4,7 @@ using Slotsi.Shared.Dtos;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace slotsi_citas.Models;
 
@@ -23,7 +24,8 @@ public class Negocio
 
     public Dictionary<string, HorarioDia> Horarios { get; set; } = new();
     public List<string> DiasCerrados { get; set; } = new();
-
+    [JsonIgnore] public double PromedioCalificacion { get; set; }
+    [JsonIgnore] public int TotalResenas { get; set; }
     [BsonIgnoreExtraElements]
     public class HorarioDia
     {

@@ -69,14 +69,13 @@ public static class MauiProgram
             .AddHttpMessageHandler<AuthHeaderHandler>();
 
         builder.Services.AddHttpClient<SuscripcionService>(ConfigurarClienteApi)
-    .AddHttpMessageHandler<AuthHeaderHandler>();
+            .AddHttpMessageHandler<AuthHeaderHandler>();
 
         builder.Services.AddHttpClient<CitaService>(ConfigurarClienteApi)
             .AddHttpMessageHandler<AuthHeaderHandler>();
 
         // --- OTROS SERVICIOS ---
         builder.Services.AddSingleton<RecuperacionService>();
-
         builder.Services.AddSingleton<EmailJSService>();
 
         // --- VIEWMODELS ---
@@ -93,11 +92,17 @@ public static class MauiProgram
         builder.Services.AddTransient<CentroReseñasViewModel>();
         builder.Services.AddTransient<EditarPerfilViewModel>();
         builder.Services.AddTransient<RecuperarContrasenaViewModel>();
+
+        // --- AQUÍ FALTABA EL REGISTRO DE REGISTROUSUARIOSVIEWMODEL ---
+        builder.Services.AddTransient<RegistroUsuariosViewModel>();
+
         builder.Services.AddTransient<ResumenViewModel>();
         builder.Services.AddTransient<DueñosNegociosViewModel>();
         builder.Services.AddTransient<SeleccionarCitaViewModel>();
+        builder.Services.AddTransient<MejoresNegociosViewModel>();
+        builder.Services.AddTransient<MejoresNegociosPage>();
 
-        // --- PÁGINAS ---
+        // --- PAGES ---
         builder.Services.AddTransient<HorariosDisponiblesPage>();
         builder.Services.AddTransient<Cita_UsuarioPage>();
         builder.Services.AddTransient<CentroCalificaciones>();
@@ -116,12 +121,19 @@ public static class MauiProgram
         builder.Services.AddTransient<RecuperarContra>();
         builder.Services.AddTransient<NuevaContra>();
 
+
         builder.Services.AddTransient<DueñosNegociosViewModel>();
         builder.Services.AddTransient<DueñosNegociosPage>();
 
         builder.Services.AddTransient<SeleccionarCitaViewModel>();
+
+        builder.Services.AddTransient<ResumenPage>();
+        builder.Services.AddTransient<ReportesMenuPage>();
+        builder.Services.AddTransient<ReporteDemandaPage>();
+
         builder.Services.AddTransient<SeleccionarCitaPage>();
         builder.Services.AddTransient<OpcionRegistrosU>();
+        builder.Services.AddTransient<RegistroUsuariosPage>(); // Asegúrate de que esta página también esté registrada
 
         return builder.Build();
     }
@@ -129,7 +141,10 @@ public static class MauiProgram
     private static void ConfigurarClienteApi(HttpClient cliente)
     {
         cliente.BaseAddress = ApiConfiguracion.UrlBase;
-        // Si el servidor no responde, falla en 10 segundos en lugar de los 100 por defecto.
         cliente.Timeout = TimeSpan.FromSeconds(10);
+
+
+        cliente.Timeout = TimeSpan.FromSeconds(30);
+
     }
 }

@@ -62,13 +62,25 @@ public class UsuarioService : ApiServiceBase
         await PutAsync($"/api/usuarios/{usuario.Id}", usuario.ToDto());
     }
 
-  
+
     public async Task CambiarEstadoAsync(string id, bool estaActivo)
     {
-        await PatchAsync($"/api/usuarios/{id}/estado", new { EstaActivo = estaActivo });
+        try
+        {
+            await PatchAsync($"/api/usuarios/{id}/estado", new { EstaActivo = estaActivo });
+        }
+        catch (ApiException ex)
+        {
+            
+            throw new Exception($"Error de la API: {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error de conexión: {ex.Message}");
+        }
     }
 
-    
+
     public async Task ActualizarContrasenaAsync(string correo, string nuevaContrasenaHash)
     {
         await PatchAsync($"/api/usuarios/password", new { Correo = correo, Contrasena = nuevaContrasenaHash });

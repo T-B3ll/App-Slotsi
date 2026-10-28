@@ -34,6 +34,9 @@ public class NegocioDto
 
     public Dictionary<string, HorarioDiaDto> Horarios { get; set; } = new();
     public List<string> DiasCerrados { get; set; } = new();
+
+    public double PromedioCalificacion { get; set; }
+    public int TotalResenas { get; set; }
 }
 
 public class HorarioDiaDto

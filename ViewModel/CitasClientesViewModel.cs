@@ -110,7 +110,7 @@ namespace slotsi_citas.ViewModel
 
             HoyCommand = new Microsoft.Maui.Controls.Command(() => FechaSeleccionada = DateTime.Today);
             AgendarHorarioCommand = new Microsoft.Maui.Controls.Command<RangoHorario>(async (rango) => await OnAgendarHorarioAsync(rango));
-            VolverCommand = new Microsoft.Maui.Controls.Command(async () => await RegresarAsync());
+            VolverCommand = new Microsoft.Maui.Controls.Command(async () => await Shell.Current.GoToAsync("//dueñosnegocios"));
 
             EliminarCitaCommand = new Microsoft.Maui.Controls.Command<RangoHorario>(async (rango) => await OnEliminarCitaAsync(rango));
             EditarCitaCommand = new Microsoft.Maui.Controls.Command<RangoHorario>(async (rango) => await OnEditarCitaAsync(rango));

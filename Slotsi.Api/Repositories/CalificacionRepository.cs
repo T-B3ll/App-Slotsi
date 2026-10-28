@@ -18,6 +18,17 @@ namespace Slotsi.Api.Repositories
                 .GetCollection<CalificacionEntity>(settings.CalificacionesCollection);
         }
 
+        public async Task<Dictionary<string, (double Promedio, int Total)>> ObtenerPromediosPorNegocioAsync(CancellationToken ct = default)
+        {
+            var lista = await _calificaciones.Find(c => c.NegocioCalificado).ToListAsync(ct);
+
+            return lista
+                .GroupBy(c => c.IdNegocio.ToString())
+                .ToDictionary(
+                    g => g.Key,
+                    g => (Math.Round(g.Average(c => c.RangoCalificacion), 1), g.Count()));
+        }
+
         public async Task<List<CalificacionEntity>> ObtenerPorNegocioAsync(string negocioId, CancellationToken ct = default)
         {
             if (!ObjectId.TryParse(negocioId, out var oid)) return new();

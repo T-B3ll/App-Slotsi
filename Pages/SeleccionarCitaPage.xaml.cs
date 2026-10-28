@@ -9,7 +9,6 @@ namespace slotsi_citas.Pages
     {
         private readonly SeleccionarCitaViewModel _viewModel;
 
-        // ✅ SOLO ESTE CONSTRUCTOR (Recibe el ViewModel por inyección)
         public SeleccionarCitaPage(SeleccionarCitaViewModel viewModel)
         {
             InitializeComponent();
@@ -46,8 +45,12 @@ namespace slotsi_citas.Pages
                 }
 
                 await _viewModel.CargarDatosSesionClienteAsync();
-                // ❌ ELIMINADA: await _viewModel.CargarColaboradoresParaServiciosAsync(); (ya no existe)
             }
+        }
+
+        private void OnMenuClicked(object sender, EventArgs e)
+        {
+            Shell.Current.FlyoutIsPresented = true;
         }
     }
 }

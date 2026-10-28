@@ -12,41 +12,48 @@
 
     <Grid RowDefinitions="Auto, *">
 
-        <Grid Grid.Row="0" BackgroundColor="#2563EB" Padding="16, 12, 16, 16">
-            <VerticalStackLayout Spacing="12">
+        <!-- NUEVO ENCABEZADO CON MENÚ Y BOTÓN ATRÁS -->
+        <VerticalStackLayout Grid.Row="0" BackgroundColor="#2563EB" Spacing="0">
 
-                <Grid ColumnDefinitions="Auto, *, Auto">
-                    <Label Grid.Column="0" Text="&#xE5C4;" FontFamily="MaterialIcons" FontSize="24" TextColor="White" VerticalOptions="Center">
-                        <Label.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding VolverCommand}"/>
-                        </Label.GestureRecognizers>
-                    </Label>
+            <!-- Fila 1: Menú y Título -->
+            <Grid ColumnDefinitions="Auto, *, Auto" Padding="16,12">
+                <ImageButton Grid.Column="0" BackgroundColor="Transparent" Clicked="OnMenuClicked" WidthRequest="24" HeightRequest="24">
+                    <ImageButton.Source>
+                        <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE5D2;" Color="White" Size="26"/>
+                    </ImageButton.Source>
+                </ImageButton>
+                <Label Grid.Column="1" Text="Calendario de citas..." FontSize="20" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                <BoxView Grid.Column="2" WidthRequest="24" Color="Transparent"/>
+            </Grid>
 
-                    <Label Grid.Column="1" Text="Calendario de citas..." FontSize="20" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
-                    <BoxView Grid.Column="2" WidthRequest="24" Color="Transparent"/>
-                </Grid>
+            <!-- Fila 2: Botón Atrás y Selector de Fecha -->
+            <Grid ColumnDefinitions="Auto, *, Auto" Padding="16,0,16,16" ColumnSpacing="8">
+                <ImageButton Grid.Column="0" BackgroundColor="Transparent" Command="{Binding VolverCommand}" WidthRequest="24" HeightRequest="24" VerticalOptions="Center">
+                    <ImageButton.Source>
+                        <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE5C4;" Color="White" Size="24"/>
+                    </ImageButton.Source>
+                </ImageButton>
 
-                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="12" Margin="4,0,4,0">
-                    <Border Grid.Column="0" BackgroundColor="#FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 8" HeightRequest="42" Padding="12,0">
-                        <Grid>
-                            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
-                                <Label Grid.Column="0" Text="{Binding TextoFechaSeleccionada}" FontSize="13" FontAttributes="Bold" TextColor="#111827" VerticalOptions="Center" MaxLines="1"/>
-                                <Image Grid.Column="1" Source="calendar.png" HeightRequest="16" WidthRequest="16" VerticalOptions="Center" Margin="6,0,0,0"/>
-                            </Grid>
-                            <DatePicker Date="{Binding FechaSeleccionada, Mode=TwoWay}" Opacity="0.01" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                <Border Grid.Column="1" BackgroundColor="#FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 8" HeightRequest="42" Padding="12,0">
+                    <Grid>
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <Label Grid.Column="0" Text="{Binding TextoFechaSeleccionada}" FontSize="13" FontAttributes="Bold" TextColor="#111827" VerticalOptions="Center" MaxLines="1"/>
+                            <Image Grid.Column="1" Source="calendar.png" HeightRequest="16" WidthRequest="16" VerticalOptions="Center" Margin="6,0,0,0"/>
                         </Grid>
-                    </Border>
+                        <DatePicker Date="{Binding FechaSeleccionada, Mode=TwoWay}" Opacity="0.01" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                    </Grid>
+                </Border>
 
-                    <Border Grid.Column="1" BackgroundColor="#FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 8" HeightRequest="42" Padding="16,0">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding HoyCommand}"/>
-                        </Border.GestureRecognizers>
-                        <Label Text="Hoy" TextColor="#111827" FontAttributes="Bold" FontSize="13" HorizontalOptions="Center" VerticalOptions="Center"/>
-                    </Border>
-                </Grid>
-            </VerticalStackLayout>
-        </Grid>
+                <Border Grid.Column="2" BackgroundColor="#FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 8" HeightRequest="42" Padding="16,0">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding HoyCommand}"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="Hoy" TextColor="#111827" FontAttributes="Bold" FontSize="13" HorizontalOptions="Center" VerticalOptions="Center"/>
+                </Border>
+            </Grid>
+        </VerticalStackLayout>
 
+        <!-- RESTO DEL CUERPO (LISTA DE HORARIOS) -->
         <Grid Grid.Row="1" BackgroundColor="#FFFFFF">
             <ActivityIndicator IsRunning="{Binding EstaCargando}" IsVisible="{Binding EstaCargando}" Color="#2563EB" HorizontalOptions="Center" VerticalOptions="Center"/>
 
@@ -87,32 +94,15 @@
                                 </Grid>
                             </Border>
 
-                            <Border Grid.Column="1" 
-                                    IsVisible="{Binding EsOcupado}" 
-                                    BackgroundColor="#FEF2F2" 
-                                    Stroke="#FEE2E2" 
-                                    StrokeThickness="1" 
-                                    StrokeShape="RoundRectangle 12" 
-                                    HeightRequest="55" 
-                                    Padding="0">
+                            <Border Grid.Column="1" IsVisible="{Binding EsOcupado}" BackgroundColor="#FEF2F2" Stroke="#FEE2E2" StrokeThickness="1" StrokeShape="RoundRectangle 12" HeightRequest="55" Padding="0">
                                 <Grid ColumnDefinitions="4, *, Auto">
                                     <BoxView Grid.Column="0" Color="#EF4444" CornerRadius="12,0,0,12"/>
-
                                     <VerticalStackLayout Grid.Column="1" Padding="14,0" VerticalOptions="Center" Spacing="1">
                                         <Label Text="Ocupado" TextColor="#991B1B" FontSize="12" FontAttributes="Bold"/>
-
-                                        <Label Text="{Binding Cita.Cliente.Nombre, StringFormat='Cliente: {0}'}" 
-                                               TextColor="#DC2626" 
-                                               FontSize="10"
-                                               IsVisible="{Binding EsMiCita}"/>     
+                                        <Label Text="{Binding Cita.Cliente.Nombre, StringFormat='Cliente: {0}'}" TextColor="#DC2626" FontSize="10" IsVisible="{Binding EsMiCita}"/>
                                     </VerticalStackLayout>
 
-                                    <HorizontalStackLayout Grid.Column="2" 
-                                                       VerticalOptions="Center" 
-                                                       Spacing="4" 
-                                                       Padding="0,0,8,0"
-                                                       IsVisible="{Binding EsMiCita}">
-
+                                    <HorizontalStackLayout Grid.Column="2" VerticalOptions="Center" Spacing="4" Padding="0,0,8,0" IsVisible="{Binding EsMiCita}">
                                         <ImageButton WidthRequest="28" HeightRequest="28" BackgroundColor="Transparent"
                                                      Command="{Binding BindingContext.EditarCitaCommand, Source={x:Reference PageRoot}}"
                                                      CommandParameter="{Binding .}">
@@ -136,6 +126,5 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
         </Grid>
-
     </Grid>
 </ContentPage>

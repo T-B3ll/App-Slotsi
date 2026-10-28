@@ -6,57 +6,47 @@
              x:Class="slotsi_citas.Pages.SeleccionarCitaPage"  
              x:Name="PageRoot"
              BackgroundColor="#F8FAFC"
-             Shell.NavBarIsVisible="True"
+             Shell.NavBarIsVisible="False"
              NavigationPage.HasNavigationBar="False">
 
     <Grid RowDefinitions="Auto, *, Auto, Auto">
 
-        <!-- ROW 0: Header Azul -->
-        <Grid Grid.Row="0" Padding="16,14" ColumnDefinitions="Auto, *" ColumnSpacing="12" BackgroundColor="#2563EB">
-            <Label Grid.Column="0" Text="&#xE5C4;" FontFamily="MaterialIcons" FontSize="26" TextColor="White" VerticalOptions="Center">
-                <Label.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding VolverCommand}" />
-                </Label.GestureRecognizers>
-            </Label>
+        <!-- NUEVO ENCABEZADO CON MENÚ Y ATRÁS -->
+        <VerticalStackLayout Grid.Row="0" BackgroundColor="#2563EB" Spacing="0">
+            <Grid ColumnDefinitions="Auto, *, Auto" Padding="16,12">
+                <ImageButton Grid.Column="0" BackgroundColor="Transparent" Clicked="OnMenuClicked" WidthRequest="24" HeightRequest="24">
+                    <ImageButton.Source>
+                        <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE5D2;" Color="White" Size="26"/>
+                    </ImageButton.Source>
+                </ImageButton>
+                <Label Grid.Column="1" Text="Seleccionar Cita" FontSize="20" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                <BoxView Grid.Column="2" WidthRequest="24" Color="Transparent"/>
+            </Grid>
 
-            <Label Grid.Column="1"
-                   Text="Seleccionar Cita"
-                   FontSize="19"
-                   FontAttributes="Bold"
-                   TextColor="White"
-                   VerticalOptions="Center"/>
-        </Grid>
+            <Grid ColumnDefinitions="Auto, *" Padding="16,0,16,16" ColumnSpacing="8">
+                <ImageButton Grid.Column="0" BackgroundColor="Transparent" Command="{Binding VolverCommand}" WidthRequest="24" HeightRequest="24" VerticalOptions="Center">
+                    <ImageButton.Source>
+                        <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE5C4;" Color="White" Size="24"/>
+                    </ImageButton.Source>
+                </ImageButton>
+                <BoxView Grid.Column="1" Color="Transparent"/>
+            </Grid>
+        </VerticalStackLayout>
 
-        <!-- ROW 1: Contenido Scrollable -->
+        <!-- CONTENIDO SCROLLABLE -->
         <ScrollView Grid.Row="1" Padding="16">
             <VerticalStackLayout Spacing="18">
-
-                <!-- TARJETA SUPERIOR: SOLO DATOS DEL NEGOCIO (SIN CLIENTE) -->
                 <Border BackgroundColor="#FFFFFF" Stroke="#E2E8F0" StrokeThickness="1" Padding="14">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="16"/>
                     </Border.StrokeShape>
-
                     <Grid ColumnDefinitions="52, *" ColumnSpacing="12" VerticalOptions="Center">
-                        <Border Grid.Column="0" 
-                                WidthRequest="52" 
-                                HeightRequest="52" 
-                                StrokeShape="RoundRectangle 26"
-                                BackgroundColor="#EFF6FF"
-                                StrokeThickness="1"
-                                Stroke="#DBEAFE">
+                        <Border Grid.Column="0" WidthRequest="52" HeightRequest="52" StrokeShape="RoundRectangle 26" BackgroundColor="#EFF6FF" StrokeThickness="1" Stroke="#DBEAFE">
                             <Grid>
                                 <Image Source="{Binding NegocioFoto}" Aspect="AspectFill"/>
-                                <Label Text="&#xE8EF;" 
-                                       FontFamily="MaterialIcons" 
-                                       FontSize="24" 
-                                       TextColor="#2563EB" 
-                                       HorizontalOptions="Center" 
-                                       VerticalOptions="Center" 
-                                       IsVisible="{Binding NoTieneFotoNegocio}"/>
+                                <Label Text="&#xE8EF;" FontFamily="MaterialIcons" FontSize="24" TextColor="#2563EB" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding NoTieneFotoNegocio}"/>
                             </Grid>
                         </Border>
-
                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
                             <Label Text="{Binding NegocioNombre}" FontSize="16" FontAttributes="Bold" TextColor="#0F172A"/>
                             <Label Text="{Binding SucursalTexto}" FontSize="12" TextColor="#64748B" MaxLines="2" LineBreakMode="TailTruncation"/>
@@ -64,64 +54,32 @@
                     </Grid>
                 </Border>
 
-                <!-- SECCIÓN DE SERVICIOS DISPONIBLES CON SELECCIÓN DE ESPECIALISTA -->
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Servicios disponibles" FontSize="15" FontAttributes="Bold" TextColor="#111827"/>
-
-                    <CollectionView ItemsSource="{Binding ServiciosTarjetas}"
-                                    ItemsLayout="HorizontalList"
-                                    HeightRequest="245"
-                                    HorizontalScrollBarVisibility="Never">
+                    <CollectionView ItemsSource="{Binding ServiciosTarjetas}" ItemsLayout="HorizontalList" HeightRequest="245" HorizontalScrollBarVisibility="Never">
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:Servicios">
-                                <Border WidthRequest="215"
-                                        HeightRequest="235"
-                                        BackgroundColor="#FFFFFF"
-                                        StrokeThickness="2"
-                                        StrokeShape="RoundRectangle 14"
-                                        Margin="0,0,12,0"
-                                        Padding="0">
+                                <Border WidthRequest="215" HeightRequest="235" BackgroundColor="#FFFFFF" StrokeThickness="2" StrokeShape="RoundRectangle 14" Margin="0,0,12,0" Padding="0">
                                     <Border.Stroke>
                                         <SolidColorBrush Color="{Binding ColorBordeCard}" />
                                     </Border.Stroke>
-
                                     <VerticalStackLayout Spacing="0">
-                                        <!-- Foto del servicio -->
                                         <Grid HeightRequest="70" BackgroundColor="#F1F5F9">
                                             <Image Source="{Binding Foto}" Aspect="AspectFill"/>
-                                            <Label Text="&#xE3F4;" 
-                                                   FontFamily="MaterialIcons" 
-                                                   FontSize="26" 
-                                                   TextColor="#CBD5E1" 
-                                                   HorizontalOptions="Center" 
-                                                   VerticalOptions="Center" 
-                                                   IsVisible="{Binding NoTieneFoto}"/>
+                                            <Label Text="&#xE3F4;" FontFamily="MaterialIcons" FontSize="26" TextColor="#CBD5E1" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding NoTieneFoto}"/>
                                         </Grid>
-
-                                        <!-- Detalles del Servicio -->
                                         <VerticalStackLayout Padding="10" Spacing="3">
                                             <Label Text="{Binding Nombre}" FontSize="13" FontAttributes="Bold" TextColor="#111827" MaxLines="1" LineBreakMode="TailTruncation"/>
-
                                             <Label Text="Especialista:" FontSize="10" FontAttributes="Italic" TextColor="#64748B"/>
-
-                                            <!-- Lista horizontal interactiva de especialistas -->
-                                            <CollectionView ItemsSource="{Binding ColaboradoresDelServicio}" 
-                                                            HeightRequest="32" 
-                                                            ItemsLayout="HorizontalList"
-                                                            HorizontalScrollBarVisibility="Never">
+                                            <CollectionView ItemsSource="{Binding ColaboradoresDelServicio}" HeightRequest="32" ItemsLayout="HorizontalList" HorizontalScrollBarVisibility="Never">
                                                 <CollectionView.ItemTemplate>
                                                     <DataTemplate x:DataType="models:Trabajador">
-                                                        <Border Stroke="#2563EB" 
-                                                                StrokeThickness="1" 
-                                                                BackgroundColor="#EFF6FF" 
-                                                                Padding="6,2" 
-                                                                Margin="0,0,4,0">
+                                                        <Border Stroke="#2563EB" StrokeThickness="1" BackgroundColor="#EFF6FF" Padding="6,2" Margin="0,0,4,0">
                                                             <Border.StrokeShape>
                                                                 <RoundRectangle CornerRadius="6"/>
                                                             </Border.StrokeShape>
                                                             <Border.GestureRecognizers>
-                                                                <TapGestureRecognizer Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SeleccionarEspecialistaServicioCommand}"
-                                                                                      CommandParameter="{Binding .}"/>
+                                                                <TapGestureRecognizer Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SeleccionarEspecialistaServicioCommand}" CommandParameter="{Binding .}"/>
                                                             </Border.GestureRecognizers>
                                                             <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
                                                                 <Label Text="&#xE86C;" FontFamily="MaterialIcons" FontSize="11" TextColor="#2563EB" VerticalOptions="Center"/>
@@ -131,21 +89,16 @@
                                                     </DataTemplate>
                                                 </CollectionView.ItemTemplate>
                                             </CollectionView>
-
                                             <Grid ColumnDefinitions="*, Auto" Margin="0,1,0,0">
                                                 <Label Grid.Column="0" Text="{Binding DuracionTexto}" FontSize="11" TextColor="#64748B" VerticalOptions="Center"/>
                                                 <Label Grid.Column="1" Text="{Binding PrecioTexto}" FontSize="12" FontAttributes="Bold" TextColor="#2563EB" VerticalOptions="Center"/>
                                             </Grid>
-
-                                            <!-- Botón Agregar / Quitar -->
                                             <Border Stroke="#2563EB" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="0,3" Margin="0,2,0,0">
                                                 <Border.Background>
                                                     <SolidColorBrush Color="{Binding ColorFondoBoton}" />
                                                 </Border.Background>
-
                                                 <Border.GestureRecognizers>
-                                                    <TapGestureRecognizer Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.ToggleServicioCommand}"
-                                                                          CommandParameter="{Binding .}"/>
+                                                    <TapGestureRecognizer Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.ToggleServicioCommand}" CommandParameter="{Binding .}"/>
                                                 </Border.GestureRecognizers>
                                                 <Label Text="{Binding TextoBoton}" TextColor="{Binding ColorTextoBoton}" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
                                             </Border>
@@ -161,11 +114,8 @@
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="16"/>
                     </Border.StrokeShape>
-
                     <VerticalStackLayout Spacing="12">
                         <Label Text="Resumen de tu cita" FontSize="15" FontAttributes="Bold" TextColor="#111827"/>
-
-                        <!-- Fila Cliente -->
                         <Grid ColumnDefinitions="Auto, *" ColumnSpacing="10" VerticalOptions="Center">
                             <Label Grid.Column="0" Text="&#xE7FD;" FontFamily="MaterialIcons" FontSize="18" TextColor="#2563EB" VerticalOptions="Center"/>
                             <HorizontalStackLayout Grid.Column="1" Spacing="6" VerticalOptions="Center">
@@ -174,7 +124,6 @@
                             </HorizontalStackLayout>
                         </Grid>
 
-                        <!-- Fila Fecha interactiva -->
                         <Border BackgroundColor="#F8FAFC" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12,8">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding IrAHorariosCommand}"/>
@@ -188,7 +137,6 @@
                             </Grid>
                         </Border>
 
-                        <!-- Fila Horario interactiva -->
                         <Border BackgroundColor="#F8FAFC" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12,8">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding IrAHorariosCommand}"/>
@@ -198,25 +146,13 @@
                                     <Label Text="Horario" FontSize="11" TextColor="#64748B"/>
                                     <Label Text="{Binding HorarioTextoResumen}" FontAttributes="Bold" FontSize="13" TextColor="#0F172A"/>
                                 </VerticalStackLayout>
-                                <Border Grid.Column="1" 
-                                        BackgroundColor="#EFF6FF" 
-                                        Stroke="#DBEAFE" 
-                                        StrokeThickness="1" 
-                                        StrokeShape="RoundRectangle 8" 
-                                        Padding="10,4"
-                                        VerticalOptions="Center">
+                                <Border Grid.Column="1" BackgroundColor="#EFF6FF" Stroke="#DBEAFE" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,4" VerticalOptions="Center">
                                     <Label Text="{Binding TextoBotonHorario}" FontSize="11" FontAttributes="Bold" TextColor="#2563EB"/>
                                 </Border>
                             </Grid>
                         </Border>
 
-                        <!-- Aviso destacado si no se ha seleccionado horario aún -->
-                        <Border IsVisible="{Binding NoTieneHorarioSeleccionado}"
-                                BackgroundColor="#EFF6FF" 
-                                Stroke="#93C5FD" 
-                                StrokeThickness="1" 
-                                StrokeShape="RoundRectangle 10" 
-                                Padding="12,10">
+                        <Border IsVisible="{Binding NoTieneHorarioSeleccionado}" BackgroundColor="#EFF6FF" Stroke="#93C5FD" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12,10">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Command="{Binding IrAHorariosCommand}"/>
                             </Border.GestureRecognizers>
@@ -230,7 +166,6 @@
                             </Grid>
                         </Border>
 
-                        <!-- Fila Servicio(s) -->
                         <Grid ColumnDefinitions="Auto, *, Auto">
                             <Label Grid.Column="0" Text="&#xE8EF;" FontFamily="MaterialIcons" FontSize="18" TextColor="#2563EB" Margin="0,0,10,0" VerticalOptions="Center"/>
                             <VerticalStackLayout Grid.Column="1">
@@ -241,25 +176,11 @@
                         </Grid>
                     </VerticalStackLayout>
                 </Border>
-
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- ROW 2: Botón Confirmar Cita -->
-        <Button Grid.Row="2" 
-                Text="Confirmar cita"
-                Command="{Binding ConfirmarCitaCommand}"
-                IsEnabled="True" 
-                BackgroundColor="#2563EB" 
-                TextColor="White" 
-                FontAttributes="Bold" 
-                FontSize="15" 
-                CornerRadius="12" 
-                HeightRequest="50" 
-                Margin="16,8,16,8"/>
+        <Button Grid.Row="2" Text="Confirmar cita" Command="{Binding ConfirmarCitaCommand}" IsEnabled="True" BackgroundColor="#2563EB" TextColor="White" FontAttributes="Bold" FontSize="15" CornerRadius="12" HeightRequest="50" Margin="16,8,16,8"/>
 
-
-        <!-- ROW 3: Barra Inferior de Navegación -->
         <Grid Grid.Row="3" ColumnDefinitions="*, *, *, *" BackgroundColor="#FFFFFF" HeightRequest="60" Padding="0,6">
             <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
                 <VerticalStackLayout.GestureRecognizers>
@@ -268,7 +189,6 @@
                 <Image Source="home.png" HeightRequest="22" WidthRequest="22"/>
                 <Label Text="Inicio" FontSize="11" TextColor="#2563EB" FontAttributes="Bold"/>
             </VerticalStackLayout>
-
             <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
                 <VerticalStackLayout.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding NavegarCitasCommand}"/>
@@ -276,7 +196,6 @@
                 <Image Source="calendar.png" HeightRequest="22" WidthRequest="22"/>
                 <Label Text="Citas" FontSize="11" TextColor="#6B7280"/>
             </VerticalStackLayout>
-
             <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
                 <VerticalStackLayout.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding NavegarSucursalCommand}"/>
@@ -284,7 +203,6 @@
                 <Image Source="location.png" HeightRequest="22" WidthRequest="22"/>
                 <Label Text="Sucursal" FontSize="11" TextColor="#6B7280"/>
             </VerticalStackLayout>
-
             <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
                 <VerticalStackLayout.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding NavegarPerfilCommand}"/>
@@ -293,6 +211,5 @@
                 <Label Text="Perfil" FontSize="11" TextColor="#6B7280"/>
             </VerticalStackLayout>
         </Grid>
-
     </Grid>
 </ContentPage>
