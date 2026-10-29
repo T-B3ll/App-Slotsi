@@ -1,21 +1,22 @@
 namespace slotsi_citas.Pages;
+
 using slotsi_citas.Services;
+using slotsi_citas.Services.Api;
 using Microsoft.Maui.Controls;
+
 public partial class RecuperarContra : ContentPage
 {
+    private readonly IAuthApiService _authService;
+    private readonly EmailJSService _emailService;
 
-    private readonly RecuperacionService _recuperacionService;
-
-    public RecuperarContra(RecuperacionService recuperacionService)
+    public RecuperarContra(IAuthApiService authService, EmailJSService emailService)
     {
         InitializeComponent();
-        _recuperacionService = recuperacionService;
+        _authService = authService;
+        _emailService = emailService;
     }
 
-    private async void OnBackClicked(object sender, EventArgs e)
-    {
-        await Navigation.PopAsync();
-    }
+    private async void OnBackClicked(object sender, EventArgs e) => await Navigation.PopAsync();
 
     private async void OnEnviarCodigoClicked(object sender, EventArgs e)
     {
@@ -27,21 +28,26 @@ public partial class RecuperarContra : ContentPage
 
         try
         {
-         
-            var codigo = await _recuperacionService.GenerarSolicitudAsync(EntryCorreo.Text);
+            var correo = EntryCorreo.Text.Trim().ToLower();
+            var respuesta = await _authService.SolicitarRestablecimientoAsync(correo);
 
-         
-            var emailService = new EmailJSService();
-            var enviado = await emailService.EnviarCodigoPorEmail(EntryCorreo.Text, codigo);
+            if (string.IsNullOrEmpty(respuesta.Token))
+            {
+                await DisplayAlert("Aviso", "Si el correo está registrado, recibirás un código.", "OK");
+                return;
+            }
+
+            var enviado = await _emailService.EnviarCodigoPorEmail(correo, respuesta.Token);
 
             if (enviado)
             {
-                await DisplayAlert("Éxito", $"Código enviado a {EntryCorreo.Text}\nRevisa tu bandeja (y spam).", "OK");
+                EntryCodigo.Text = string.Empty;
+                await DisplayAlert("Éxito", $"Código enviado a {correo}. Revisa tu Gmail.", "OK");
                 EntryCodigo.Focus();
             }
             else
             {
-                await DisplayAlert("Error", "No se pudo enviar el correo. Intenta más tarde.", "OK");
+                await DisplayAlert("Error", "El correo no pudo ser enviado. Intenta de nuevo.", "OK");
             }
         }
         catch (Exception ex)
@@ -52,34 +58,28 @@ public partial class RecuperarContra : ContentPage
 
     private async void OnSeguirClicked(object sender, EventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(EntryCodigo.Text) || EntryCodigo.Text.Length != 6)
+        if (string.IsNullOrWhiteSpace(EntryCodigo.Text))
         {
-            await DisplayAlert("Error", "Por favor ingresa el código de 6 dígitos.", "OK");
+            await DisplayAlert("Error", "Ingresa el código que recibiste.", "OK");
             return;
         }
 
         try
         {
-           
-            var solicitudValida = await _recuperacionService.ValidarCodigoAsync(
-                EntryCorreo.Text,
-                EntryCodigo.Text
-            );
+            var correo = EntryCorreo.Text.Trim().ToLower();
+            var token = EntryCodigo.Text.Trim();
 
-            if (solicitudValida != null)
-            {
-             
-                await Navigation.PushAsync(new NuevaContra(solicitudValida.Id, EntryCorreo.Text));
-            }
-            else
-            {
-                await DisplayAlert("Error", "El código es incorrecto o ha expirado.", "OK");
-            }
+            await _authService.ValidarTokenAsync(correo, token);
+
+            await Navigation.PushAsync(new NuevaContra(correo, token));
+        }
+        catch (ApiException ex)
+        {
+            await DisplayAlert("codigo  inválido", ex.Message, "OK");
         }
         catch (Exception ex)
         {
             await DisplayAlert("Error", ex.Message, "OK");
         }
-
     }
 }

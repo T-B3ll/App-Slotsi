@@ -54,8 +54,22 @@ public class UsuarioRepository : IUsuarioRepository
 
     public async Task<bool> ActualizarAsync(UsuarioEntity usuario, CancellationToken ct = default)
     {
-        var filtro = Builders<UsuarioEntity>.Filter.Eq("_id", usuario.Id);
-        var resultado = await _usuarios.ReplaceOneAsync(filtro, usuario, cancellationToken: ct);
+        if (!ObjectId.TryParse(usuario.Id, out var oid)) return false;
+
+        var filtro = Builders<UsuarioEntity>.Filter.Eq("_id", oid);
+
+        var update = Builders<UsuarioEntity>.Update
+            .Set(u => u.NombreCompleto, usuario.NombreCompleto)
+            .Set(u => u.Correo, usuario.Correo)
+            .Set(u => u.Telefono, usuario.Telefono)
+            .Set(u => u.Cedula, usuario.Cedula)
+            .Set(u => u.Contrasena, usuario.Contrasena)
+            .Set(u => u.TipoUsuario, usuario.TipoUsuario)
+            .Set(u => u.EstaActivo, usuario.EstaActivo)
+            .Set(u => u.ResetTokenHash, usuario.ResetTokenHash)
+            .Set(u => u.ResetTokenExpira, usuario.ResetTokenExpira);
+
+        var resultado = await _usuarios.UpdateOneAsync(filtro, update, cancellationToken: ct);
         return resultado.MatchedCount > 0;
     }
 

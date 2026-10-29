@@ -70,9 +70,9 @@
                            WidthRequest="24" HeightRequest="24" 
                            Aspect="AspectFit" 
                            VerticalOptions="Center" Margin="0,0,10,0"/>
-                    <Entry x:Name="EntryCodigo" Grid.Column="1" Placeholder="------" 
-                           Keyboard="Numeric" MaxLength="6" PlaceholderColor="#9CA3AF" 
-                           TextColor="#111827" FontSize="18" CharacterSpacing="5"
+                    <Entry x:Name="EntryCodigo" Grid.Column="1" Placeholder="Pega el código aquí" 
+                           Keyboard="Text" PlaceholderColor="#9CA3AF" 
+                           TextColor="#111827" FontSize="14" CharacterSpacing="1"
                            BackgroundColor="Transparent" VerticalOptions="Center"
                            HorizontalTextAlignment="Center"/>
                 </Grid>

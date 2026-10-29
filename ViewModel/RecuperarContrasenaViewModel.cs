@@ -9,7 +9,7 @@ namespace slotsi_citas.ViewModel
     public class RecuperarContrasenaViewModel : INotifyPropertyChanged
     {
         private readonly RecuperacionService _recuperacionService;
-        private readonly EmailJSService _emailService; 
+        private readonly EmailJSService _emailService;
         private string _correo = string.Empty;
 
         public string Correo
@@ -20,11 +20,10 @@ namespace slotsi_citas.ViewModel
 
         public ICommand EnviarCommand { get; }
 
-
         public RecuperarContrasenaViewModel(RecuperacionService recuperacionService, EmailJSService emailService)
         {
             _recuperacionService = recuperacionService;
-            _emailService = emailService; 
+            _emailService = emailService;
             EnviarCommand = new Command(async () => await EnviarCodigoAsync());
         }
 
@@ -38,34 +37,30 @@ namespace slotsi_citas.ViewModel
 
             try
             {
-                
-                string codigoPrueba = "123456";
+              
+                string codigoReal = await _recuperacionService.GenerarSolicitudAsync(Correo);
 
-                System.Diagnostics.Debug.WriteLine($" INICIANDO ENVÍO A: {Correo} CON CÓDIGO: {codigoPrueba}");
+                System.Diagnostics.Debug.WriteLine($"[RECUPERACION] Código generado: {codigoReal} para {Correo}");
 
-               
-                bool enviado = await _emailService.EnviarCodigoPorEmail(Correo, codigoPrueba);
-
-                System.Diagnostics.Debug.WriteLine($"📩 RESULTADO DEL ENVÍO: {enviado}");
+          
+                bool enviado = await _emailService.EnviarCodigoPorEmail(Correo, codigoReal);
 
                 if (enviado)
                 {
                     await Application.Current.MainPage.DisplayAlert("Éxito",
-                        $"Código enviado a {Correo}. Revisa spam.", "OK");
+                        $"Código enviado a {Correo}. Revisa tu bandeja de entrada o spam.", "OK");
+
+                  
                 }
                 else
                 {
-                    
-                    await Application.Current.MainPage.DisplayAlert("Fallo el envío",
-                        $"El correo no salió, pero usa este código manual: {codigoPrueba}", "OK");
+                    await Application.Current.MainPage.DisplayAlert("Error de envío",
+                        "No se pudo enviar el correo. Intenta de nuevo más tarde.", "OK");
                 }
             }
             catch (Exception ex)
             {
-               
                 System.Diagnostics.Debug.WriteLine($"💥 ERROR CRÍTICO EN VIEWMODEL: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"💥 DETALLE: {ex.StackTrace}");
-
                 await Application.Current.MainPage.DisplayAlert("Error Crítico", ex.Message, "OK");
             }
         }
