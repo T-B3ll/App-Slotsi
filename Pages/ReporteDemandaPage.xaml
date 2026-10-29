@@ -34,6 +34,23 @@
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="12" Spacing="12">
 
+                <HorizontalStackLayout Spacing="10" HorizontalOptions="Center" Margin="0,10,0,10">
+                    <Button Text="PDF" 
+                            BackgroundColor="#EF4444" 
+                            TextColor="White" 
+                            CornerRadius="8" 
+                            HeightRequest="40" 
+                            WidthRequest="100"
+                            Clicked="OnGenerarPdfClicked"/>
+                    <Button Text="Excel" 
+                            BackgroundColor="#10B981" 
+                            TextColor="White" 
+                            CornerRadius="8" 
+                            HeightRequest="40" 
+                            WidthRequest="100"
+                            Clicked="OnGenerarExcelClicked"/>
+                </HorizontalStackLayout>
+
                 <Border StrokeShape="RoundRectangle 12" 
                         BackgroundColor="White" 
                         Stroke="#E5E7EB" 

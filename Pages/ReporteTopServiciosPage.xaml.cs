@@ -1,3 +1,4 @@
+using CommunityToolkit.Maui.Storage;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Storage;
@@ -147,6 +148,58 @@ public partial class ReporteTopServiciosPage : ContentPage
         catch (Exception ex)
         {
             await DisplayAlert("Error", $"No se pudo cargar el reporte: {ex.Message}", "OK");
+        }
+    }
+
+    private async void OnGenerarPdfClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            string negocioId = Preferences.Get("NegocioSeleccionadoId", string.Empty);
+            var topServicios = await _citaService.ObtenerTopServiciosAsync(negocioId, _periodoActual);
+
+            var pdfService = new ReporteService();
+            byte[] pdfBytes = pdfService.GenerarTopServiciosPdf(topServicios, _periodoActual);
+
+            string fileName = $"Reporte_TopServicios_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+
+            using var stream = new MemoryStream(pdfBytes);
+            var resultado = await FileSaver.Default.SaveAsync(fileName, stream);
+
+            if (resultado.IsSuccessful)
+                await DisplayAlert("Éxito", $"Reporte guardado en: {resultado.FilePath}", "OK");
+            else
+                await DisplayAlert("Aviso", "Se canceló el guardado.", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"No se pudo generar el PDF: {ex.Message}", "OK");
+        }
+    }
+
+    private async void OnGenerarExcelClicked(object sender, EventArgs e)
+    {
+        try
+        {
+            string negocioId = Preferences.Get("NegocioSeleccionadoId", string.Empty);
+            var topServicios = await _citaService.ObtenerTopServiciosAsync(negocioId, _periodoActual);
+
+            var excelService = new ReporteService();
+            byte[] excelBytes = excelService.GenerarTopServiciosExcel(topServicios, _periodoActual);
+
+            string fileName = $"Reporte_TopServicios_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+
+            using var stream = new MemoryStream(excelBytes);
+            var resultado = await FileSaver.Default.SaveAsync(fileName, stream);
+
+            if (resultado.IsSuccessful)
+                await DisplayAlert("Éxito", $"Reporte guardado en: {resultado.FilePath}", "OK");
+            else
+                await DisplayAlert("Aviso", "Se canceló el guardado.", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"No se pudo generar el Excel: {ex.Message}", "OK");
         }
     }
 
