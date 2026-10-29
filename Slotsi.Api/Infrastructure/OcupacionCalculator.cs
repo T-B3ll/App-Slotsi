@@ -13,7 +13,6 @@ namespace Slotsi.Api.Infrastructure
         {
             var dias = (hasta.Date - desde.Date).Days + 1;
 
-            // Negocio sin horarios cargados: usar la jornada por defecto.
             if (negocio.Horarios is null || negocio.Horarios.Count == 0)
                 return MinutosPorDefecto * dias;
 

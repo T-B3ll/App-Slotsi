@@ -95,7 +95,7 @@ public static class MauiProgram
 
         // --- AQUÍ FALTABA EL REGISTRO DE REGISTROUSUARIOSVIEWMODEL ---
         builder.Services.AddTransient<RegistroUsuariosViewModel>();
-
+        builder.Services.AddTransient<CancelacionesViewModel>();
         builder.Services.AddTransient<ResumenViewModel>();
         builder.Services.AddTransient<DueñosNegociosViewModel>();
         builder.Services.AddTransient<SeleccionarCitaViewModel>();
@@ -104,6 +104,7 @@ public static class MauiProgram
 
         // --- PAGES ---
         builder.Services.AddTransient<HorariosDisponiblesPage>();
+        builder.Services.AddTransient<CancelacionesPage>();
         builder.Services.AddTransient<Cita_UsuarioPage>();
         builder.Services.AddTransient<CentroCalificaciones>();
         builder.Services.AddTransient<LoginPage>();

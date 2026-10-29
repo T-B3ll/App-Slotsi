@@ -12,4 +12,5 @@ public interface ICitaRepository
     Task CrearAsync(CitaEntity cita, CancellationToken ct = default);
     Task<bool> ActualizarAsync(CitaEntity cita, CancellationToken ct = default);
     Task<bool> EliminarAsync(string id, CancellationToken ct = default);
+    Task<List<CitaEntity>> ObtenerPorRangoConCanceladasAsync(string negocioId, DateTime desde, DateTime hasta, CancellationToken ct = default);
 }

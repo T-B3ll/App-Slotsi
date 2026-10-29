@@ -38,7 +38,6 @@ public class NegocioRepository : INegocioRepository
             }
             catch (Exception ex)
             {
-                // ✅ Ya NO se silencia: queda rastro para saber qué documento falla
                 System.Diagnostics.Debug.WriteLine(
                     $"⚠️ Documento ignorado {doc.GetValue("_id", "?")}: {ex.Message}");
             }

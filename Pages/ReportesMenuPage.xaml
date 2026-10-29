@@ -9,75 +9,43 @@
     <ScrollView>
         <VerticalStackLayout Padding="24" Spacing="20">
 
-
             <VerticalStackLayout Spacing="4" Margin="0,10,0,10">
-                <Label Text="Panel de Reportes" 
-                       FontSize="26" 
-                       FontAttributes="Bold" 
-                       TextColor="#111827" />
-                <Label Text="Selecciona el reporte que deseas visualizar" 
-                       FontSize="14" 
-                       TextColor="#6B7280" />
+                <Label Text="Panel de Reportes" FontSize="26" FontAttributes="Bold" TextColor="#111827" />
+                <Label Text="Selecciona el reporte que deseas visualizar" FontSize="14" TextColor="#6B7280" />
             </VerticalStackLayout>
 
-
-            <Border BackgroundColor="White" 
-                    Stroke="#E5E7EB" 
-                    StrokeThickness="1" 
-                    StrokeShape="RoundRectangle 20" 
-                    Padding="20"
-                    Margin="0,10,0,0">
+            <!-- Top Servicios -->
+            <Border BackgroundColor="White" Stroke="#E5E7EB" StrokeThickness="1" StrokeShape="RoundRectangle 20" Padding="20" Margin="0,10,0,0">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnTopServiciosTapped"/>
                 </Border.GestureRecognizers>
 
                 <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="16">
-                    <!-- Ícono -->
-                    <Border Grid.Column="0" 
-                            BackgroundColor="#EFF6FF" 
-                            StrokeThickness="0" 
-                            StrokeShape="RoundRectangle 16" 
-                            WidthRequest="64" 
-                            HeightRequest="64">
-                        <Image Source="{FontImageSource FontFamily=MaterialIcons, Glyph='&#xE8B5;', Color=#2563EB, Size=32}" 
-                               WidthRequest="32" HeightRequest="32"
-                               HorizontalOptions="Center" VerticalOptions="Center"/>
+                    <Border Grid.Column="0" BackgroundColor="#EFF6FF" StrokeThickness="0" StrokeShape="RoundRectangle 16" WidthRequest="64" HeightRequest="64">
+                        <Image Source="{FontImageSource FontFamily=MaterialIcons, Glyph='&#xE8B5;', Color=#2563EB, Size=32}" WidthRequest="32" HeightRequest="32" HorizontalOptions="Center" VerticalOptions="Center"/>
                     </Border>
-
 
                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
                         <Label Text="Top Servicios" FontSize="18" FontAttributes="Bold" TextColor="#111827"/>
                         <Label Text="Los servicios más solicitados por tus clientes" FontSize="13" TextColor="#6B7280" LineBreakMode="TailTruncation"/>
                     </VerticalStackLayout>
 
-
                     <Label Grid.Column="2" Text="›" FontSize="28" TextColor="#D1D5DB" VerticalOptions="Center"/>
                 </Grid>
             </Border>
 
-
-            <Border BackgroundColor="White" 
-                    Stroke="#E5E7EB" 
-                    StrokeThickness="1" 
-                    StrokeShape="RoundRectangle 20" 
-                    Padding="20">
+            <!-- Demanda Semanal -->
+            <Border BackgroundColor="White" Stroke="#E5E7EB" StrokeThickness="1" StrokeShape="RoundRectangle 20" Padding="20">
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnDemandaSemanalTapped"/>
                 </Border.GestureRecognizers>
 
                 <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="16">
-
-                    <Border Grid.Column="0" 
-                            BackgroundColor="#DCFCE7" 
-                            StrokeThickness="0" 
-                            StrokeShape="RoundRectangle 16" 
-                            WidthRequest="64" 
-                            HeightRequest="64">
+                    <Border Grid.Column="0" BackgroundColor="#DCFCE7" StrokeThickness="0" StrokeShape="RoundRectangle 16" WidthRequest="64" HeightRequest="64">
                         <Image Source="{FontImageSource FontFamily=MaterialIcons, Glyph='&#xE916;', Color=#10B981, Size=32}" 
                                WidthRequest="32" HeightRequest="32"
                                HorizontalOptions="Center" VerticalOptions="Center"/>
                     </Border>
-
 
                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
                         <Label Text="Demanda Semanal" FontSize="18" FontAttributes="Bold" TextColor="#111827"/>
@@ -87,14 +55,28 @@
                     <Label Grid.Column="2" Text="›" FontSize="28" TextColor="#D1D5DB" VerticalOptions="Center"/>
                 </Grid>
             </Border>
+            <!-- Tasa de cancelaciones -->
+            <Border BackgroundColor="White" Stroke="#E5E7EB" StrokeThickness="1" StrokeShape="RoundRectangle 20" Padding="20">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCancelacionesTapped"/>
+                </Border.GestureRecognizers>
 
+                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="16">
+                    <Border Grid.Column="0" BackgroundColor="#FEE2E2" StrokeThickness="0" StrokeShape="RoundRectangle 16" WidthRequest="64" HeightRequest="64">
+                        <Image Source="{FontImageSource FontFamily=MaterialIcons, Glyph='&#xE615;', Color=#EF4444, Size=32}" WidthRequest="32" HeightRequest="32"
+                               HorizontalOptions="Center" VerticalOptions="Center"/>
+                    </Border>
 
-            <Label Text="Los reportes se actualizan en tiempo real desde la base de datos." 
-                   FontSize="12" 
-                   TextColor="#9CA3AF" 
-                   HorizontalTextAlignment="Center" 
-                   Margin="0,30,0,0"/>
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="4">
+                        <Label Text="Cancelaciones" FontSize="18" FontAttributes="Bold" TextColor="#111827"/>
+                        <Label Text="Tasa de citas canceladas y clientes que no asistieron" FontSize="13" TextColor="#6B7280" LineBreakMode="TailTruncation"/>
+                    </VerticalStackLayout>
 
+                    <Label Grid.Column="2" Text="›" FontSize="28" TextColor="#D1D5DB" VerticalOptions="Center"/>
+                </Grid>
+            </Border>
+
+            <Label Text="Los reportes se actualizan en tiempo real desde la base de datos." FontSize="12" TextColor="#9CA3AF" HorizontalTextAlignment="Center" Margin="0,30,0,0"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

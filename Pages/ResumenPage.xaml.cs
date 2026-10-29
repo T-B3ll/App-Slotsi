@@ -20,7 +20,6 @@ namespace slotsi_citas.Pages;
 
         private async void OnFechaSeleccionada(object? sender, DateChangedEventArgs e)
         {
-            // Si el rango quedó invertido, corrige "hasta"; ese cambio vuelve a disparar la carga.
             if (_vm.Hasta < _vm.Desde)
             {
                 _vm.Hasta = _vm.Desde;

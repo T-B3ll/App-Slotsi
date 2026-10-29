@@ -107,6 +107,51 @@ public class CitasController : ControllerBase
         return Ok(dto);
     }
 
+    [HttpGet("reportes/cancelaciones")]
+    [ProducesResponseType(typeof(CancelacionesResporteDto), StatusCodes.Status200OK)]
+    public async Task<ActionResult<CancelacionesResporteDto>> ObtenerCancelaciones(
+    [FromQuery] string negocioId,
+    [FromQuery] DateTime desde,
+    [FromQuery] DateTime hasta,
+    CancellationToken ct)
+    {
+        if (!IdValidator.EsValido(negocioId)) return BadRequest("ID de negocio inválido");
+        if (hasta < desde) return BadRequest("'hasta' no puede ser anterior a 'desde'");
+
+        var citas = await _citas.ObtenerPorRangoConCanceladasAsync(negocioId, desde, hasta, ct);
+
+        static bool EsCancelada(string? e) =>
+            e is not null && e.StartsWith("cancelad", StringComparison.OrdinalIgnoreCase);
+
+        static bool EsNoAsistio(string? e) =>
+            e is not null && e.Replace(" ", "").StartsWith("noasist", StringComparison.OrdinalIgnoreCase);
+
+        var total = citas.Count;
+        var canceladas = citas.Count(c => EsCancelada(c.Estado));
+        var noAsistio = citas.Count(c => EsNoAsistio(c.Estado));
+
+        static double Pct(int parte, int todo) =>
+            todo == 0 ? 0 : Math.Round(parte * 100.0 / todo, 1);
+
+        var dto = new CancelacionesResporteDto
+        {
+            Desde = desde,
+            Hasta = hasta,
+            Total = total,
+            Canceladas = canceladas,
+            NoAsistio = noAsistio,
+            PorcentajeCancelacion = Pct(canceladas, total),
+            PorcentajeNoAsistio = Pct(noAsistio, total),
+            PorcentajePerdida = Pct(canceladas + noAsistio, total),
+            Citas = citas
+                .Where(c => EsCancelada(c.Estado) || EsNoAsistio(c.Estado))
+                .Select(c => c.ToDto())
+                .ToList()
+        };
+
+        return Ok(dto);
+    }
+
     [HttpPut("{id}")]
     public async Task<IActionResult> Actualizar(string id, CitaDto dto, CancellationToken ct)
     {

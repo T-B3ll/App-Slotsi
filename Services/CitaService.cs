@@ -16,6 +16,17 @@ namespace slotsi_citas.Services
             return await GetAsync<List<CitaDto>>($"api/citas?fecha={fecha:yyyy-MM-dd}");
         }
 
+        public async Task<CancelacionesResporteDto> ObtenerCancelacionesAsync(
+     string negocioId, DateTime desde, DateTime hasta)
+        {
+            static string Fmt(DateTime d) => Uri.EscapeDataString(
+                d.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ss'Z'",
+                    System.Globalization.CultureInfo.InvariantCulture));
+
+            return await GetAsync<CancelacionesResporteDto>(
+                $"api/citas/reportes/cancelaciones?negocioId={negocioId}&desde={Fmt(desde)}&hasta={Fmt(hasta)}");
+        }
+
         public async Task<List<CitaDto>> ObtenerPorUsuarioAsync(string clienteId)
         {
             return await GetAsync<List<CitaDto>>($"api/citas/usuario/{clienteId}");

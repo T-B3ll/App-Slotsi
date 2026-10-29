@@ -15,6 +15,11 @@ public partial class ReportesMenuPage : ContentPage
         await Shell.Current.GoToAsync(nameof(ReporteTopServiciosPage));
     }
 
+    private async void OnCancelacionesTapped(object sender, TappedEventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(CancelacionesPage));
+    }
+
     private async void OnDemandaSemanalTapped(object sender, TappedEventArgs e)
     {
 

@@ -41,6 +41,23 @@ public class CitaRepository : ICitaRepository
         return await _citas.Find(c => c.Id == objectId).FirstOrDefaultAsync(ct);
     }
 
+    public Task<List<CitaEntity>> ObtenerPorRangoConCanceladasAsync(
+    string negocioId, DateTime desde, DateTime hasta, CancellationToken ct = default)
+    {
+        if (!ObjectId.TryParse(negocioId, out var negocioObjId))
+            return Task.FromResult(new List<CitaEntity>());
+
+        var inicio = desde;
+        var fin = hasta;
+
+        return _citas.Find(c =>
+                c.NegocioId == negocioObjId &&
+                c.FechaHoraInicio >= inicio &&
+                c.FechaHoraInicio <= fin)
+            .SortByDescending(c => c.FechaHoraInicio)
+            .ToListAsync(ct);
+    }
+
     public Task<List<CitaEntity>> ObtenerPorFechaAsync(DateTime fecha, CancellationToken ct = default)
     {
         var inicioDia = fecha.Date;
