@@ -55,7 +55,7 @@
                                 <VerticalStackLayout Spacing="6">
                                     <HorizontalStackLayout Spacing="6">
                                         <Ellipse Fill="#10B981" WidthRequest="8" HeightRequest="8" VerticalOptions="Center" />
-                                        <Label Text="Citas Confirm." FontSize="11" TextColor="#64748B" LineBreakMode="TailTruncation" />
+                                        <Label Text="Citas Confirmadas" FontSize="10" TextColor="#64748B" LineBreakMode="TailTruncation" />
                                     </HorizontalStackLayout>
                                     <Label Text="{Binding CitasConfirmadas}" FontSize="28" FontAttributes="Bold" TextColor="#0F172A" />
                                 </VerticalStackLayout>
@@ -68,7 +68,7 @@
                                 <VerticalStackLayout Spacing="6">
                                     <HorizontalStackLayout Spacing="6">
                                         <Ellipse Fill="#F59E0B" WidthRequest="8" HeightRequest="8" VerticalOptions="Center" />
-                                        <Label Text="Citas Pendientes" FontSize="11" TextColor="#64748B" LineBreakMode="TailTruncation" />
+                                        <Label Text="Citas Pendientes" FontSize="10" TextColor="#64748B" LineBreakMode="TailTruncation" />
                                     </HorizontalStackLayout>
                                     <Label Text="{Binding CitasPendientes}" FontSize="28" FontAttributes="Bold" TextColor="#0F172A" />
                                 </VerticalStackLayout>

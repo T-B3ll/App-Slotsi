@@ -53,27 +53,22 @@ public partial class RegistroUsuarioBasico : ContentPage
     private void OnCedulaChanged(object sender, TextChangedEventArgs e)
     {
         if (_isUpdating) return;
-
-
         string clean = new string(e.NewTextValue.Where(char.IsLetterOrDigit).ToArray()).ToUpper();
-
-        if (clean.Length > 13) clean = clean.Substring(0, 13);
+        if (clean.Length > 14) clean = clean.Substring(0, 14);
 
         string formatted = clean;
+        if (clean.Length > 3)
+            formatted = formatted.Insert(3, "-");
 
+        if (clean.Length > 9)
+            formatted = formatted.Insert(10, "-");
 
-        if (clean.Length > 4) formatted = formatted.Insert(4, "-");
-        if (clean.Length > 9) formatted = formatted.Insert(9, "-");
-
-        Device.BeginInvokeOnMainThread(() =>
-        {
+        Device.BeginInvokeOnMainThread(() => {
             _isUpdating = true;
             EntryCedula.Text = formatted;
             EntryCedula.CursorPosition = formatted.Length;
 
-   
             _viewModel.Cedula = clean;
-
             _isUpdating = false;
         });
     }

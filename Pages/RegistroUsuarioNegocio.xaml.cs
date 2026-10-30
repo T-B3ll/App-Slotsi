@@ -77,22 +77,24 @@ public partial class RegistroUsuarioNegocio : ContentPage
         });
     }
 
-    
+
     private void OnCedulaChanged(object sender, TextChangedEventArgs e)
     {
         if (_isUpdating) return;
         string clean = new string(e.NewTextValue.Where(char.IsLetterOrDigit).ToArray()).ToUpper();
-        if (clean.Length > 13) clean = clean.Substring(0, 13);
+        if (clean.Length > 14) clean = clean.Substring(0, 14);
 
         string formatted = clean;
-        if (clean.Length > 4) formatted = formatted.Insert(4, "-");
-        if (clean.Length > 8) formatted = formatted.Insert(9, "-");
+        if (clean.Length > 3)
+            formatted = formatted.Insert(3, "-");
+
+        if (clean.Length > 9)
+            formatted = formatted.Insert(10, "-");
 
         Device.BeginInvokeOnMainThread(() => {
             _isUpdating = true;
             EntryCedula.Text = formatted;
             EntryCedula.CursorPosition = formatted.Length;
-
 
             _viewModel.CedulaJuridica = clean;
             _isUpdating = false;
