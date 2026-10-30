@@ -66,7 +66,7 @@ Slotsi/
     ├── AppShell.xaml
     └── MauiProgram.cs
 ```
----
+
 Base de datos
 La base de datos se llama `SlotsiCitasDB` y contiene las siguientes colecciones:
 Colección	Descripción
@@ -79,7 +79,7 @@ Colección	Descripción
 `PagoSub`	Estado de la suscripción de cada dueño
 `HistorialPagos`	Historial de pagos de suscripción
 `RecuperarContraseña`	Códigos temporales para recuperar la contraseña
----
+
 Requisitos previos
 Visual Studio 2022 (o superior) con las cargas de trabajo Desarrollo de .NET Multiplataforma (MAUI) y ASP.NET y desarrollo web
 .NET SDK compatible con el proyecto
