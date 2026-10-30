@@ -1,24 +1,41 @@
 Slotsi
 Slotsi es una aplicación móvil para la gestión y agenda de citas en barberías y salones de belleza. 
 Conecta a los clientes con los negocios de su zona y le da a los dueños herramientas para administrar sus servicios, trabajadores, citas y reputación.
+
 Proyecto académico de *Integrador VI* — Ingeniería en Sistemas de la Información, UNAN-CUR-Matagalpa.
 
 Características
+
 1-Para clientes
+
 Registro e inicio de sesión
+
 Búsqueda de negocios y consulta de sus servicios
+
 Agendado de citas seleccionando servicio, trabajador, día y hora
+
 Calificación y reseñas de los negocios
+
 Ranking de Mejores Calificados con filtro por categoría (Salones, Barbería)
+
 Recuperación de contraseña por código enviado al correo
+
 2-Para dueños de negocio
+
 Registro del negocio con foto de perfil y documentos de verificación
+
 Gestión de servicios (nombre, duración, precio, categoría)
+
 Gestión de trabajadores y sus horarios de trabajo
+
 Agenda de citas y resumen del día
+
 Reporte de cancelaciones
+
 Centro de reseñas
+
 Suscripción de uso de la aplicación (pago mensual)
+
 
 Tecnologías
 Capa	Tecnología
