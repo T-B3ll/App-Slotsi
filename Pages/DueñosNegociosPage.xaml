@@ -37,8 +37,14 @@
                 </ScrollView>
             </VerticalStackLayout>
         </Frame>
+
+        <ActivityIndicator x:Name="indicadorCarga" Grid.Row="2" IsRunning="False" IsVisible="False" Color="#2563EB" HorizontalOptions="Center" VerticalOptions="Center"/>
+
         <Label x:Name="LblResultados" Grid.Row="1" Margin="24,12,24,0" FontSize="14" TextColor="#6B7280"/>
-        <CollectionView Grid.Row="2" ItemsSource="{Binding ListaDueños}" Margin="16,12,16,12">
+
+        <!-- OPTIMIZACIÓN 1: SelectionMode="None" para que el sistema no calcule el estado táctil de la tarjeta -->
+        <CollectionView x:Name="ListaNegocios" Grid.Row="2" ItemsSource="{Binding ListaDueños}" Margin="16,12,16,12"
+                        SelectionMode="None">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
             </CollectionView.ItemsLayout>
@@ -53,12 +59,12 @@
                                 <Label Text="{Binding TotalResenas, StringFormat='({0} reseñas)'}" FontSize="12" TextColor="#6B7280"/>
                             </HorizontalStackLayout>
                             <HorizontalStackLayout Spacing="6">
-                          
+
                             </HorizontalStackLayout>
                             <Grid ColumnDefinitions="56, *, Auto" ColumnSpacing="14">
                                 <Border Grid.Column="0" StrokeShape="RoundRectangle 28" BackgroundColor="#EFF6FF" HeightRequest="56" WidthRequest="56" StrokeThickness="0">
                                     <Grid>
-                                        <Image Source="{Binding UrlFotoPerfil}" Aspect="AspectFill" />
+                                        <Image Source="{Binding UrlFotoPerfil}" Aspect="AspectFill" WidthRequest="56" HeightRequest="56" />
                                         <Label Text="{Binding Nombre}" TextColor="#2563EB" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
                                     </Grid>
                                 </Border>
@@ -79,7 +85,7 @@
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="16"/>
                         </Border.StrokeShape>
-                        </Border>
+                    </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

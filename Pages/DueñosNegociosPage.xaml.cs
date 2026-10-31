@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading.Tasks;
 using slotsi_citas.ViewModel;
 using slotsi_citas.Models;
 
@@ -11,6 +12,7 @@ public partial class DueñosNegociosPage : ContentPage
     private string _textoBusqueda = "";
     private List<Negocio> _todosLosNegocios = new();
     private DueñosNegociosViewModel? _viewModel;
+    private bool _isNavigating = false;
 
     public DueñosNegociosPage(DueñosNegociosViewModel viewModel)
     {
@@ -29,7 +31,7 @@ public partial class DueñosNegociosPage : ContentPage
 
     private void OnClearSearchClicked(object sender, EventArgs e)
     {
-        EntryBusqueda.Text = ""; // dispara OnSearchTextChanged y resetea todo
+        EntryBusqueda.Text = "";
     }
 
     private void OnFilterClicked(object sender, EventArgs e)
@@ -84,10 +86,22 @@ public partial class DueñosNegociosPage : ContentPage
         base.OnAppearing();
         if (_viewModel == null) return;
 
-        await _viewModel.CargarNegociosAsync();          // ya incluye los promedios
-        _todosLosNegocios = _viewModel.ListaDueños.ToList();
-        AplicarFiltros();
+        indicadorCarga.IsRunning = indicadorCarga.IsVisible = true;
+        ListaNegocios.IsVisible = false;
+
+        try
+        {
+            await _viewModel.CargarNegociosAsync();
+            _todosLosNegocios = _viewModel.ListaDueños.ToList();
+            AplicarFiltros();
+        }
+        finally
+        {
+            indicadorCarga.IsRunning = indicadorCarga.IsVisible = false;
+            ListaNegocios.IsVisible = true;
+        }
     }
+
     private bool CoincideCategoria(Negocio n)
     {
         if (_categoriaActual == "todos") return true;
@@ -144,7 +158,7 @@ public partial class DueñosNegociosPage : ContentPage
     {
         if (_viewModel == null) return;
 
-        MainThread.BeginInvokeOnMainThread(() =>
+        Dispatcher.Dispatch(() =>
         {
             _viewModel.ListaDueños.Clear();
             foreach (var item in lista)
@@ -156,6 +170,9 @@ public partial class DueñosNegociosPage : ContentPage
 
     private async void OnNegocioTapped(object sender, EventArgs e)
     {
+        if (_isNavigating) return;
+        _isNavigating = true;
+
         try
         {
             Negocio? negocioSeleccionado = null;
@@ -184,13 +201,18 @@ public partial class DueñosNegociosPage : ContentPage
 
             if (Shell.Current != null)
             {
-                await Shell.Current.GoToAsync("CatalogoCliente");
+                await Task.Yield();
+                await Shell.Current.GoToAsync("CatalogoCliente", false);
             }
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"[ERROR NAVEGACION]: {ex.Message}");
             await DisplayAlert("Error", $"No se pudo abrir el catálogo: {ex.Message}", "OK");
+        }
+        finally
+        {
+            _isNavigating = false;
         }
     }
 }

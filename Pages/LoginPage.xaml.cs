@@ -12,6 +12,9 @@ public partial class LoginPage : ContentPage
     private readonly UsuarioService _usuarioService;
     private readonly NegocioService _negocioService;
 
+    // Evita doble toque
+    private bool _isNavigating = false;
+
     public LoginPage(IAuthApiService auth, ISesionService sesion,
                      UsuarioService usuarioService, NegocioService negocioService)
     {
@@ -107,15 +110,42 @@ public partial class LoginPage : ContentPage
         indicadorCarga.IsVisible = indicadorCarga.IsRunning = activo;
     }
 
-    private async void OnForgotPasswordTapped(object? sender, TappedEventArgs e)
+    private async void OnForgotPasswordClicked(object? sender, EventArgs e)
     {
-        var pagina = Handler?.MauiContext?.Services.GetRequiredService<RecuperarContra>();
-        if (pagina != null)
-            await Navigation.PushAsync(pagina);
+        if (_isNavigating) return;
+        _isNavigating = true;
+
+        try
+        {
+            await Task.Yield(); 
+
+            var pagina = Handler?.MauiContext?.Services.GetRequiredService<RecuperarContra>();
+            if (pagina != null)
+                await Navigation.PushAsync(pagina, false); 
+        }
+        finally
+        {
+            _isNavigating = false;
+        }
     }
 
-    private async void OnCreateAccountTapped(object? sender, TappedEventArgs e) =>
-        await Navigation.PushAsync(new OpcionRegistrosU());
+    private async void OnCreateAccountClicked(object? sender, EventArgs e)
+    {
+        if (_isNavigating) return;
+        _isNavigating = true;
+
+        try
+        {
+            await Task.Yield(); 
+
+            var pagina = Handler?.MauiContext?.Services.GetService<OpcionRegistrosU>() ?? new OpcionRegistrosU();
+            await Navigation.PushAsync(pagina, false); 
+        }
+        finally
+        {
+            _isNavigating = false;
+        }
+    }
 
     private void OnTogglePasswordVisibility(object? sender, EventArgs e) =>
         entryContrasena.IsPassword = !entryContrasena.IsPassword;

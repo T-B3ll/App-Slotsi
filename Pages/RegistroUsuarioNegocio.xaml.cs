@@ -1,16 +1,22 @@
 ﻿using Microsoft.Maui.Controls;
 using slotsi_citas.ViewModel;
-using Syncfusion.Maui.Toolkit.Carousel;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace slotsi_citas.Pages;
 
 public partial class RegistroUsuarioNegocio : ContentPage
 {
+    private static readonly Color ColorActivoBorde = Color.FromArgb("#2563EB");
+    private static readonly Color ColorActivoFondo = Color.FromArgb("#EFF6FF");
+    private static readonly Color ColorInactivoBorde = Color.FromArgb("#E5E7EB");
+    private static readonly Color ColorInactivoFondo = Colors.White;
+    // 👆 ----------------------------------------------------------- 👆
+
     private bool _isUpdating = false;
     private bool _isPasswordVisible = false;
-    private string _tipoNegocio = "";
+    private bool _isInitialized = false;
 
     private RegistrarNegocioViewModel _viewModel;
 
@@ -22,6 +28,17 @@ public partial class RegistroUsuarioNegocio : ContentPage
         BindingContext = _viewModel;
     }
 
+    protected override async void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (!_isInitialized)
+        {
+            _isInitialized = true;
+            await Task.Delay(100);
+        }
+    }
+
     private void OnTipoNegocioSelected(object sender, TappedEventArgs e)
     {
         string opcion = e.Parameter?.ToString();
@@ -29,12 +46,12 @@ public partial class RegistroUsuarioNegocio : ContentPage
 
         _viewModel.TipoServicio = opcion;
 
-        FrameSede.BorderColor = Color.FromArgb("#E5E7EB");
-        FrameSede.BackgroundColor = Colors.White;
-        FrameDomicilio.BorderColor = Color.FromArgb("#E5E7EB");
-        FrameDomicilio.BackgroundColor = Colors.White;
-        FrameMixta.BorderColor = Color.FromArgb("#E5E7EB");
-        FrameMixta.BackgroundColor = Colors.White;
+        FrameSede.BorderColor = ColorInactivoBorde;
+        FrameSede.BackgroundColor = ColorInactivoFondo;
+        FrameDomicilio.BorderColor = ColorInactivoBorde;
+        FrameDomicilio.BackgroundColor = ColorInactivoFondo;
+        FrameMixta.BorderColor = ColorInactivoBorde;
+        FrameMixta.BackgroundColor = ColorInactivoFondo;
 
         Frame activo = opcion switch
         {
@@ -46,8 +63,8 @@ public partial class RegistroUsuarioNegocio : ContentPage
 
         if (activo != null)
         {
-            activo.BorderColor = Color.FromArgb("#2563EB");
-            activo.BackgroundColor = Color.FromArgb("#EFF6FF");
+            activo.BorderColor = ColorActivoBorde;
+            activo.BackgroundColor = ColorActivoFondo;
         }
     }
 
