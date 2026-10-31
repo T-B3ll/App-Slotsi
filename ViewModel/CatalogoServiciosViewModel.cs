@@ -30,6 +30,18 @@ namespace slotsi_citas.ViewModel
             set { _negocioActual = value; OnPropertyChanged(); }
         }
 
+        private bool _estaCargando;
+        public bool EstaCargando
+        {
+            get => _estaCargando;
+            set
+            {
+                if (_estaCargando == value) return;
+                _estaCargando = value;
+                OnPropertyChanged();
+            }
+        }
+
         private int _serviciosActivosCount;
         public int ServiciosActivosCount
         {
@@ -106,6 +118,8 @@ namespace slotsi_citas.ViewModel
         {
             try
             {
+                EstaCargando = true;
+
                 if (string.IsNullOrEmpty(negocioId))
                 {
                     negocioId = Preferences.Get("NegocioSeleccionadoId", string.Empty);
@@ -124,21 +138,25 @@ namespace slotsi_citas.ViewModel
 
                 _todosLosServiciosCliente = resultados.Where(s => s.Activo).ToList();
 
-                MainThread.BeginInvokeOnMainThread(() =>
+                await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     AplicarFiltrosCliente();
                 });
             }
             catch (TaskCanceledException)
             {
-             
+
                 await Application.Current.MainPage.DisplayAlert("Tiempo de espera agotado",
                     "La conexión con el servidor tardó demasiado o se perdió. Verifica tu red WiFi (o la IP de tu PC) e intenta de nuevo.", "OK");
             }
             catch (Exception ex)
             {
-                
+
                 await Application.Current.MainPage.DisplayAlert("Error", $"Error al cargar servicios activos: {ex.Message}", "OK");
+            }
+            finally
+            {
+                EstaCargando = false;
             }
         }
 
@@ -285,7 +303,9 @@ namespace slotsi_citas.ViewModel
         public async Task CargarServiciosAsync()
         {
             try
-            {         
+            {
+                EstaCargando = true;
+
                 string negocioId = Preferences.Get("negocio_id", string.Empty);
 
                 if (string.IsNullOrEmpty(negocioId))
@@ -299,7 +319,7 @@ namespace slotsi_citas.ViewModel
 
                 System.Diagnostics.Debug.WriteLine($"[SERVICIOS] negocioId={negocioId}, cantidad={resultados.Count}");
 
-                MainThread.BeginInvokeOnMainThread(() =>
+                await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     Servicios.Clear();
                     foreach (var serv in resultados)
@@ -314,6 +334,10 @@ namespace slotsi_citas.ViewModel
                 {
                     await Application.Current!.MainPage!.DisplayAlert("Error", $"Error al cargar servicios: {ex.Message}", "OK");
                 });
+            }
+            finally
+            {
+                EstaCargando = false;
             }
         }
         public async Task CambiarEstadoActivoAsync(Servicios servicio)

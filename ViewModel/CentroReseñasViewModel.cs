@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using static slotsi_citas.Models.Calificaciones;
@@ -50,6 +51,21 @@ namespace slotsi_citas.ViewModel
                 _ = CargarCalificacionesAsync();
             }
         }
+
+        private int _cargasEnCurso;
+        private bool _estaCargando;
+        public bool EstaCargando
+        {
+            get => _estaCargando;
+            private set
+            {
+                if (_estaCargando == value) return;
+                _estaCargando = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(NoEstaCargando));
+            }
+        }
+        public bool NoEstaCargando => !EstaCargando;
 
         private int _totalCalificaciones;
         public int TotalCalificaciones
@@ -93,6 +109,9 @@ namespace slotsi_citas.ViewModel
         {
             try
             {
+                Interlocked.Increment(ref _cargasEnCurso);
+                EstaCargando = true;
+
                 bool esDuenoNegocio = Preferences.Get("EsDuenoNegocio", false);
                 _rolActual = esDuenoNegocio ? TipoRolUsuario.Negocio : TipoRolUsuario.Cliente;
 
@@ -119,7 +138,7 @@ namespace slotsi_citas.ViewModel
                     }
                     catch
                     {
-
+            
                     }
 
                     var todasNegocio = await _calificacionService.ObtenerPorNegocioAsync(negocioId);
@@ -146,7 +165,7 @@ namespace slotsi_citas.ViewModel
                     dtos = todasCliente.Where(c => c.NegocioCalificado == estadoCalificado).ToList();
                 }
 
-                MainThread.BeginInvokeOnMainThread(() =>
+                await MainThread.InvokeOnMainThreadAsync(() =>
                 {
                     ListaCalificaciones.Clear();
 
@@ -202,8 +221,15 @@ namespace slotsi_citas.ViewModel
             {
                 Debug.WriteLine($"[CentroReseñas] Error: {ex.Message}");
             }
+            finally
+            {
+                if (Interlocked.Decrement(ref _cargasEnCurso) <= 0)
+                {
+                    _cargasEnCurso = 0;
+                    await MainThread.InvokeOnMainThreadAsync(() => EstaCargando = false);
+                }
+            }
         }
-
         private void LimpiarLista()
         {
             MainThread.BeginInvokeOnMainThread(() =>

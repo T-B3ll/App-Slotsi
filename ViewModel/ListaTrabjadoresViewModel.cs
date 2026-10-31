@@ -1,4 +1,5 @@
-﻿using Microsoft.Maui.ApplicationModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Controls;
 using slotsi_citas.Models;
 using slotsi_citas.Pages;
@@ -16,32 +17,26 @@ using System.Windows.Input;
 
 namespace slotsi_citas.ViewModel
 {
-    public class ListaTrabjadoresViewModel : INotifyPropertyChanged
+    public partial class ListaTrabjadoresViewModel : ObservableObject
     {
+        private readonly Dictionary<string, bool> _estadoServidor = new();
         private readonly TrabajadorService _trabajadorService;
         private readonly NegocioService _negocioService;
-
         public ICommand EditarTrabajadorCommand { get; }
         public ICommand IrANuevoTrabajadorCommand { get; }
         public ICommand CambiarEstadoActivoCommand { get; }
 
+        [ObservableProperty]
         private int _trabajadoresActivosCount;
-        public int TrabajadoresActivosCount
-        {
-            get => _trabajadoresActivosCount;
-            set
-            {
-                if (_trabajadoresActivosCount != value)
-                {
-                    _trabajadoresActivosCount = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
+
+        [ObservableProperty]
+        private bool estaCargando;
+
 
         public ObservableCollection<Trabajador> Trabajadores { get; set; } = new ObservableCollection<Trabajador>();
 
-        public ListaTrabjadoresViewModel(TrabajadorService trabajadorService, NegocioService negocioService)
+        public ListaTrabjadoresViewModel(
+            TrabajadorService trabajadorService, NegocioService negocioService)
         {
             _trabajadorService = trabajadorService;
             _negocioService = negocioService;
@@ -72,6 +67,8 @@ namespace slotsi_citas.ViewModel
         {
             try
             {
+                EstaCargando = true;
+
                 string usuarioId = Preferences.Get("UsuarioId", string.Empty);
 
                 if (string.IsNullOrEmpty(usuarioId))
@@ -96,6 +93,9 @@ namespace slotsi_citas.ViewModel
 
                 var dtos = await _trabajadorService.ObtenerPorNegocioAsync(negocioId);
                 var lista = dtos.Select(d => d.ToModel()).ToList();
+                _estadoServidor.Clear();
+                foreach (var t in lista)
+                    _estadoServidor[t.Id] = t.Activo;
 
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
@@ -112,13 +112,21 @@ namespace slotsi_citas.ViewModel
                 Debug.WriteLine($"[ERROR API TRABAJADORES] {ex}");
                 await Application.Current.MainPage.DisplayAlert("Error", ApiException.MensajePara(ex), "OK");
             }
+            finally
+            {
+                EstaCargando = false;
+            }
         }
 
-        public async Task CambiarEstadoActivoAsync(Trabajador trabajador)
+public async Task CambiarEstadoActivoAsync(Trabajador trabajador)
         {
             if (trabajador == null) return;
 
-            if (!trabajador.Activo)
+            var nuevoEstado = trabajador.Activo;
+            if (_estadoServidor.TryGetValue(trabajador.Id, out var actual) && actual == nuevoEstado)
+                return;
+
+            if (!nuevoEstado)
             {
                 bool confirmar = await Application.Current.MainPage.DisplayAlert(
                     "Desactivar trabajador",
@@ -128,28 +136,23 @@ namespace slotsi_citas.ViewModel
 
                 if (!confirmar)
                 {
-                    trabajador.Activo = true;
+                    trabajador.Activo = true; // dispara Toggled, pero se ignora por el diccionario
                     return;
                 }
             }
 
             try
             {
-                await _trabajadorService.CambiarEstadoAsync(trabajador.Id, trabajador.Activo);
-                trabajador.Activo = trabajador.Activo;
+                await _trabajadorService.CambiarEstadoAsync(trabajador.Id, nuevoEstado);
+                _estadoServidor[trabajador.Id] = nuevoEstado;
                 TrabajadoresActivosCount = Trabajadores.Count(t => t.Activo);
             }
             catch (Exception ex)
             {
-                trabajador.Activo = !trabajador.Activo;
-                await Application.Current.MainPage.DisplayAlert("Error", $"Error al actualizar: {ApiException.MensajePara(ex)}", "OK");
+                trabajador.Activo = !nuevoEstado; // se ignora por el diccionario
+                await Application.Current.MainPage.DisplayAlert("Error",
+                    $"Error al actualizar: {ApiException.MensajePara(ex)}", "OK");
             }
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

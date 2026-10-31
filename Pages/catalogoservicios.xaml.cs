@@ -18,10 +18,9 @@ namespace slotsi_citas.Pages
         {
             base.OnAppearing();
 
-            // se ejecuta la carga en segundo plano para que no bloquee la interfaz
             if (BindingContext is CatalogoServiciosViewModel vm)
             {
-                await Task.Run(async () => await _vm.CargarServiciosAsync());
+                await _vm.CargarServiciosAsync();
             }
         }
 
@@ -31,13 +30,10 @@ namespace slotsi_citas.Pages
             {
                 if (BindingContext is ViewModel.CatalogoServiciosViewModel vm)
                 {
-                    // Usamos Task.Run también aquí para no bloquear al cambiar el switch
-                    await Task.Run(async () => await vm.CambiarEstadoActivoAsync(servicio));
+                    await vm.CambiarEstadoActivoAsync(servicio);
                 }
             }
         }
-
-
         private void OnMenuClicked(object sender, EventArgs e)
         {
             Shell.Current.FlyoutIsPresented = true;

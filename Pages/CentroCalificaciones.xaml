@@ -24,21 +24,17 @@
             </Border>
 
             <Grid Grid.Row="1" ColumnDefinitions="*, *" Margin="16,0,16,12" ColumnSpacing="10">
-                <Button Grid.Column="0"
-                        Text="Recibidas"
+                <Button Grid.Column="0" Text="Recibidas"
                         BackgroundColor="{Binding ColorBotonRecibidas}"
                         TextColor="{Binding TextoBotonRecibidas}"
-                        FontAttributes="Bold"
-                        CornerRadius="8"
+                        FontAttributes="Bold" CornerRadius="8"
                         Command="{Binding SeleccionarPestanaCommand}"
                         CommandParameter="Recibidas" />
 
-                <Button Grid.Column="1"
-                        Text="Realizadas"
+                <Button Grid.Column="1" Text="Realizadas"
                         BackgroundColor="{Binding ColorBotonRealizadas}"
                         TextColor="{Binding TextoBotonRealizadas}"
-                        FontAttributes="Bold"
-                        CornerRadius="8"
+                        FontAttributes="Bold" CornerRadius="8"
                         Command="{Binding SeleccionarPestanaCommand}"
                         CommandParameter="Realizadas" />
             </Grid>
@@ -65,26 +61,24 @@
                     </BindableLayout.ItemTemplate>
 
                     <BindableLayout.EmptyView>
-                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Margin="0,50">
+                        <VerticalStackLayout Spacing="8" HorizontalOptions="Center" Margin="0,50" IsVisible="{Binding NoEstaCargando}">
                             <Label Text="No hay reseñas en este apartado." TextColor="#9CA3AF" FontSize="14" HorizontalOptions="Center" />
                         </VerticalStackLayout>
                     </BindableLayout.EmptyView>
                 </VerticalStackLayout>
             </ScrollView>
+
+            <VerticalStackLayout Grid.Row="2" VerticalOptions="Center" HorizontalOptions="Center" Spacing="10"
+                                 IsVisible="{Binding EstaCargando}">
+                <ActivityIndicator IsRunning="{Binding EstaCargando}" Color="#2563EB" WidthRequest="50" HeightRequest="50"/>
+                <Label Text="Cargando reseñas..." TextColor="#6B7280" FontSize="14" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
         </Grid>
 
-        
+
         <Button Text="+ Crear Reseña"
                 Command="{Binding IrACrearResenaCommand}"
                 IsVisible="{Binding MostrarBotonCrearResena}"
-                BackgroundColor="#2563EB"
-                TextColor="White"
-                FontAttributes="Bold"
-                CornerRadius="24"
-                HeightRequest="48"
-                Padding="16,0"
-                HorizontalOptions="End"
-                VerticalOptions="End"
-                Margin="0,0,20,20" />
+                BackgroundColor="#2563EB" TextColor="White" FontAttributes="Bold" CornerRadius="24" HeightRequest="48" Padding="16,0" HorizontalOptions="End" VerticalOptions="End" Margin="0,0,20,20" />
     </Grid>
 </ContentPage>

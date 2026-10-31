@@ -15,7 +15,6 @@ namespace slotsi_citas.ViewModels
         private readonly NegocioService _negocioService;
         private readonly TrabajadorService _trabajadorService;
         private string _trabajadorId;
-
         private Trabajador _trabajadorAEditar;
         private string _archivoProfesionalBase64;
         private string _nombreDocumento = "Subir documento del título profesional";
@@ -299,11 +298,6 @@ namespace slotsi_citas.ViewModels
                 .ToList();
         }
 
-        /// <summary>
-        /// Revisa los campos obligatorios (los que tienen * en la pantalla).
-        /// Devuelve la lista de lo que falta o está mal (vacía si todo está correcto).
-        /// Para quitar una obligatoriedad, borra su línea.
-        /// </summary>
         private List<string> Validar()
         {
             var errores = new List<string>();

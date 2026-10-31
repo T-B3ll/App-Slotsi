@@ -1,17 +1,17 @@
-﻿using slotsi_citas.Models;
+﻿using Microsoft.Maui.Controls;
+using slotsi_citas.Models;
 using slotsi_citas.Services;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace slotsi_citas.ViewModel
 {
-    public class MejoresNegociosViewModel
+    public class MejoresNegociosViewModel : BindableObject
     {
         private readonly NegocioService _negocioService;
         private readonly CalificacionService _calificacionService;
@@ -33,8 +33,16 @@ namespace slotsi_citas.ViewModel
         public bool Cargando
         {
             get => _cargando;
-            set { _cargando = value; OnPropertyChanged(); }
+            set
+            {
+                if (_cargando == value) return;
+                _cargando = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(NoCargando));
+            }
         }
+
+        public bool NoCargando => !Cargando;
 
         public MejoresNegociosViewModel(NegocioService negocioService, CalificacionService calificacionService)
         {
@@ -64,8 +72,6 @@ namespace slotsi_citas.ViewModel
                     catch { }
                     finally { limitador.Release(); }
                 }));
-
-                // Un ranking solo tiene sentido con negocios que ya tienen reseñas
                 _todos = negocios.Where(n => n.TotalResenas > 0).ToList();
                 Aplicar();
             }
@@ -132,9 +138,5 @@ namespace slotsi_citas.ViewModel
             return texto.ToLower().Replace("á", "a").Replace("é", "e").Replace("í", "i")
                         .Replace("ó", "o").Replace("ú", "u").Replace("ñ", "n");
         }
-
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string? name = null) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }

@@ -4,9 +4,9 @@
              x:Class="slotsi_citas.Pages.MejoresNegociosPage"
              Title="Mejor Calificados"
              BackgroundColor="#F3F4F6">
+    
     <Grid RowDefinitions="Auto, Auto, *">
 
-        <!-- Filtros -->
         <VerticalStackLayout Grid.Row="0" BackgroundColor="White" Padding="20,12,20,14" Spacing="10">
             <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
                 <ScrollView Grid.Column="0" Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
@@ -16,13 +16,7 @@
                         <Button x:Name="BtnBarberia" Text="Barbería" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="38" Padding="20,0" FontSize="13" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnCategoriaClicked"/>
                     </HorizontalStackLayout>
                 </ScrollView>
-
-                <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
-                    <Button x:Name="BtnPdf" Text="PDF" BackgroundColor="#EF4444" TextColor="White" CornerRadius="8" HeightRequest="38" WidthRequest="80" FontSize="13" Padding="0" Clicked="OnGenerarPdfClicked"/>
-                    <Button x:Name="BtnExcel" Text="Excel" BackgroundColor="#10B981" TextColor="White" CornerRadius="8" HeightRequest="38" WidthRequest="80" FontSize="13" Padding="0" Clicked="OnGenerarExcelClicked"/>
-                </HorizontalStackLayout>
             </Grid>
-
             <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
                 <HorizontalStackLayout Spacing="10">
                     <Button x:Name="BtnTop10" ClassId="10" Text="Top 10" BackgroundColor="#2563EB" TextColor="White" CornerRadius="20" HeightRequest="34" Padding="16,0" FontSize="12" FontAttributes="Bold" Clicked="OnTopClicked"/>
@@ -31,18 +25,22 @@
                     <Button x:Name="BtnTop100" ClassId="100" Text="Top 100" BackgroundColor="White" TextColor="#4B5563" CornerRadius="20" HeightRequest="34" Padding="16,0" FontSize="12" BorderColor="#E5E7EB" BorderWidth="1" Clicked="OnTopClicked"/>
                 </HorizontalStackLayout>
             </ScrollView>
+            <Label Text="Elija un formato de descarga" FontSize="11" TextColor="#64748B" />
+            <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
+                <Button x:Name="BtnPdf" Text="PDF" BackgroundColor="#EF4444" TextColor="White" CornerRadius="8" HeightRequest="36" WidthRequest="75" FontSize="12" Clicked="OnGenerarPdfClicked" />
+                <Button x:Name="BtnExcel" Text="Excel" BackgroundColor="#10B981" TextColor="White" CornerRadius="8" HeightRequest="36" WidthRequest="75" FontSize="12" Clicked="OnGenerarExcelClicked"/>
+            </HorizontalStackLayout>
         </VerticalStackLayout>
 
         <Label Grid.Row="1" Text="{Binding TextoResultados}" Margin="24,12,24,0" FontSize="14" FontAttributes="Bold" TextColor="#6B7280"/>
-       
-        <!-- Lista -->
+
         <CollectionView Grid.Row="2" ItemsSource="{Binding Ranking}" SelectionMode="None" Margin="16,12,16,12">
             <CollectionView.ItemsLayout>
                 <LinearItemsLayout Orientation="Vertical" ItemSpacing="12"/>
             </CollectionView.ItemsLayout>
 
             <CollectionView.EmptyView>
-                <Label Text="Aún no hay negocios calificados en esta categoría." HorizontalTextAlignment="Center" TextColor="#9CA3AF" Margin="0,40,0,0"/>
+                <Label Text="Aún no hay negocios calificados en esta categoría." HorizontalTextAlignment="Center" TextColor="#9CA3AF" Margin="0,40,0,0" IsVisible="{Binding NoCargando}"/>
             </CollectionView.EmptyView>
 
             <CollectionView.ItemTemplate>
@@ -94,7 +92,12 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <ActivityIndicator Grid.Row="2" IsRunning="{Binding Cargando}" IsVisible="{Binding Cargando}" Color="#2563EB" HorizontalOptions="Center" VerticalOptions="Center"/>
+        <VerticalStackLayout Grid.Row="2" VerticalOptions="Center" HorizontalOptions="Center" Spacing="10"
+                             IsVisible="{Binding Cargando}">
+            <ActivityIndicator IsRunning="{Binding Cargando}" Color="#2563EB" WidthRequest="50" HeightRequest="50"/>
+            <Label Text="Cargando ranking..." TextColor="#6B7280" FontSize="14" HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+
         <Grid x:Name="OverlayGenerando" Grid.RowSpan="3" IsVisible="False" BackgroundColor="#80000000">
             <Border BackgroundColor="White" StrokeThickness="0" Padding="28,22" HorizontalOptions="Center" VerticalOptions="Center">
                 <Border.StrokeShape>
