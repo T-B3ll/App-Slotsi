@@ -32,11 +32,6 @@
                                     <Label Text="{Binding DireccionNegocio}" FontSize="13" TextColor="#64748B"/>
                                 </VerticalStackLayout>
 
-                                <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
-                                    <Button x:Name="BtnPdf" Text="PDF" BackgroundColor="#EF4444" TextColor="White" CornerRadius="8" HeightRequest="36" WidthRequest="75" FontSize="12" Clicked="OnGenerarPdfClicked" />
-                                    <Button x:Name="BtnExcel" Text="Excel" BackgroundColor="#10B981" TextColor="White" CornerRadius="8" HeightRequest="36" WidthRequest="75" FontSize="12" Clicked="OnGenerarExcelClicked"/>
-                                </HorizontalStackLayout>
-
                             </Grid>
                         </Border>
 
@@ -91,7 +86,11 @@
                                 </VerticalStackLayout>
                             </Border>
                         </Grid>
-
+                        <Label Text="Elija un formato de descarga" FontSize="11" TextColor="#64748B" />
+                        <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
+                            <Button x:Name="BtnPdf" Text="PDF" BackgroundColor="#EF4444" TextColor="White" CornerRadius="8" HeightRequest="36" WidthRequest="75" FontSize="12" Clicked="OnGenerarPdfClicked" />
+                            <Button x:Name="BtnExcel" Text="Excel" BackgroundColor="#10B981" TextColor="White" CornerRadius="8" HeightRequest="36" WidthRequest="75" FontSize="12" Clicked="OnGenerarExcelClicked"/>
+                        </HorizontalStackLayout>
                         <Border BackgroundColor="White" Stroke="#E2E8F0" Padding="14">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="12" />

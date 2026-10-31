@@ -25,9 +25,6 @@ public partial class ListaTrabajadores : ContentPage
     {
         if (sender is Switch sw && sw.BindingContext is Models.Trabajador trab)
         {
-            if (e.Value == trab.Activo) return;
-
-            trab.Activo = e.Value;
             await _viewModel.CambiarEstadoActivoAsync(trab);
         }
     }

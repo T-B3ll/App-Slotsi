@@ -94,16 +94,22 @@ public partial class NuevoTrabajador : ContentPage
 
     private void AplicarTexto(Entry entry, string texto)
     {
-        _isUpdating = true;
-        try
-        {
-            entry.Text = texto;
-        }
-        finally
-        {
-            _isUpdating = false;
-        }
+        string original = entry.Text ?? string.Empty;
 
-        entry.Dispatcher.Dispatch(() => entry.CursorPosition = entry.Text?.Length ?? 0);
+        entry.Dispatcher.Dispatch(() =>
+        {
+            if ((entry.Text ?? string.Empty) != original) return;
+            if (entry.Text == texto) return;
+
+            _isUpdating = true;
+            try
+            {
+                entry.Text = texto;
+            }
+            finally
+            {
+                _isUpdating = false;
+            }
+        });
     }
 }
