@@ -44,7 +44,7 @@ namespace Slotsi.Api.Controllers
             usuario.Contrasena = _hasher.HashPassword(usuario, dto.Contrasena);
 
             if (!await _usuarios.CrearAsync(usuario, ct))
-                return Problem(title: "Correo ya registrado", detail: "Ya existe un usuario con ese correo",
+                return Problem(title: " ", detail: "Ya existe un usuario con ese correo",
                     statusCode: StatusCodes.Status409Conflict);
 
             return StatusCode(StatusCodes.Status201Created);

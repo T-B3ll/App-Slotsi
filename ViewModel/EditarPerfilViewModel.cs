@@ -129,11 +129,14 @@ namespace slotsi_citas.ViewModel
             }
         }
 
-        private async void CargarDatosAsync()
+        public async Task CargarDatosAsync()
         {
             IsBusy = true;
             try
             {
+                DocumentosSubidos.Clear();
+                OnPropertyChanged(nameof(HayDocumentos));
+
                 var idUsuario = Preferences.Get("UsuarioId", string.Empty).Trim();
                 _esDueno = Preferences.Get("EsDuenoNegocio", false);
 
@@ -167,7 +170,6 @@ namespace slotsi_citas.ViewModel
                         }
                         else
                         {
-                            // Si la App no encuentra el negocio, nos avisa con el ID exacto
                             await Application.Current.MainPage.DisplayAlert("Aviso", $"No se encontró el negocio.\nApp busca el ID: {idUsuario}\nRevisa que en Compass el UsuarioId sea idéntico.", "OK");
                             CargarHorariosDesdeModelo(new Negocio());
                         }

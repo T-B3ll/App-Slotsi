@@ -61,17 +61,28 @@
                            TextChanged="OnCedulaChanged"/>
 
                     <Label Text="Nueva contraseña" TextColor="#111827" FontSize="14" FontAttributes="Bold" Margin="0,10,0,0"/>
-                    <Entry x:Name="EntryPassword"
-                           Placeholder="Dejar vacío si no desea cambiar" 
-                           IsPassword="True"
-                           PlaceholderColor="#9CA3AF"
-                           TextColor="#111827"
-                           IsEnabled="{Binding PuedeEditar}"
-                           BackgroundColor="#F9FAFB" 
-                           HeightRequest="50"
-                           Text="{Binding NuevaPassword}"/>
-                    <Label Text="Mínimo 6 caracteres para actualizar." FontSize="10" TextColor="#9CA3AF" Margin="0,-8,0,0"/>
+                    <Frame BackgroundColor="#F9FAFB" BorderColor="Transparent" CornerRadius="8" Padding="12,0" HeightRequest="50" HasShadow="False">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <Entry x:Name="PasswordEntry"
+                                   Grid.Column="0"
+                                   Placeholder="Dejar vacío si no desea cambiar" 
+                                   IsPassword="True"
+                                   PlaceholderColor="#9CA3AF"
+                                   TextColor="#111827"
+                                   IsEnabled="{Binding PuedeEditar}"
+                                   BackgroundColor="Transparent" 
+                                   HeightRequest="50"
+                                   Text="{Binding NuevaPassword}"
+                                   TextChanged="OnPasswordChanged"/>
 
+                            <ImageButton x:Name="BtnTogglePassword" Grid.Column="1" Source="eye_open.png" 
+                                         WidthRequest="24" HeightRequest="24" Aspect="AspectFit" 
+                                         BackgroundColor="Transparent" VerticalOptions="Center" 
+                                         Clicked="OnTogglePasswordVisibility"/>
+                        </Grid>
+                    </Frame>
+                    <Label x:Name="lblSeguridadPassword" Text="" FontSize="12" TextColor="#6B7280" Margin="0,-5,0,0" />
+                    <Label Text="Mínimo 8 caracteres (Mayúscula, minúscula, número y símbolo)." FontSize="10" TextColor="#9CA3AF" Margin="0,-8,0,0"/>
                 </VerticalStackLayout>
             </Border>
 
@@ -179,7 +190,7 @@
 
                                             <Border Grid.Column="3" BackgroundColor="#4B5563" StrokeShape="RoundRectangle 16" 
                                                     Padding="4,3" VerticalOptions="Center">
-                                                <Switch IsToggled="{Binding TienePausa}" OnColor="#3B82F6" ThumbColor="#FFFFFF" Scale="0.95"/>
+                                                <Switch IsToggled="{Binding TienePausa}" OnColor="#3B82F6" ThumbColor="#FFFFFF" Scale="0.95" IsEnabled="{Binding EsLaboral}"/>
                                             </Border>
 
                                             <Label Grid.Column="4" Text="Pausa" FontSize="12" TextColor="#6B7280" 
@@ -258,13 +269,13 @@
                         Clicked="OnCancelarClicked"/>
 
                 <Button Grid.Column="1"
-                        Text="Guardar Cambios" 
-                        BackgroundColor="#2563EB" 
-                        TextColor="White" 
-                        FontAttributes="Bold" 
-                        CornerRadius="12" 
-                        HeightRequest="50"
-                        Command="{Binding GuardarCambiosCommand}"/>
+                    Text="Guardar Cambios" 
+                    BackgroundColor="#2563EB" 
+                    TextColor="White" 
+                    FontAttributes="Bold" 
+                    CornerRadius="12" 
+                    HeightRequest="50"
+                    Clicked="OnGuardarClicked"/>
             </Grid>
 
         </VerticalStackLayout>
