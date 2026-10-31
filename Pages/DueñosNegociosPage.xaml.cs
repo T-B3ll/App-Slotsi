@@ -14,19 +14,33 @@ public partial class DueñosNegociosPage : ContentPage
     private DueñosNegociosViewModel? _viewModel;
     private bool _isNavigating = false;
 
+    private CancellationTokenSource? _searchCancellationTokenSource;
+
     public DueñosNegociosPage(DueñosNegociosViewModel viewModel)
     {
         InitializeComponent();
         _viewModel = viewModel;
         BindingContext = _viewModel;
     }
-
-    private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+    private async void OnSearchTextChanged(object sender, TextChangedEventArgs e)
     {
         string original = e.NewTextValue ?? "";
-        _textoBusqueda = NormalizarTexto(original);
         BtnLimpiarBusqueda.IsVisible = !string.IsNullOrEmpty(original);
-        AplicarFiltros();
+
+        _searchCancellationTokenSource?.Cancel();
+        _searchCancellationTokenSource = new CancellationTokenSource();
+        var token = _searchCancellationTokenSource.Token;
+
+        try
+        {
+            await Task.Delay(300, token);
+
+            _textoBusqueda = NormalizarTexto(original);
+            AplicarFiltros();
+        }
+        catch (TaskCanceledException)
+        {
+        }
     }
 
     private void OnClearSearchClicked(object sender, EventArgs e)

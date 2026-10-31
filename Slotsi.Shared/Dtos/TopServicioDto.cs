@@ -14,5 +14,7 @@ public class DemandaSemanalDto
     public int Hora { get; set; }
     public int TotalCitas { get; set; }
 
+    public string NombreServicio { get; set; } = string.Empty;
+    public string NombreTrabajador { get; set; } = string.Empty;
 
 }

@@ -14,11 +14,15 @@ public class CitasController : ControllerBase
 {
     private readonly ICitaRepository _citas;
     private readonly INegocioRepository _negocio;
+    private readonly ITrabajadorRepository _trabajadores;
 
-    public CitasController(ICitaRepository citas, INegocioRepository negocio)
+
+
+    public CitasController(ICitaRepository citas, INegocioRepository negocio, ITrabajadorRepository trabajadores)
     {
         _citas = citas;
         _negocio = negocio;
+        _trabajadores = trabajadores;
     }
 
     [HttpGet]
@@ -246,13 +250,15 @@ public class CitasController : ControllerBase
                 citas = citas.Where(c => c.NegocioId.ToString() == negocioId).ToList();
             }
 
-        
-            var hoyLocal = DateTime.Now.Date; 
+            var listaTrabajadores = string.IsNullOrEmpty(negocioId)
+                ? new List<Slotsi.Api.Entities.TrabajadorEntity>()
+                : await _trabajadores.ObtenerPorNegocioAsync(negocioId, ct);
+
+            var hoyLocal = DateTime.Now.Date;
             int diasParaLunes = ((int)hoyLocal.DayOfWeek + 6) % 7;
             var inicioSemana = hoyLocal.AddDays(-diasParaLunes);
             var finSemana = inicioSemana.AddDays(7);
 
-           
             citas = citas.Where(c =>
             {
                 var fechaLocal = c.FechaHoraInicio.ToLocalTime();
@@ -264,13 +270,30 @@ public class CitasController : ControllerBase
                 .GroupBy(c => new
                 {
                     Dia = c.FechaHoraInicio.ToLocalTime().DayOfWeek,
-                    Hora = c.FechaHoraInicio.ToLocalTime().Hour
+                    Hora = c.FechaHoraInicio.ToLocalTime().Hour,
+                    Servicio = string.IsNullOrEmpty(c.ServicioNombre) ? "General" : c.ServicioNombre,
+                    TrabajadorId = c.TrabajadorId.ToString()
                 })
-                .Select(g => new DemandaSemanalDto
+                .Select(g =>
                 {
-                    DiaSemana = g.Key.Dia.ToString(),
-                    Hora = g.Key.Hora,
-                    TotalCitas = g.Count()
+                    var trabajadorReal = listaTrabajadores.FirstOrDefault(t =>
+                        t.Id.ToString().ToLower() == g.Key.TrabajadorId.ToLower());
+
+                    string nombreTrabajador = "Sin asignar";
+
+                    if (trabajadorReal != null)
+                    {
+                        nombreTrabajador = trabajadorReal.Nombre;
+                    }
+
+                    return new DemandaSemanalDto
+                    {
+                        DiaSemana = g.Key.Dia.ToString(),
+                        Hora = g.Key.Hora,
+                        TotalCitas = g.Count(),
+                        NombreServicio = g.Key.Servicio,
+                        NombreTrabajador = nombreTrabajador
+                    };
                 })
                 .ToList();
 

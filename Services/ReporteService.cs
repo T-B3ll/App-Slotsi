@@ -199,23 +199,21 @@ namespace slotsi_citas.Services
             var fontBold = PdfFontFactory.CreateFont(iText.IO.Font.Constants.StandardFonts.HELVETICA_BOLD);
             var fontNormal = PdfFontFactory.CreateFont(iText.IO.Font.Constants.StandardFonts.HELVETICA);
 
-            document.Add(new Paragraph($"Reporte de Demanda esta   ({periodo})")
+            document.Add(new Paragraph($"Reporte de Demanda ({periodo})")
                 .SetFont(fontBold).SetFontSize(18).SetTextAlignment(iText.Layout.Properties.TextAlignment.CENTER));
-
 
             var topDemanda = demanda
                 .OrderByDescending(d => d.TotalCitas)
                 .Take(10)
                 .ToList();
 
-            var table = new Table(new float[] { 1, 3, 2, 2 }).UseAllAvailableWidth();
+            var table = new Table(new float[] { 2, 2, 3, 3 }).UseAllAvailableWidth();
 
-            table.AddHeaderCell(new iText.Layout.Element.Cell().Add(new Paragraph("#").SetFont(fontBold)).SetBackgroundColor(ColorConstants.LIGHT_GRAY));
             table.AddHeaderCell(new iText.Layout.Element.Cell().Add(new Paragraph("Día").SetFont(fontBold)).SetBackgroundColor(ColorConstants.LIGHT_GRAY));
-            table.AddHeaderCell(new iText.Layout.Element.Cell().Add(new Paragraph("Hora").SetFont(fontBold)).SetBackgroundColor(ColorConstants.LIGHT_GRAY));
-            table.AddHeaderCell(new iText.Layout.Element.Cell().Add(new Paragraph("Citas").SetFont(fontBold)).SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+            table.AddHeaderCell(new iText.Layout.Element.Cell().Add(new Paragraph("Horario").SetFont(fontBold)).SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+            table.AddHeaderCell(new iText.Layout.Element.Cell().Add(new Paragraph("Servicio").SetFont(fontBold)).SetBackgroundColor(ColorConstants.LIGHT_GRAY));
+            table.AddHeaderCell(new iText.Layout.Element.Cell().Add(new Paragraph("Trabajador").SetFont(fontBold)).SetBackgroundColor(ColorConstants.LIGHT_GRAY));
 
-            int index = 1;
             foreach (var item in topDemanda)
             {
                 string diaEspanol = item.DiaSemana switch
@@ -232,40 +230,74 @@ namespace slotsi_citas.Services
 
                 string horaFormateada = DateTime.Today.AddHours(item.Hora).ToString("h:mm tt");
 
-                table.AddCell(new iText.Layout.Element.Cell().Add(new Paragraph(index.ToString()).SetFont(fontNormal)));
+                string servicio = string.IsNullOrWhiteSpace(item.NombreServicio) ? "Sin servicio" : item.NombreServicio;
+
+                string trabajador = string.IsNullOrWhiteSpace(item.NombreTrabajador) || item.NombreTrabajador == "000000000000000000000000"
+                    ? "Sin asignar"
+                    : item.NombreTrabajador;
+
+                if (trabajador.Length == 24 && trabajador.All(char.IsLetterOrDigit))
+                    trabajador = "Asignado (ID Oculto)";
+
                 table.AddCell(new iText.Layout.Element.Cell().Add(new Paragraph(diaEspanol).SetFont(fontNormal)));
                 table.AddCell(new iText.Layout.Element.Cell().Add(new Paragraph(horaFormateada).SetFont(fontNormal)));
-                table.AddCell(new iText.Layout.Element.Cell().Add(new Paragraph(item.TotalCitas.ToString()).SetFont(fontNormal)));
-                index++;
+                table.AddCell(new iText.Layout.Element.Cell().Add(new Paragraph(servicio).SetFont(fontNormal)));
+                table.AddCell(new iText.Layout.Element.Cell().Add(new Paragraph(trabajador).SetFont(fontNormal)));
             }
 
             document.Add(table);
             document.Close();
             return stream.ToArray();
         }
+
         public byte[] GenerarDemandaSemanalExcel(List<DemandaSemanalDto> demanda, string periodo)
         {
             using var workbook = new XLWorkbook();
             var worksheet = workbook.Worksheets.Add("Demanda Semanal");
 
-            worksheet.Cell(1, 1).Value = $"Reporte de Demanda  ({periodo})";
+            worksheet.Cell(1, 1).Value = $"Reporte de Demanda ({periodo})";
             worksheet.Cell(1, 1).Style.Font.Bold = true;
             worksheet.Cell(1, 1).Style.Font.FontSize = 14;
 
             worksheet.Cell(3, 1).Value = "Día";
-            worksheet.Cell(3, 2).Value = "Hora";
-            worksheet.Cell(3, 3).Value = "Total Citas";
+            worksheet.Cell(3, 2).Value = "Horario";
+            worksheet.Cell(3, 3).Value = "Servicio";
+            worksheet.Cell(3, 4).Value = "Trabajador";
 
-            var headerRange = worksheet.Range(3, 1, 3, 3);
+            var headerRange = worksheet.Range(3, 1, 3, 4);
             headerRange.Style.Font.Bold = true;
             headerRange.Style.Fill.BackgroundColor = XLColor.LightBlue;
 
             int row = 4;
             foreach (var item in demanda)
             {
-                worksheet.Cell(row, 1).Value = item.DiaSemana;
-                worksheet.Cell(row, 2).Value = $"{item.Hora}:00";
-                worksheet.Cell(row, 3).Value = item.TotalCitas;
+                string diaEspanol = item.DiaSemana switch
+                {
+                    "Monday" => "Lunes",
+                    "Tuesday" => "Martes",
+                    "Wednesday" => "Miércoles",
+                    "Thursday" => "Jueves",
+                    "Friday" => "Viernes",
+                    "Saturday" => "Sábado",
+                    "Sunday" => "Domingo",
+                    _ => item.DiaSemana
+                };
+
+                string horaFormateada = DateTime.Today.AddHours(item.Hora).ToString("h:mm tt");
+
+                string servicio = string.IsNullOrWhiteSpace(item.NombreServicio) ? "Sin servicio" : item.NombreServicio;
+
+                string trabajador = string.IsNullOrWhiteSpace(item.NombreTrabajador) || item.NombreTrabajador == "000000000000000000000000"
+                    ? "Sin asignar"
+                    : item.NombreTrabajador;
+
+                if (trabajador.Length == 24 && trabajador.All(char.IsLetterOrDigit))
+                    trabajador = "Asignado (ID Oculto)";
+
+                worksheet.Cell(row, 1).Value = diaEspanol;
+                worksheet.Cell(row, 2).Value = horaFormateada;
+                worksheet.Cell(row, 3).Value = servicio;
+                worksheet.Cell(row, 4).Value = trabajador;
                 row++;
             }
 
