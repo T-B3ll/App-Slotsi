@@ -1,53 +1,57 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-                 xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
-                 x:Class="slotsi_citas.Pages.ResumenPage"
-                 x:DataType="vm:ResumenViewModel"
-                 Title="Resumen del Día"
-                 Shell.NavBarIsVisible="True"
-                 BackgroundColor="#F8FAFC">
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
+             x:Class="slotsi_citas.Pages.ResumenPage"
+             x:DataType="vm:ResumenViewModel"
+             Title="Resumen del Día"
+             Shell.NavBarIsVisible="True"
+             BackgroundColor="#F8FAFC">
 
-        <RefreshView Command="{Binding CargarCommand}"
-                     IsRefreshing="{Binding IsBusy}">
-
-            <CollectionView ItemsSource="{Binding Citas}"
-                            SelectionMode="None">
-
-              
+    <Grid>
+        <RefreshView Command="{Binding CargarCommand}" IsRefreshing="{Binding IsBusy}">
+            <CollectionView ItemsSource="{Binding Citas}" SelectionMode="None">
                 <CollectionView.Header>
                     <VerticalStackLayout Padding="16,16,16,8" Spacing="12">
+                        <Label Text="Resumen del Día" HorizontalOptions="Center" FontSize="18" FontAttributes="Bold" TextColor="#2563EB" />
 
-                        <Label Text="Resumen del Día"
-                               HorizontalOptions="Center"
-                               FontSize="18"
-                               FontAttributes="Bold"
-                               TextColor="#2563EB" />
+                        <Border BackgroundColor="White" Stroke="#E2E8F0" Padding="14">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
 
-                      
+                            <Grid ColumnDefinitions="56,*,Auto" ColumnSpacing="14">
+                                <Border StrokeShape="RoundRectangle 28" BackgroundColor="#EFF6FF" HeightRequest="56" WidthRequest="56" StrokeThickness="0">
+                                    <Grid>
+                                        <Label Text="{Binding Iniciales}" TextColor="#2563EB" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                        <Image Source="{Binding UrlFotoPerfil}" Aspect="AspectFill"/>
+                                    </Grid>
+                                </Border>
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                    <Label Text="{Binding NombreNegocio}" FontSize="17" FontAttributes="Bold" TextColor="#0F172A"/>
+                                    <Label Text="{Binding DireccionNegocio}" FontSize="13" TextColor="#64748B"/>
+                                </VerticalStackLayout>
+
+                                <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
+                                    <Button x:Name="BtnPdf" Text="PDF" BackgroundColor="#EF4444" TextColor="White" CornerRadius="8" HeightRequest="36" WidthRequest="75" FontSize="12" Clicked="OnGenerarPdfClicked" />
+                                    <Button x:Name="BtnExcel" Text="Excel" BackgroundColor="#10B981" TextColor="White" CornerRadius="8" HeightRequest="36" WidthRequest="75" FontSize="12" Clicked="OnGenerarExcelClicked"/>
+                                </HorizontalStackLayout>
+
+                            </Grid>
+                        </Border>
+
                         <Border BackgroundColor="White" Stroke="#E2E8F0" Padding="12,4">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="10" />
                             </Border.StrokeShape>
                             <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="8">
-                                <DatePicker Date="{Binding Desde, Mode=TwoWay}"
-                                            Format="dd MMM yyyy"
-                                            TextColor="#0F172A"
-                                            DateSelected="OnFechaSeleccionada" />
-                                <Label Grid.Column="1" Text="→"
-                                       VerticalOptions="Center"
-                                       TextColor="#64748B" />
-                                <DatePicker Grid.Column="2"
-                                            Date="{Binding Hasta, Mode=TwoWay}"
-                                            Format="dd MMM yyyy"
-                                            TextColor="#0F172A"
-                                            DateSelected="OnFechaSeleccionada" />
+                                <DatePicker Date="{Binding Desde, Mode=TwoWay}" Format="dd MMM yyyy" TextColor="#0F172A" DateSelected="OnFechaSeleccionada" />
+                                <Label Grid.Column="1" Text="→" VerticalOptions="Center" TextColor="#64748B" />
+                                <DatePicker Grid.Column="2" Date="{Binding Hasta, Mode=TwoWay}" Format="dd MMM yyyy" TextColor="#0F172A" DateSelected="OnFechaSeleccionada" />
                             </Grid>
                         </Border>
 
-                    
                         <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
-
                             <Border Grid.Column="0" BackgroundColor="White" Stroke="#E2E8F0" Padding="12">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="12" />
@@ -83,96 +87,54 @@
                                         <Label Text="Ocupación" FontSize="11" TextColor="#64748B" />
                                         <Ellipse Fill="#2563EB" WidthRequest="8" HeightRequest="8" VerticalOptions="Center" />
                                     </HorizontalStackLayout>
-                                    <Label Text="{Binding OcupacionPorcentaje, StringFormat='{0}%'}"
-                                           FontSize="28" FontAttributes="Bold" TextColor="#0F172A" />
+                                    <Label Text="{Binding OcupacionPorcentaje, StringFormat='{0}%'}" FontSize="28" FontAttributes="Bold" TextColor="#0F172A" />
                                 </VerticalStackLayout>
                             </Border>
                         </Grid>
 
-                    
                         <Border BackgroundColor="White" Stroke="#E2E8F0" Padding="14">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="12" />
                             </Border.StrokeShape>
                             <Grid ColumnDefinitions="*,Auto">
-                                <Label Text="Servicios Activos Hoy"
-                                       FontAttributes="Bold"
-                                       TextColor="#0F172A"
-                                       VerticalOptions="Center" />
+                                <Label Text="Servicios Activos Hoy" FontAttributes="Bold" TextColor="#0F172A" VerticalOptions="Center" />
                                 <Border Grid.Column="1" BackgroundColor="#DBEAFE" StrokeThickness="0" Padding="12,4">
                                     <Border.StrokeShape>
                                         <RoundRectangle CornerRadius="10" />
                                     </Border.StrokeShape>
-                                    <Label Text="{Binding ServiciosActivosHoy}"
-                                           TextColor="#2563EB"
-                                           FontAttributes="Bold" />
+                                    <Label Text="{Binding ServiciosActivosHoy}" TextColor="#2563EB" FontAttributes="Bold" />
                                 </Border>
                             </Grid>
                         </Border>
 
-                        
-                        <Label Text="{Binding Error}"
-                               IsVisible="{Binding HasError}"
-                               TextColor="#DC2626"
-                               FontSize="13" />
-
-                        <Label Text="Mis Citas"
-                               FontSize="16"
-                               FontAttributes="Bold"
-                               TextColor="#0F172A" />
+                        <Label Text="{Binding Error}" IsVisible="{Binding HasError}" TextColor="#DC2626" FontSize="13" />
+                        <Label Text="Mis Citas" FontSize="16" FontAttributes="Bold" TextColor="#0F172A" />
                     </VerticalStackLayout>
                 </CollectionView.Header>
 
-             
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="vm:CitaItemViewModel">
-                        <Border Margin="16,0,16,10"
-                                Padding="0"
-                                BackgroundColor="White"
-                                Stroke="#E2E8F0">
+                        <Border Margin="16,0,16,10" Padding="0" BackgroundColor="White" Stroke="#E2E8F0">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="12" />
                             </Border.StrokeShape>
-
                             <Grid ColumnDefinitions="5,*">
                                 <BoxView Color="{Binding ColorPrincipal}" />
-
                                 <VerticalStackLayout Grid.Column="1" Padding="14,12" Spacing="4">
                                     <Grid ColumnDefinitions="*,Auto">
-                                        <Label Text="{Binding Hora}"
-                                               FontAttributes="Bold"
-                                               FontSize="14"
-                                               TextColor="#0F172A"
-                                               VerticalOptions="Center" />
-                                        <Border Grid.Column="1"
-                                                BackgroundColor="{Binding ColorChipFondo}"
-                                                StrokeThickness="0"
-                                                Padding="8,2">
+                                        <Label Text="{Binding Hora}" FontAttributes="Bold" FontSize="14" TextColor="#0F172A" VerticalOptions="Center" />
+                                        <Border Grid.Column="1" BackgroundColor="{Binding ColorChipFondo}" StrokeThickness="0" Padding="8,2">
                                             <Border.StrokeShape>
                                                 <RoundRectangle CornerRadius="6" />
                                             </Border.StrokeShape>
-                                            <Label Text="{Binding EstadoTexto}"
-                                                   TextColor="{Binding ColorChipTexto}"
-                                                   FontSize="10"
-                                                   FontAttributes="Bold" />
+                                            <Label Text="{Binding EstadoTexto}" TextColor="{Binding ColorChipTexto}" FontSize="10" FontAttributes="Bold" />
                                         </Border>
                                     </Grid>
-
                                     <HorizontalStackLayout Spacing="6">
-                                        <Label Text="{Binding Cliente}"
-                                               FontAttributes="Bold"
-                                               FontSize="16"
-                                               TextColor="#0F172A" />
-                                        <Label Text="✓"
-                                               IsVisible="{Binding EsConfirmada}"
-                                               TextColor="#10B981"
-                                               FontAttributes="Bold"
-                                               VerticalOptions="Center" />
+                                        <Label Text="{Binding Cliente}" FontAttributes="Bold" FontSize="16" TextColor="#0F172A" />
+                                        <Label Text="✓" IsVisible="{Binding EsConfirmada}" TextColor="#10B981" FontAttributes="Bold" VerticalOptions="Center" />
                                     </HorizontalStackLayout>
-
-                                    <Label Text="{Binding Servicio}"
-                                           FontSize="13"
-                                           TextColor="#64748B" />
+                                    <Label Text="{Binding Servicio}" FontSize="13" TextColor="#64748B" />
                                 </VerticalStackLayout>
                             </Grid>
                         </Border>
@@ -180,11 +142,20 @@
                 </CollectionView.ItemTemplate>
 
                 <CollectionView.EmptyView>
-                    <Label Text="No hay citas en este rango."
-                           HorizontalOptions="Center"
-                           Margin="0,24"
-                           TextColor="#64748B" />
+                    <Label Text="No hay citas en este rango." HorizontalOptions="Center" Margin="0,24" TextColor="#64748B" />
                 </CollectionView.EmptyView>
             </CollectionView>
         </RefreshView>
-    </ContentPage>
+        <Grid x:Name="OverlayGenerando" IsVisible="False" BackgroundColor="#80000000">
+            <Border BackgroundColor="White" StrokeThickness="0" Padding="28,22" HorizontalOptions="Center" VerticalOptions="Center">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="16"/>
+                </Border.StrokeShape>
+                <VerticalStackLayout Spacing="14">
+                    <ActivityIndicator IsRunning="{Binding Source={x:Reference OverlayGenerando}, Path=IsVisible}" Color="#2563EB" HeightRequest="40" WidthRequest="40"/>
+                    <Label x:Name="Lbl" Text="Generando reporte..." FontSize="14" TextColor="#4B5563" HorizontalTextAlignment="Center"/>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

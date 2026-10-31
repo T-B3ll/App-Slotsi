@@ -50,11 +50,19 @@ public partial class RegistroUsuarioBasico : ContentPage
 
     }
 
+    [Obsolete]
     private void OnCedulaChanged(object sender, TextChangedEventArgs e)
     {
         if (_isUpdating) return;
+
         string clean = new string(e.NewTextValue.Where(char.IsLetterOrDigit).ToArray()).ToUpper();
         if (clean.Length > 14) clean = clean.Substring(0, 14);
+
+        if (clean.Length == 14 && char.IsDigit(clean[13]))
+        {
+
+            clean = clean.Substring(0, 13);
+        }
 
         string formatted = clean;
         if (clean.Length > 3)

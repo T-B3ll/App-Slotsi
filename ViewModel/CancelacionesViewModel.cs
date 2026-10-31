@@ -3,16 +3,73 @@ using CommunityToolkit.Mvvm.Input;
 using Slotsi.Shared.Dtos;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using slotsi_citas.Models;
+using System.Diagnostics;
 
 namespace slotsi_citas.ViewModel;
 
 public partial class CancelacionesViewModel : ObservableObject
 {
+    private CancelacionesResporteDto? _ultimoResultado;
+    private DateTime _desde;
+    private DateTime _hasta;
+    [ObservableProperty] private string nombreNegocio = string.Empty;
+    [ObservableProperty] private string direccionNegocio = string.Empty;
+    private readonly Services.NegocioService _negocios;
     private readonly Services.CitaService _citas;
     private string NegocioId => Preferences.Get("negocio_id", string.Empty);
 
-    public CancelacionesViewModel(Services.CitaService citas) => _citas = citas;
+    public CancelacionesViewModel(Services.CitaService citas, Services.NegocioService negocios)
+    {
+        _citas = citas;
+        _negocios = negocios;
+    }
+    private async Task CargarDatosNegocioAsync()
+    {
+        if (!string.IsNullOrEmpty(NombreNegocio)) return;
 
+        try
+        {
+            var negocio = await _negocios.ObtenerPorIdAsync(NegocioId);
+            if (negocio == null) return;
+
+            NombreNegocio = negocio.NombreNegocio ?? string.Empty;
+            DireccionNegocio = negocio.DireccionNegocio ?? string.Empty;
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+        }
+    }
+
+    public CancelacionesReporteData? ConstruirDatosReporte()
+    {
+        if (_ultimoResultado is null) return null;
+        var r = _ultimoResultado;
+
+        return new CancelacionesReporteData
+        {
+            NombreNegocio = NombreNegocio,
+            DireccionNegocio = DireccionNegocio,
+            Periodo = IndicePeriodo >= 0 && IndicePeriodo < Opciones.Count ? Opciones[IndicePeriodo] : Opciones[2],
+            Desde = _desde,
+            Hasta = _hasta,
+            Total = r.Total,
+            Canceladas = r.Canceladas,
+            NoAsistio = r.NoAsistio,
+            PorcentajePerdida = r.PorcentajePerdida,
+            PorcentajeCancelacion = r.PorcentajeCancelacion,
+            PorcentajeNoAsistio = r.PorcentajeNoAsistio,
+            Citas = Items.Select(i => new CancelacionFila
+            {
+                Fecha = i.Fecha,
+                Hora = i.Hora,
+                Cliente = i.Cliente,
+                Servicio = i.Servicio,
+                Estado = i.EstadoTexto
+            }).ToList()
+        };
+    }
     public List<string> Opciones { get; } = new()
     {
         "Últimas 24 horas",
@@ -47,6 +104,7 @@ public partial class CancelacionesViewModel : ObservableObject
         try
         {
             Cargando = true;
+            await CargarDatosNegocioAsync();
 
             var hasta = DateTime.Now;
             var desde = indicePeriodo switch
@@ -57,6 +115,10 @@ public partial class CancelacionesViewModel : ObservableObject
             };
 
             var r = await _citas.ObtenerCancelacionesAsync(NegocioId, desde, hasta);
+
+            _ultimoResultado = r;           
+            _desde = desde;                                       
+            _hasta = hasta;
 
             EtiquetaPerdida = indicePeriodo switch
             {
