@@ -1,10 +1,11 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using Slotsi.Shared.Dtos;
+using slotsi_citas.Models;
+using slotsi_citas.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using slotsi_citas.Services;
-using Slotsi.Shared.Dtos;
 
 namespace slotsi_citas.ViewModel;
 
@@ -12,11 +13,17 @@ public partial class ResumenViewModel : ObservableObject
 {
     private readonly ResumenService _service;
 
-   
+    private readonly NegocioService _negocioService;
+
     private string NegocioId => Preferences.Get("negocio_id", string.Empty);
 
     [ObservableProperty] private DateTime desde = DateTime.Today;
     [ObservableProperty] private DateTime hasta = DateTime.Today;
+
+    [ObservableProperty] private string nombreNegocio = string.Empty;
+    [ObservableProperty] private string direccionNegocio = string.Empty;
+    [ObservableProperty] private string? urlFotoPerfil;
+    [ObservableProperty] private string iniciales = string.Empty;
 
     [ObservableProperty] private int citasConfirmadas;
     [ObservableProperty] private int citasPendientes;
@@ -33,7 +40,53 @@ public partial class ResumenViewModel : ObservableObject
 
     public ObservableCollection<CitaItemViewModel> Citas { get; } = new();
 
-    public ResumenViewModel(ResumenService service) => _service = service;
+    public ResumenViewModel(ResumenService service, NegocioService negocioService)
+    {
+        _service = service;
+        _negocioService = negocioService;
+    
+    }
+
+    private async Task CargarDatosNegocioAsync()
+    {
+        try
+        {
+            Negocio? negocio = null;
+
+            if (!string.IsNullOrEmpty(NegocioId))
+                negocio = await _negocioService.ObtenerPorIdAsync(NegocioId);
+
+            if (negocio == null)
+            {
+                string usuarioId = Preferences.Get("UsuarioId", string.Empty);
+                if (!string.IsNullOrEmpty(usuarioId))
+                {
+                    negocio = await _negocioService.ObtenerPorUsuarioIdAsync(usuarioId);
+                 
+                    if (negocio != null && !string.IsNullOrEmpty(negocio.Id))
+                    {
+                        Preferences.Set("negocio_id", negocio.Id);
+                        Preferences.Set("NegocioSeleccionadoId", negocio.Id);
+                    }
+                }
+            }
+
+            if (negocio == null) return;
+
+            NombreNegocio = negocio.NombreNegocio ?? string.Empty;
+            DireccionNegocio = negocio.DireccionNegocio ?? string.Empty;
+            UrlFotoPerfil = negocio.UrlFotoPerfil;
+
+            Iniciales = string.Concat(
+                NombreNegocio.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                             .Take(2)
+                             .Select(p => char.ToUpper(p[0])));
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine(ex);
+        }
+    }
 
     [RelayCommand]
     private async Task CargarAsync()
@@ -44,6 +97,8 @@ public partial class ResumenViewModel : ObservableObject
         {
             IsBusy = true;
             Error = null;
+
+            await CargarDatosNegocioAsync();
 
             if (string.IsNullOrEmpty(NegocioId))
             {
@@ -75,7 +130,6 @@ public partial class ResumenViewModel : ObservableObject
     }
 }
 
-/// <summary>Prepara cada cita para pintarla en la tarjeta (textos y colores).</summary>
 public class CitaItemViewModel
 {
     private static readonly Color Verde = Color.FromArgb("#10B981");

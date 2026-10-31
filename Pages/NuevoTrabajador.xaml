@@ -61,11 +61,13 @@
                     <Label Text="*" TextColor="#EF4444" />
                 </HorizontalStackLayout>
                 <Border Stroke="#E2E8F0" StrokeShape="RoundRectangle 8" Padding="12,0" BackgroundColor="#F8FAFC">
-                    <Entry Placeholder="Ej. +505-8989-9090" 
-                           PlaceholderColor="#94A3B8" 
-                           Keyboard="Telephone" 
-                           Text="{Binding Telefono}" 
-                           TextColor="#0F172A" />
+                    <Entry x:Name="EntryTelefono" Placeholder="Ej. +505 8585-1212" PlaceholderColor="#94A3B8"
+       Keyboard="Telephone"
+       Text="{Binding Telefono}"
+       TextColor="#0F172A"
+       TextChanged="OnTelefonoChanged"
+       Focused="OnTelefonoFocused"
+       Unfocused="OnTelefonoUnfocused" />
                 </Border>
             </VerticalStackLayout>
 
@@ -75,11 +77,7 @@
                     <Label Text="*" TextColor="#EF4444" />
                 </HorizontalStackLayout>
                 <Border Stroke="#E2E8F0" StrokeShape="RoundRectangle 8" Padding="12,0" BackgroundColor="#F8FAFC">
-                    <Entry Placeholder="Ej. carlos.rod@gmail.com" 
-                           PlaceholderColor="#94A3B8" 
-                           Keyboard="Email" 
-                           Text="{Binding Correo}" 
-                           TextColor="#0F172A" />
+                    <Entry Placeholder="Ej. carlos.rod@gmail.com" PlaceholderColor="#94A3B8" Keyboard="Email" Text="{Binding Correo}" TextColor="#0F172A" />
                 </Border>
             </VerticalStackLayout>
 
@@ -89,10 +87,7 @@
                     <Label Text="*" TextColor="#EF4444" />
                 </HorizontalStackLayout>
                 <Border Stroke="#E2E8F0" StrokeShape="RoundRectangle 8" Padding="12,0" BackgroundColor="#F8FAFC">
-                    <Entry Placeholder="Ej. 212-232123-2002Q" 
-                           PlaceholderColor="#94A3B8" 
-                           Text="{Binding Cedula}" 
-                           TextColor="#0F172A" />
+                    <Entry x:Name="EntryCedula" Placeholder="Ej. 001-010190-0001A" PlaceholderColor="#94A3B8" Text="{Binding Cedula}" TextColor="#0F172A" TextChanged="OnCedulaChanged" />
                 </Border>
             </VerticalStackLayout>
 

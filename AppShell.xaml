@@ -70,13 +70,6 @@
         <ShellContent ContentTemplate="{DataTemplate pages:CalendarioPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Seleccionar Cita" Route="SeleccionarCitaPage" IsVisible="{x:Static app:MenuUsuario.EsCliente}">
-        <FlyoutItem.Icon>
-            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8B5;" Color="#2563EB" Size="22" />
-        </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:SeleccionarCitaPage}" />
-    </FlyoutItem>
-
     <FlyoutItem Title="Horarios Disponibles" Route="CalendarioPage" IsVisible="{x:Static app:MenuUsuario.EsCliente}">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE924;" Color="#2563EB" Size="22" />
@@ -113,7 +106,7 @@
     </FlyoutItem>
 
 
-    <FlyoutItem Title="Reportes" Route="ReportesMenuPage">
+    <FlyoutItem Title="Reportes" Route="ReportesMenuPage" IsVisible="{x:Static app:MenuUsuario.EsDueno}">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE8B5;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>

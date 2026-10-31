@@ -1,5 +1,7 @@
 using slotsi_citas.ViewModel;
 using slotsi_citas.Models;
+using CommunityToolkit.Maui.Storage;
+using slotsi_citas.Services;
 
 namespace slotsi_citas.Pages;
 
@@ -17,11 +19,79 @@ public partial class MejoresNegociosPage : ContentPage
         base.OnAppearing();
         await _viewModel.CargarAsync();
     }
+    
 
+    private async void OnGenerarPdfClicked(object sender, EventArgs e)
+    {
+        await ExportarAsync(
+            "PDF",
+            "pdf",
+            (ranking, subtitulo) => new ReporteService().GenerarRankingNegociosPdf(ranking, subtitulo));
+    }
+
+    private async void OnGenerarExcelClicked(object sender, EventArgs e)
+    {
+        await ExportarAsync(
+            "Excel",
+            "xlsx",
+            (ranking, subtitulo) => new ReporteService().GenerarRankingNegociosExcel(ranking, subtitulo));
+    }
+
+    private async Task ExportarAsync(
+        string tipo,
+        string extension,
+        Func<List<NegocioRanckingItem>, string, byte[]> generar)
+    {
+        try
+        {
+            var ranking = _viewModel.Ranking.ToList();
+            if (ranking.Count == 0)
+            {
+                await DisplayAlert("Aviso", "No hay negocios en el ranking para exportar.", "OK");
+                return;
+            }
+
+            string subtitulo = _viewModel.TextoResultados;
+            byte[] bytes;
+
+            // Mostrar carga solo mientras se genera el archivo
+            MostrarCarga(true, $"Generando {tipo}...");
+            try
+            {
+                bytes = await Task.Run(() => generar(ranking, subtitulo));
+            }
+            finally
+            {
+                MostrarCarga(false);
+            }
+
+            string fileName = $"Reporte_MejoresNegocios_{DateTime.Now:yyyyMMdd_HHmmss}.{extension}";
+
+            using var stream = new MemoryStream(bytes);
+            var resultado = await FileSaver.Default.SaveAsync(fileName, stream);
+
+            if (resultado.IsSuccessful)
+                await DisplayAlert("Éxito", $"Reporte guardado en: {resultado.FilePath}", "OK");
+            else
+                await DisplayAlert("Aviso", "Se canceló el guardado.", "OK");
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Error", $"No se pudo generar el {tipo}: {ex.Message}", "OK");
+        }
+    }
+
+    private void MostrarCarga(bool visible, string mensaje = "Generando reporte...")
+    {
+        LblGenerando.Text = mensaje;
+        OverlayGenerando.IsVisible = visible;
+        BtnPdf.IsEnabled = !visible;
+        BtnExcel.IsEnabled = !visible;
+    }
     private void OnCategoriaClicked(object sender, EventArgs e)
     {
         if (sender is not Button btn) return;
-        MarcarActivo(btn, BtnTodos, BtnSalones, BtnBarberia, BtnSpa);
+        MarcarActivo(btn, BtnTodos, BtnSalones, BtnBarberia);
         _viewModel.CambiarCategoria(btn.Text);
     }
 
