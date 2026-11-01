@@ -207,7 +207,7 @@ namespace slotsi_citas.Services
                 .Take(10)
                 .ToList();
 
-            var table = new Table(new float[] { 2, 2, 3, 3 }).UseAllAvailableWidth();
+            var table = new Table(UnitValue.CreatePercentArray(new float[] { 15, 20, 40, 25 })).UseAllAvailableWidth();
 
             table.AddHeaderCell(new iText.Layout.Element.Cell().Add(new Paragraph("Día").SetFont(fontBold)).SetBackgroundColor(ColorConstants.LIGHT_GRAY));
             table.AddHeaderCell(new iText.Layout.Element.Cell().Add(new Paragraph("Horario").SetFont(fontBold)).SetBackgroundColor(ColorConstants.LIGHT_GRAY));
@@ -229,8 +229,10 @@ namespace slotsi_citas.Services
                 };
 
                 string horaFormateada = DateTime.Today.AddHours(item.Hora).ToString("h:mm tt");
-
                 string servicio = string.IsNullOrWhiteSpace(item.NombreServicio) ? "Sin servicio" : item.NombreServicio;
+
+                if (servicio.Length > 35)
+                    servicio = servicio.Substring(0, 32) + "...";
 
                 string trabajador = string.IsNullOrWhiteSpace(item.NombreTrabajador) || item.NombreTrabajador == "000000000000000000000000"
                     ? "Sin asignar"
@@ -239,10 +241,10 @@ namespace slotsi_citas.Services
                 if (trabajador.Length == 24 && trabajador.All(char.IsLetterOrDigit))
                     trabajador = "Asignado (ID Oculto)";
 
-                table.AddCell(new iText.Layout.Element.Cell().Add(new Paragraph(diaEspanol).SetFont(fontNormal)));
-                table.AddCell(new iText.Layout.Element.Cell().Add(new Paragraph(horaFormateada).SetFont(fontNormal)));
-                table.AddCell(new iText.Layout.Element.Cell().Add(new Paragraph(servicio).SetFont(fontNormal)));
-                table.AddCell(new iText.Layout.Element.Cell().Add(new Paragraph(trabajador).SetFont(fontNormal)));
+                table.AddCell(new iText.Layout.Element.Cell().Add(new Paragraph(diaEspanol).SetFont(fontNormal).SetFontSize(9)));
+                table.AddCell(new iText.Layout.Element.Cell().Add(new Paragraph(horaFormateada).SetFont(fontNormal).SetFontSize(9)));
+                table.AddCell(new iText.Layout.Element.Cell().Add(new Paragraph(servicio).SetFont(fontNormal).SetFontSize(9)));
+                table.AddCell(new iText.Layout.Element.Cell().Add(new Paragraph(trabajador).SetFont(fontNormal).SetFontSize(9)));
             }
 
             document.Add(table);
@@ -267,6 +269,7 @@ namespace slotsi_citas.Services
             var headerRange = worksheet.Range(3, 1, 3, 4);
             headerRange.Style.Font.Bold = true;
             headerRange.Style.Fill.BackgroundColor = XLColor.LightBlue;
+            headerRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
 
             int row = 4;
             foreach (var item in demanda)
@@ -296,8 +299,14 @@ namespace slotsi_citas.Services
 
                 worksheet.Cell(row, 1).Value = diaEspanol;
                 worksheet.Cell(row, 2).Value = horaFormateada;
-                worksheet.Cell(row, 3).Value = servicio;
+                worksheet.Cell(row, 3).Value = servicio; 
                 worksheet.Cell(row, 4).Value = trabajador;
+
+                if (row % 2 == 0)
+                {
+                    worksheet.Range(row, 1, row, 4).Style.Fill.BackgroundColor = XLColor.FromHtml("#F9FAFB");
+                }
+
                 row++;
             }
 

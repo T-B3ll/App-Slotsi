@@ -57,20 +57,13 @@ public partial class RegistroUsuarioBasico : ContentPage
         });
     }
 
+    [Obsolete]
     private void OnCedulaChanged(object sender, TextChangedEventArgs e)
     {
         if (_isUpdating) return;
-
-        _isUpdating = true;
-
         string clean = new string(e.NewTextValue.Where(char.IsLetterOrDigit).ToArray()).ToUpper();
 
         if (clean.Length > 14) clean = clean.Substring(0, 14);
-
-        if (clean.Length == 14 && char.IsDigit(clean[13]))
-        {
-            clean = clean.Substring(0, 13);
-        }
 
         string formatted = clean;
         if (clean.Length > 3)
@@ -174,6 +167,22 @@ public partial class RegistroUsuarioBasico : ContentPage
             return;
         }
 
+        string telefonoLimpio = EntryTelefono.Text?.Replace("-", "").Trim() ?? "";
+        if (telefonoLimpio.Length != 8)
+        {
+            await DisplayAlert("Teléfono inválido", "El número de teléfono debe tener exactamente 8 dígitos.", "OK");
+            EntryTelefono.Focus();
+            return;
+        }
+
+        string cedulaLimpia = EntryCedula.Text?.Replace("-", "").Trim() ?? "";
+        if (cedulaLimpia.Length != 14 || !char.IsLetter(cedulaLimpia.Last()))
+        {
+            await DisplayAlert("Cédula inválida", "La cédula debe tener 14 caracteres (formato 000-000000-0000A) y terminar en una letra.", "OK");
+            EntryCedula.Focus();
+            return;
+        }
+
         if (!EsContrasenaSegura(PasswordEntry.Text, out string mensajePassword))
         {
             await DisplayAlert("Contraseña insegura", mensajePassword, "OK");
@@ -181,8 +190,8 @@ public partial class RegistroUsuarioBasico : ContentPage
             return;
         }
 
-        _viewModel.Telefono = EntryTelefono.Text?.Replace("-", "").Trim();
-        _viewModel.Cedula = EntryCedula.Text?.Replace("-", "").Trim();
+        _viewModel.Telefono = telefonoLimpio;
+        _viewModel.Cedula = cedulaLimpia;
         _viewModel.Contrasena = PasswordEntry.Text;
 
         if (_viewModel.RegistrarCommand.CanExecute(null))

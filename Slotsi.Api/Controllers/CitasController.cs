@@ -236,7 +236,6 @@ public class CitasController : ControllerBase
             return StatusCode(500, new { error = ex.Message });
         }
     }
-
     [HttpGet("reportes/demanda-semanal")]
     [ProducesResponseType(typeof(List<DemandaSemanalDto>), StatusCodes.Status200OK)]
     public async Task<ActionResult<List<DemandaSemanalDto>>> ObtenerDemandaSemanal([FromQuery] string? negocioId, [FromQuery] string? periodo, CancellationToken ct)
@@ -261,37 +260,28 @@ public class CitasController : ControllerBase
 
             citas = citas.Where(c =>
             {
-                var fechaLocal = c.FechaHoraInicio.ToLocalTime();
-                return fechaLocal >= inicioSemana && fechaLocal < finSemana;
+                return c.FechaHoraInicio >= inicioSemana && c.FechaHoraInicio < finSemana;
             }).ToList();
 
             var demanda = citas
                 .Where(c => c.Estado != "Cancelada")
-                .GroupBy(c => new
-                {
-                    Dia = c.FechaHoraInicio.ToLocalTime().DayOfWeek,
-                    Hora = c.FechaHoraInicio.ToLocalTime().Hour,
-                    Servicio = string.IsNullOrEmpty(c.ServicioNombre) ? "General" : c.ServicioNombre,
-                    TrabajadorId = c.TrabajadorId.ToString()
-                })
-                .Select(g =>
+                .Select(c =>
                 {
                     var trabajadorReal = listaTrabajadores.FirstOrDefault(t =>
-                        t.Id.ToString().ToLower() == g.Key.TrabajadorId.ToLower());
+                        t.Id.ToString().ToLower() == c.TrabajadorId.ToString().ToLower());
 
-                    string nombreTrabajador = "Sin asignar";
+                    string nombreTrabajador = trabajadorReal?.Nombre ?? "Sin asignar";
 
-                    if (trabajadorReal != null)
-                    {
-                        nombreTrabajador = trabajadorReal.Nombre;
-                    }
+                    string servicioLimpio = string.IsNullOrEmpty(c.ServicioNombre) ? "General" : c.ServicioNombre;
+                    if (servicioLimpio.Contains("(General)"))
+                        servicioLimpio = servicioLimpio.Replace("(General)", "").Trim();
 
                     return new DemandaSemanalDto
                     {
-                        DiaSemana = g.Key.Dia.ToString(),
-                        Hora = g.Key.Hora,
-                        TotalCitas = g.Count(),
-                        NombreServicio = g.Key.Servicio,
+                        DiaSemana = c.FechaHoraInicio.DayOfWeek.ToString(),
+                        Hora = c.FechaHoraInicio.Hour,
+                        TotalCitas = 1,
+                        NombreServicio = servicioLimpio,
                         NombreTrabajador = nombreTrabajador
                     };
                 })

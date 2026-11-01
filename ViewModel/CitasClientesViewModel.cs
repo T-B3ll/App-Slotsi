@@ -61,6 +61,13 @@ namespace slotsi_citas.ViewModel
             set { _estaCargando = value; OnPropertyChanged(); }
         }
 
+        private string _trabajadorSeleccionadoId = string.Empty;
+        public string TrabajadorSeleccionadoId
+        {
+            get => _trabajadorSeleccionadoId;
+            set { _trabajadorSeleccionadoId = value; OnPropertyChanged(); }
+        }
+
         private bool _estaCerradoElDia;
         public bool EstaCerradoElDia
         {
@@ -213,7 +220,6 @@ namespace slotsi_citas.ViewModel
                 EstaCargando = true;
                 RangosHorarios.Clear();
 
-                // Movemos TODA la lógica de red y cálculo a un hilo de fondo
                 await Task.Run(async () =>
                 {
                     if (NegocioActual == null)
@@ -259,7 +265,6 @@ namespace slotsi_citas.ViewModel
                         }
                     }
 
-                    // Variables para pasar al hilo principal si es necesario
                     bool setCerrado = estaCerrado || horarioConfig == null;
                     string msgCerrado = $"El negocio se encuentra cerrado los días {nombreDiaLargo}.";
                     var listaTemporal = new List<RangoHorario>();

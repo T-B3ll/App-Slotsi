@@ -12,7 +12,6 @@ public partial class RegistroUsuarioNegocio : ContentPage
     private static readonly Color ColorActivoFondo = Color.FromArgb("#EFF6FF");
     private static readonly Color ColorInactivoBorde = Color.FromArgb("#E5E7EB");
     private static readonly Color ColorInactivoFondo = Colors.White;
-    // 👆 ----------------------------------------------------------- 👆
 
     private bool _isUpdating = false;
     private bool _isPasswordVisible = false;
@@ -293,7 +292,20 @@ public partial class RegistroUsuarioNegocio : ContentPage
             EntryCorreo.Focus();
             return;
         }
-
+        string telefonoLimpio = EntryTelefono.Text?.Replace("-", "").Trim() ?? "";
+        if (telefonoLimpio.Length != 8)
+        {
+            await DisplayAlert("Teléfono inválido", "El número de teléfono debe tener exactamente 8 dígitos.", "OK");
+            EntryTelefono.Focus();
+            return;
+        }
+        string cedulaLimpia = EntryCedula.Text?.Replace("-", "").Trim() ?? "";
+        if (cedulaLimpia.Length != 14 || !char.IsLetter(cedulaLimpia.Last()))
+        {
+            await DisplayAlert("Cédula inválida", "La cédula debe tener 14 caracteres (formato 000-000000-0000A) y terminar en una letra.", "OK");
+            EntryCedula.Focus();
+            return;
+        }
         if (!EsContrasenaSegura(PasswordEntry.Text, out string mensajePassword))
         {
             await DisplayAlert("Contraseña insegura", mensajePassword, "OK");
@@ -315,9 +327,9 @@ public partial class RegistroUsuarioNegocio : ContentPage
 
         _viewModel.Nombre = EntryNombre.Text.Trim();
         _viewModel.Correo = EntryCorreo.Text.Trim();
-        _viewModel.Telefono = EntryTelefono.Text?.Replace("-", "").Trim();
+        _viewModel.Telefono = telefonoLimpio;
         _viewModel.Contrasena = PasswordEntry.Text;
-        _viewModel.CedulaJuridica = EntryCedula.Text?.Replace("-", "").Trim();
+        _viewModel.CedulaJuridica = cedulaLimpia;
         _viewModel.Direccion = EntryUbicacion.Text.Trim();
         _viewModel.NumeroRuc = EntryRuc.Text?.Trim();
         _viewModel.NombreNegocio = EntryNombreNegocio.Text.Trim();

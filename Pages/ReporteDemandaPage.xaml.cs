@@ -79,17 +79,25 @@ public partial class ReporteDemandaPage : ContentPage
                         rowGrid.ColumnDefinitions.Add(new ColumnDefinition(GridLength.Star));
                         var diaSemana = (DayOfWeek)((i + 1) % 7);
 
-                        var item = demanda?.FirstOrDefault(d => d.DiaSemana == diaSemana.ToString() && d.Hora == hora);
+                        var item = demanda?.FirstOrDefault(d =>
+                            d.DiaSemana.Equals(diaSemana.ToString(), StringComparison.OrdinalIgnoreCase) &&
+                            d.Hora == hora);
+
                         int total = item?.TotalCitas ?? 0;
 
-                        Color color;
-                        if (total == 0) color = Color.FromArgb("#F1F5F9");
-                        else if (total == 1) color = Color.FromArgb("#DBEAFE");
-                        else if (total == 2) color = Color.FromArgb("#93C5FD");
-                        else if (total == 3) color = Color.FromArgb("#34D399");
-                        else color = Color.FromArgb("#10B981");
+                        Color colorFondo = total > 0 ? Color.FromArgb("#10B981") : Color.FromArgb("#F1F5F9");
 
-                        var box = new BoxView { Color = color, WidthRequest = 22, HeightRequest = 22, CornerRadius = 5, HorizontalOptions = LayoutOptions.Center, VerticalOptions = LayoutOptions.Center };
+                        var box = new Border
+                        {
+                            BackgroundColor = colorFondo,
+                            WidthRequest = 24,
+                            HeightRequest = 24,
+                            StrokeThickness = 0,
+                            StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 5 },
+                            HorizontalOptions = LayoutOptions.Center,
+                            VerticalOptions = LayoutOptions.Center
+                        };
+
                         Grid.SetColumn(box, i + 1);
                         rowGrid.Children.Add(box);
                     }
@@ -112,9 +120,10 @@ public partial class ReporteDemandaPage : ContentPage
                         _ => bloqueMaximo.DiaSemana
                     };
 
-                    int horaFin = bloqueMaximo.Hora + 1;
+                    string horaInicio = DateTime.Today.AddHours(bloqueMaximo.Hora).ToString("h:mm tt");
+                    string horaFin = DateTime.Today.AddHours(bloqueMaximo.Hora + 1).ToString("h:mm tt");
 
-                    lblMensajeDemanda.Text = $"La mayor demanda se concentra el {diaEspanol} entre {bloqueMaximo.Hora}:00 y {horaFin}:00.";
+                    lblMensajeDemanda.Text = $"La mayor demanda se concentra el {diaEspanol} entre {horaInicio} y {horaFin}.";
                 }
                 else
                 {
@@ -127,31 +136,23 @@ public partial class ReporteDemandaPage : ContentPage
             await DisplayAlert("Error", $"No se pudo cargar el reporte: {ex.Message}", "OK");
         }
     }
-
     private async void OnGenerarPdfClicked(object sender, EventArgs e)
     {
         try
         {
             string negocioId = Preferences.Get("NegocioSeleccionadoId", string.Empty);
             var demanda = await _citaService.ObtenerDemandaSemanalAsync(negocioId, "semana");
-
             var pdfService = new ReporteService();
             byte[] pdfBytes = pdfService.GenerarDemandaSemanalPdf(demanda, "semana");
 
             string fileName = $"Reporte_Demanda_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
-
             using var stream = new MemoryStream(pdfBytes);
             var resultado = await FileSaver.Default.SaveAsync(fileName, stream);
 
-            if (resultado.IsSuccessful)
-                await DisplayAlert("Éxito", $"Reporte guardado en: {resultado.FilePath}", "OK");
-            else
-                await DisplayAlert("Aviso", "Se canceló el guardado.", "OK");
+            if (resultado.IsSuccessful) await DisplayAlert("Éxito", $"Reporte guardado en: {resultado.FilePath}", "OK");
+            else await DisplayAlert("Aviso", "Se canceló el guardado.", "OK");
         }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", $"No se pudo generar el PDF: {ex.Message}", "OK");
-        }
+        catch (Exception ex) { await DisplayAlert("Error", $"No se pudo generar el PDF: {ex.Message}", "OK"); }
     }
 
     private async void OnGenerarExcelClicked(object sender, EventArgs e)
@@ -160,24 +161,17 @@ public partial class ReporteDemandaPage : ContentPage
         {
             string negocioId = Preferences.Get("NegocioSeleccionadoId", string.Empty);
             var demanda = await _citaService.ObtenerDemandaSemanalAsync(negocioId, "semana");
-
             var excelService = new ReporteService();
             byte[] excelBytes = excelService.GenerarDemandaSemanalExcel(demanda, "semana");
 
             string fileName = $"Reporte_Demanda_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
-
             using var stream = new MemoryStream(excelBytes);
             var resultado = await FileSaver.Default.SaveAsync(fileName, stream);
 
-            if (resultado.IsSuccessful)
-                await DisplayAlert("Éxito", $"Reporte guardado en: {resultado.FilePath}", "OK");
-            else
-                await DisplayAlert("Aviso", "Se canceló el guardado.", "OK");
+            if (resultado.IsSuccessful) await DisplayAlert("Éxito", $"Reporte guardado en: {resultado.FilePath}", "OK");
+            else await DisplayAlert("Aviso", "Se canceló el guardado.", "OK");
         }
-        catch (Exception ex)
-        {
-            await DisplayAlert("Error", $"No se pudo generar el Excel: {ex.Message}", "OK");
-        }
+        catch (Exception ex) { await DisplayAlert("Error", $"No se pudo generar el Excel: {ex.Message}", "OK"); }
     }
 
     private async void OnVolverClicked(object sender, TappedEventArgs e)

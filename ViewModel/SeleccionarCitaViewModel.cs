@@ -339,18 +339,26 @@ namespace slotsi_citas.ViewModel
 
                 string telefonoCliente = Preferences.Get("UsuarioTelefono", string.Empty);
                 var servicioPrincipal = _serviciosSeleccionados.First();
-                string trabajadorIdAsignado = servicioPrincipal.ColaboradorSeleccionado?.Id ?? "";
+
+                string trabajadorIdAsignado = servicioPrincipal.ColaboradorSeleccionado?.Id;
+
+                if (string.IsNullOrEmpty(trabajadorIdAsignado))
+                {
+                    trabajadorIdAsignado = servicioPrincipal.ColaboradoresHabilitados?.FirstOrDefault();
+                }
+
+                trabajadorIdAsignado ??= string.Empty;
 
                 string negocioIdFinal = NegocioActualObj?.Id ?? Preferences.Get("NegocioSeleccionadoId", CitaSession.NegocioId);
                 if (string.IsNullOrEmpty(negocioIdFinal))
                 {
-                    negocioIdFinal = "652b1234567890abcdef1234"; // Fallback
+                    negocioIdFinal = "652b1234567890abcdef1234"; 
                 }
 
                 var citaDto = new CitaDto
                 {
                     NegocioId = negocioIdFinal,
-                    TrabajadorId = trabajadorIdAsignado,
+                    TrabajadorId = trabajadorIdAsignado, 
                     ServicioId = servicioPrincipal.Id,
                     ClienteId = string.IsNullOrEmpty(ClienteId) ? "652b1234567890abcdef1237" : ClienteId,
                     ClienteNombre = ClienteNombre,
@@ -367,7 +375,6 @@ namespace slotsi_citas.ViewModel
                     Notas = ""
                 };
 
-                // 👇 AQUÍ SE USA EL CITA SERVICE (API) EN LUGAR DE MONGO
                 await _citaService.CrearAsync(citaDto);
 
                 await Application.Current.MainPage.DisplayAlert("Éxito", "¡Cita registrada correctamente en la API!", "OK");
