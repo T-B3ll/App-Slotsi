@@ -11,7 +11,6 @@
 
     <Grid RowDefinitions="Auto, *, Auto, Auto">
 
-        <!-- NUEVO ENCABEZADO CON MENÚ Y ATRÁS -->
         <VerticalStackLayout Grid.Row="0" BackgroundColor="#2563EB" Spacing="0">
             <Grid ColumnDefinitions="Auto, *, Auto" Padding="16,12">
                 <ImageButton Grid.Column="0" BackgroundColor="Transparent" Clicked="OnMenuClicked" WidthRequest="24" HeightRequest="24">
@@ -33,7 +32,6 @@
             </Grid>
         </VerticalStackLayout>
 
-        <!-- CONTENIDO SCROLLABLE -->
         <ScrollView Grid.Row="1" Padding="16">
             <VerticalStackLayout Spacing="18">
                 <Border BackgroundColor="#FFFFFF" Stroke="#E2E8F0" StrokeThickness="1" Padding="14">
@@ -71,24 +69,47 @@
                                         <VerticalStackLayout Padding="10" Spacing="3">
                                             <Label Text="{Binding Nombre}" FontSize="13" FontAttributes="Bold" TextColor="#111827" MaxLines="1" LineBreakMode="TailTruncation"/>
                                             <Label Text="Especialista:" FontSize="10" FontAttributes="Italic" TextColor="#64748B"/>
+
                                             <CollectionView ItemsSource="{Binding ColaboradoresDelServicio}" HeightRequest="32" ItemsLayout="HorizontalList" HorizontalScrollBarVisibility="Never">
                                                 <CollectionView.ItemTemplate>
                                                     <DataTemplate x:DataType="models:Trabajador">
-                                                        <Border Stroke="#2563EB" StrokeThickness="1" BackgroundColor="#EFF6FF" Padding="6,2" Margin="0,0,4,0">
-                                                            <Border.StrokeShape>
-                                                                <RoundRectangle CornerRadius="6"/>
-                                                            </Border.StrokeShape>
-                                                            <Border.GestureRecognizers>
-                                                                <TapGestureRecognizer Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SeleccionarEspecialistaServicioCommand}" CommandParameter="{Binding .}"/>
-                                                            </Border.GestureRecognizers>
-                                                            <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
-                                                                <Label Text="&#xE86C;" FontFamily="MaterialIcons" FontSize="11" TextColor="#2563EB" VerticalOptions="Center"/>
-                                                                <Label Text="{Binding Nombre}" FontSize="10" FontAttributes="Bold" TextColor="#1E3A8A" VerticalOptions="Center" MaxLines="1"/>
-                                                            </HorizontalStackLayout>
-                                                        </Border>
+                                                        <Grid>
+                                                            <Border IsVisible="{Binding EstaHabilitado}" 
+                Stroke="#2563EB" StrokeThickness="1" BackgroundColor="{Binding ColorFondoBoton}" 
+                Padding="6,2" Margin="0,0,4,0">
+                                                                <Border.StrokeShape>
+                                                                    <RoundRectangle CornerRadius="6"/>
+                                                                </Border.StrokeShape>
+                                                                <Border.GestureRecognizers>
+                                                                    <TapGestureRecognizer 
+                    Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.SeleccionarEspecialistaServicioCommand}" 
+                    CommandParameter="{Binding .}"/>
+                                                                </Border.GestureRecognizers>
+                                                                <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                                                    <Label Text="&#xE86C;" FontFamily="MaterialIcons" FontSize="11" TextColor="{Binding ColorTextoBoton}" VerticalOptions="Center" />
+                                                                    <Label Text="{Binding Nombre}" FontSize="10" FontAttributes="Bold" TextColor="{Binding ColorTextoBoton}" VerticalOptions="Center" MaxLines="1" />
+                                                                </HorizontalStackLayout>
+                                                            </Border>
+
+                                                            <Border IsVisible="{Binding EstaDeshabilitado}" 
+                Stroke="#CBD5E1" StrokeThickness="1" BackgroundColor="#F1F5F9" 
+                Padding="6,2" Margin="0,0,4,0">
+                                                                <Border.StrokeShape>
+                                                                    <RoundRectangle CornerRadius="6"/>
+                                                                </Border.StrokeShape>
+                                                                <Border.GestureRecognizers>
+                                                                    <TapGestureRecognizer Command="{Binding Source={x:Reference PageRoot}, Path=BindingContext.NadaCommand}"/>
+                                                                </Border.GestureRecognizers>
+                                                                <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                                                    <Label Text="&#xE86C;" FontFamily="MaterialIcons" FontSize="11" TextColor="#94A3B8" VerticalOptions="Center" />
+                                                                    <Label Text="{Binding Nombre}" FontSize="10" FontAttributes="Bold" TextColor="#94A3B8" VerticalOptions="Center" MaxLines="1" />
+                                                                </HorizontalStackLayout>
+                                                            </Border>
+                                                        </Grid>
                                                     </DataTemplate>
                                                 </CollectionView.ItemTemplate>
                                             </CollectionView>
+
                                             <Grid ColumnDefinitions="*, Auto" Margin="0,1,0,0">
                                                 <Label Grid.Column="0" Text="{Binding DuracionTexto}" FontSize="11" TextColor="#64748B" VerticalOptions="Center"/>
                                                 <Label Grid.Column="1" Text="{Binding PrecioTexto}" FontSize="12" FontAttributes="Bold" TextColor="#2563EB" VerticalOptions="Center"/>

@@ -68,6 +68,13 @@ namespace slotsi_citas.ViewModel
             set { _trabajadorSeleccionadoId = value; OnPropertyChanged(); }
         }
 
+        private bool _esSeleccionado;
+        public bool EsSeleccionado
+        {
+            get => _esSeleccionado;
+            set { _esSeleccionado = value; OnPropertyChanged(); }
+        }
+
         private bool _estaCerradoElDia;
         public bool EstaCerradoElDia
         {

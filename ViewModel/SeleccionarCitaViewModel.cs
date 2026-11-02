@@ -139,6 +139,7 @@ namespace slotsi_citas.ViewModel
         public ICommand NavegarCitasCommand { get; }
         public ICommand NavegarSucursalCommand { get; }
         public ICommand NavegarPerfilCommand { get; }
+        public ICommand NadaCommand { get; }
 
         public SeleccionarCitaViewModel(CitaService citaService, NegocioService negocioService)
         {
@@ -184,6 +185,8 @@ namespace slotsi_citas.ViewModel
                 if (Shell.Current != null) await Shell.Current.GoToAsync("//EditarPerfilPage");
             });
 
+            NadaCommand = new Command(() => { });
+
             _ = CargarDatosSesionClienteAsync();
         }
 
@@ -221,6 +224,14 @@ namespace slotsi_citas.ViewModel
                     serv.EsSeleccionado = true;
                     _serviciosSeleccionados.Add(serv);
                     ServiciosTarjetas.Add(serv);
+
+                    if (serv.ColaboradoresDelServicio != null)
+                    {
+                        foreach (var t in serv.ColaboradoresDelServicio)
+                        {
+                            t.ServicioPadre = serv;
+                        }
+                    }
                 }
 
                 OnPropertyChanged(nameof(ServicioNombreResumen));
@@ -240,14 +251,44 @@ namespace slotsi_citas.ViewModel
 
         private void OnSeleccionarEspecialistaServicio(Trabajador? trabajador)
         {
-            if (trabajador == null) return;
+            if (trabajador?.ServicioPadre == null) return;
+
+            var servicioTocado = trabajador.ServicioPadre;
+            bool estabaSeleccionado = servicioTocado.ColaboradorSeleccionado?.Id == trabajador.Id;
+
+            if (estabaSeleccionado)
+            {
+                servicioTocado.ColaboradorSeleccionado = null;
+            }
+            else
+            {
+                foreach (var s in ServiciosTarjetas)
+                {
+                    if (s.ColaboradorSeleccionado?.Id == trabajador.Id)
+                    {
+                        s.ColaboradorSeleccionado = null;
+                    }
+                }
+                servicioTocado.ColaboradorSeleccionado = trabajador;
+            }
+
+            bool seleccionadoEnAlgunServicio = ServiciosTarjetas.Any(s =>
+                s.ColaboradorSeleccionado?.Id == trabajador.Id);
 
             foreach (var servicio in ServiciosTarjetas)
             {
-                if (servicio.ColaboradoresDelServicio.Any(c => c.Id == trabajador.Id))
+                var t = servicio.ColaboradoresDelServicio.FirstOrDefault(c => c.Id == trabajador.Id);
+                if (t == null) continue;
+
+                if (servicio.ColaboradorSeleccionado?.Id == trabajador.Id)
                 {
-                    servicio.ColaboradorSeleccionado = trabajador;
-                    break;
+                    t.EsSeleccionado = true;
+                    t.EstaDeshabilitado = false;
+                }
+                else
+                {
+                    t.EsSeleccionado = false;
+                    t.EstaDeshabilitado = seleccionadoEnAlgunServicio;
                 }
             }
 
@@ -321,6 +362,18 @@ namespace slotsi_citas.ViewModel
                 return;
             }
 
+            var servicioSinTrabajador = _serviciosSeleccionados.FirstOrDefault(s =>
+                s.ColaboradoresDelServicio != null &&
+                s.ColaboradoresDelServicio.Count > 0 &&
+                s.ColaboradorSeleccionado == null);
+
+            if (servicioSinTrabajador != null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Especialista requerido",
+                    $"Por favor, selecciona un especialista para el servicio '{servicioSinTrabajador.Nombre}'.", "OK");
+                return;
+            }
+
             if (HorarioSeleccionado == null)
             {
                 bool irACalendario = await Application.Current.MainPage.DisplayAlert("Horario Requerido", "Aún no has seleccionado un horario para tu cita. ¿Deseas elegir uno ahora?", "Sí, elegir", "Cancelar");
@@ -342,23 +395,16 @@ namespace slotsi_citas.ViewModel
 
                 string trabajadorIdAsignado = servicioPrincipal.ColaboradorSeleccionado?.Id;
 
-                if (string.IsNullOrEmpty(trabajadorIdAsignado))
-                {
-                    trabajadorIdAsignado = servicioPrincipal.ColaboradoresHabilitados?.FirstOrDefault();
-                }
-
-                trabajadorIdAsignado ??= string.Empty;
-
                 string negocioIdFinal = NegocioActualObj?.Id ?? Preferences.Get("NegocioSeleccionadoId", CitaSession.NegocioId);
                 if (string.IsNullOrEmpty(negocioIdFinal))
                 {
-                    negocioIdFinal = "652b1234567890abcdef1234"; 
+                    negocioIdFinal = "652b1234567890abcdef1234";
                 }
 
                 var citaDto = new CitaDto
                 {
                     NegocioId = negocioIdFinal,
-                    TrabajadorId = trabajadorIdAsignado, 
+                    TrabajadorId = trabajadorIdAsignado,
                     ServicioId = servicioPrincipal.Id,
                     ClienteId = string.IsNullOrEmpty(ClienteId) ? "652b1234567890abcdef1237" : ClienteId,
                     ClienteNombre = ClienteNombre,

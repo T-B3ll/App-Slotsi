@@ -9,16 +9,39 @@ namespace slotsi_citas.Services
 {
     public class CatalogoService : ApiServiceBase
     {
-        public CatalogoService(HttpClient http) : base(http) { }
+        private readonly TrabajadorService _trabajadorService;
+
+        public CatalogoService(HttpClient http, TrabajadorService trabajadorService) : base(http)
+        {
+            _trabajadorService = trabajadorService;
+        }
 
         public async Task<List<Servicios>> ObtenerServiciosPorNegocioAsync(string negocioId)
         {
             var dtos = await GetAsync<List<ServiciosDto>>($"/api/servicios/negocio/{Uri.EscapeDataString(negocioId)}") ?? new();
 
+            var trabajadoresDto = await _trabajadorService.ObtenerPorNegocioAsync(negocioId);
+            var trabajadoresReales = new List<Trabajador>();
+
+            if (trabajadoresDto != null)
+            {
+                foreach (var t in trabajadoresDto)
+                {
+                    trabajadoresReales.Add(new Trabajador
+                    {
+                        Id = t.Id,
+                        Nombre = t.Nombre,
+                        Especialidad = t.Especialidad,
+                        Foto = t.Foto,
+                        Activo = t.Activo
+                    });
+                }
+            }
+
             var lista = new List<Servicios>();
             foreach (var d in dtos)
             {
-                lista.Add(new Servicios
+                var servicio = new Servicios
                 {
                     Id = d.Id,
                     NegocioId = d.NegocioId,
@@ -31,7 +54,30 @@ namespace slotsi_citas.Services
                     DisponibleDomicilio = d.DisponibleDomicilio,
                     Activo = d.Activo,
                     Foto = d.Foto
-                });
+                };
+
+                if (servicio.ColaboradoresHabilitados != null)
+                {
+                    foreach (var idTrabajador in servicio.ColaboradoresHabilitados)
+                    {
+                        var tOriginal = trabajadoresReales.FirstOrDefault(t => t.Id == idTrabajador);
+                        if (tOriginal != null)
+                        {
+                            var clon = new Trabajador
+                            {
+                                Id = tOriginal.Id,
+                                Nombre = tOriginal.Nombre,
+                                Especialidad = tOriginal.Especialidad,
+                                Foto = tOriginal.Foto,
+                                Activo = tOriginal.Activo,
+                                ServicioPadre = servicio
+                            };
+                            servicio.ColaboradoresDelServicio.Add(clon);
+                        }
+                    }
+                }
+
+                lista.Add(servicio);
             }
             return lista;
         }
