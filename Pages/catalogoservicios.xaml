@@ -7,10 +7,9 @@
              Shell.NavBarIsVisible="True">
 
     <Grid RowDefinitions="Auto, *">
-        <Grid Grid.Row="0" ColumnDefinitions="Auto, *, Auto" Padding="16,44,16,15" BackgroundColor="#2563EB">
-            <VerticalStackLayout Grid.Column="1" Spacing="2" Margin="16,0,0,0" VerticalOptions="Center">
-                <Label Text="Gestión del Catálogo" FontSize="20" FontAttributes="Bold" TextColor="White" />
-                <Label Text="{Binding ServiciosActivosCount, StringFormat='{0} servicios activos'}" FontSize="12" TextColor="#E0E7FF" />
+        <Grid Grid.Row="0" ColumnDefinitions="Auto, *" Padding="16,10,16,10" BackgroundColor="Transparent">
+            <VerticalStackLayout Grid.Column="1" Spacing="0" Margin="0" VerticalOptions="Center">
+                <Label Text="{Binding ServiciosActivosCount, StringFormat='{0} servicios activos'}" FontSize="12" TextColor="#6B7280" />
             </VerticalStackLayout>
         </Grid>
 

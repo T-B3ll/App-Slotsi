@@ -3,14 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
              x:Class="slotsi_citas.Pages.ListaTrabajadores"
-             Title="Lista de Trabajadores"
+             Title="Gestión de Trabajadores"
              BackgroundColor="#F8FAFC">
 
     <Grid RowDefinitions="Auto, *">
 
-        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="20,20,20,15" BackgroundColor="#FFFFFF">
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" Padding="16,10,16,10" BackgroundColor="Transparent"  >
             <VerticalStackLayout Grid.Column="0" Spacing="2">
-                <Label Text="Gestión de trabajadores" FontSize="22" FontAttributes="Bold" TextColor="#111827" />
                 <Label Text="{Binding TrabajadoresActivosCount, StringFormat='{0} trabajadores activos'}" FontSize="13" TextColor="#6B7280" />
             </VerticalStackLayout>
         </Grid>
