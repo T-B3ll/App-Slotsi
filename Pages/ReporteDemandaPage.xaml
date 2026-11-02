@@ -8,13 +8,13 @@
 
     <Grid RowDefinitions="Auto, *">
 
-        <Grid Grid.Row="0" BackgroundColor="#F8FAFC" Padding="16, 14">
+        <Grid Grid.Row="0" BackgroundColor="#2563EB" Padding="16, 14">
             <Grid ColumnDefinitions="Auto, *">
                 <Label Grid.Column="0" 
                        Text="&#xE5C4;" 
                        FontFamily="MaterialIcons" 
                        FontSize="26" 
-                       TextColor="#2563EB" 
+                       TextColor="#F8FAFC" 
                        VerticalOptions="Center"
                        Margin="0,0,10,0">
                     <Label.GestureRecognizers>
@@ -25,7 +25,7 @@
                        Text="Demanda Semanal" 
                        FontSize="19" 
                        FontAttributes="Bold" 
-                       TextColor="#2563EB" 
+                       TextColor="#F8FAFC" 
                        HorizontalOptions="Center" 
                        VerticalOptions="Center"/>
             </Grid>

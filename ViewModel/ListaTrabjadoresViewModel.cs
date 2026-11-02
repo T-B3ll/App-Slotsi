@@ -136,7 +136,7 @@ public async Task CambiarEstadoActivoAsync(Trabajador trabajador)
 
                 if (!confirmar)
                 {
-                    trabajador.Activo = true; // dispara Toggled, pero se ignora por el diccionario
+                    trabajador.Activo = true; 
                     return;
                 }
             }
@@ -149,7 +149,7 @@ public async Task CambiarEstadoActivoAsync(Trabajador trabajador)
             }
             catch (Exception ex)
             {
-                trabajador.Activo = !nuevoEstado; // se ignora por el diccionario
+                trabajador.Activo = !nuevoEstado; 
                 await Application.Current.MainPage.DisplayAlert("Error",
                     $"Error al actualizar: {ApiException.MensajePara(ex)}", "OK");
             }
