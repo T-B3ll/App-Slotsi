@@ -303,7 +303,6 @@ namespace slotsi_citas.ViewModel
                             tienePausa = true;
                         }
 
-                        // LLAMADA A LA API EN SEGUNDO PLANO
                         var citasDelDiaDto = await _citaService.ObtenerPorFechaAsync(FechaSeleccionada);
                         string negocioIdFiltro = NegocioActual?.Id ?? Preferences.Get("NegocioSeleccionadoId", string.Empty);
 
@@ -364,7 +363,6 @@ namespace slotsi_citas.ViewModel
                         }
                     }
 
-                    // Volvemos al hilo principal para actualizar la UI
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
                         EstaCerradoElDia = setCerrado;
@@ -472,41 +470,61 @@ namespace slotsi_citas.ViewModel
                 $"Editar tu Cita",
                 "Cancelar",
                 null,
-                "Marcar como Completada",
+                "Editar cita",
                 "Marcar como Cancelada");
 
-            if (accion == "Cancelar" || string.IsNullOrEmpty(accion)) return;
-
-            string nuevoEstado = accion == "Marcar como Completada" ? "Completada" : "Cancelada";
-
-            var citaDto = new CitaDto
+            if (accion == "Editar cita")
             {
-                Id = rango.Cita.Id,
-                NegocioId = rango.Cita.NegocioId,
-                ClienteId = rango.Cita.ClienteId,
-                ClienteNombre = rango.Cita.Cliente?.Nombre ?? "",
-                ClienteTelefono = rango.Cita.Cliente?.Telefono ?? "",
-                FechaHoraInicio = rango.Cita.FechaHoraInicio,
-                FechaHoraFin = rango.Cita.FechaHoraFin,
-                Estado = nuevoEstado,
-                Precio = 0,
-                Moneda = "NIO",
-                DuracionMinutos = 45,
-                Tipo = "EnLocal",
-                MetodoPago = "Efectivo",
-                ServicioNombre = "Servicio"
-            };
+                CitaSession.HorarioSeleccionado = rango;
+                CitaSession.FechaSeleccionada = rango.HoraInicio;
 
-            bool actualizado = await _citaService.ActualizarEstadoAsync(citaDto.Id!, citaDto);
+                var navParams = new Dictionary<string, object>
+                {
+                    { "HorarioSeleccionado", rango },
+                    { "FechaSeleccionada", rango.HoraInicio },
+                    { "EsEdicion", true },
+                    { "CitaId", rango.Cita.Id ?? string.Empty },
+                    { "ServicioNombreEdicion", rango.Cita.ServicioNombre ?? "Servicio" }
+                };
 
-            if (actualizado)
-            {
-                await Application.Current.MainPage.DisplayAlert("Éxito", $"Cita marcada como {nuevoEstado}.", "OK");
-                await CargarRangosHorariosAsync();
+                if (NegocioActual != null)
+                {
+                    navParams["Negocio"] = NegocioActual;
+                }
+
+                await Shell.Current.GoToAsync(nameof(SeleccionarCitaPage), navParams);
             }
-            else
+            else if (accion == "Marcar como Cancelada")
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "No se pudo actualizar la cita.", "OK");
+                var citaDto = new CitaDto
+                {
+                    Id = rango.Cita.Id,
+                    NegocioId = rango.Cita.NegocioId,
+                    ClienteId = rango.Cita.ClienteId,
+                    ClienteNombre = rango.Cita.Cliente?.Nombre ?? "",
+                    ClienteTelefono = rango.Cita.Cliente?.Telefono ?? "",
+                    FechaHoraInicio = rango.Cita.FechaHoraInicio,
+                    FechaHoraFin = rango.Cita.FechaHoraFin,
+                    Estado = "Cancelada",
+                    Precio = 0,
+                    Moneda = "NIO",
+                    DuracionMinutos = 45,
+                    Tipo = "EnLocal",
+                    MetodoPago = "Efectivo",
+                    ServicioNombre = "Servicio"
+                };
+
+                bool actualizado = await _citaService.ActualizarEstadoAsync(citaDto.Id!, citaDto);
+
+                if (actualizado)
+                {
+                    await Application.Current.MainPage.DisplayAlert("Éxito", "Cita cancelada correctamente.", "OK");
+                    await CargarRangosHorariosAsync();
+                }
+                else
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", "No se pudo cancelar la cita.", "OK");
+                }
             }
         }
 

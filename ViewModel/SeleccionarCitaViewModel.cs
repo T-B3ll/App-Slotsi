@@ -19,6 +19,7 @@ namespace slotsi_citas.ViewModel
     {
         private readonly CitaService _citaService;
         private readonly NegocioService _negocioService;
+        private readonly CatalogoService _catalogoService;
 
         private string _negocioNombre = "Cargando negocio...";
         public string NegocioNombre
@@ -42,6 +43,8 @@ namespace slotsi_citas.ViewModel
 
         public bool TieneFotoNegocio => !string.IsNullOrEmpty(NegocioFoto);
         public bool NoTieneFotoNegocio => string.IsNullOrEmpty(NegocioFoto);
+        public bool EsEdicion { get; set; } = false;
+        public string CitaIdEdicion { get; set; } = string.Empty;
 
         private string _direccionCliente = "Matagalpa, Nicaragua";
         public string DireccionCliente
@@ -119,7 +122,7 @@ namespace slotsi_citas.ViewModel
         public ObservableCollection<Servicios> ServiciosTarjetas { get; set; } = new ObservableCollection<Servicios>();
 
         public string ServicioNombreResumen => _serviciosSeleccionados.Any()
-            ? string.Join(", ", _serviciosSeleccionados.Select(s => $"{s.Nombre} ({s.ColaboradorSeleccionado?.Nombre ?? "General"})"))
+            ? string.Join(", ", _serviciosSeleccionados.Select(s => s.Nombre))
             : "Selecciona un servicio";
 
         public string ServicioPrecioResumen => _serviciosSeleccionados.Any()
@@ -141,10 +144,11 @@ namespace slotsi_citas.ViewModel
         public ICommand NavegarPerfilCommand { get; }
         public ICommand NadaCommand { get; }
 
-        public SeleccionarCitaViewModel(CitaService citaService, NegocioService negocioService)
+        public SeleccionarCitaViewModel(CitaService citaService, NegocioService negocioService, CatalogoService catalogoService)
         {
             _citaService = citaService;
             _negocioService = negocioService;
+            _catalogoService = catalogoService;
 
             HorarioSeleccionado = CitaSession.HorarioSeleccionado;
             FechaSeleccionada = CitaSession.FechaSeleccionada != default
@@ -194,7 +198,22 @@ namespace slotsi_citas.ViewModel
         {
             if (Shell.Current != null)
             {
-                await Shell.Current.GoToAsync(nameof(HorariosDisponiblesPage));
+                if (NegocioActualObj != null && !string.IsNullOrEmpty(NegocioActualObj.Id))
+                {
+                    Preferences.Set("NegocioSeleccionadoId", NegocioActualObj.Id);
+                }
+
+                var navParams = new Dictionary<string, object>
+                {
+                    { "FechaSeleccionada", FechaSeleccionada }
+                };
+
+                if (NegocioActualObj != null)
+                {
+                    navParams["Negocio"] = NegocioActualObj;
+                }
+
+                await Shell.Current.GoToAsync(nameof(HorariosDisponiblesPage), navParams);
             }
         }
 
@@ -214,7 +233,7 @@ namespace slotsi_citas.ViewModel
             }
 
             if (query.TryGetValue("ServiciosSeleccionados", out var serviciosObj) &&
-                serviciosObj is List<Servicios> servicios)
+                serviciosObj is List<Servicios> servicios && servicios.Any())
             {
                 _serviciosSeleccionados.Clear();
                 ServiciosTarjetas.Clear();
@@ -237,6 +256,15 @@ namespace slotsi_citas.ViewModel
                 OnPropertyChanged(nameof(ServicioNombreResumen));
                 OnPropertyChanged(nameof(ServicioPrecioResumen));
             }
+            else if (query.TryGetValue("EsEdicion", out var esEdicionObj) && esEdicionObj is bool esEdicion && esEdicion)
+            {
+                string nombreServicio = string.Empty;
+                if (query.TryGetValue("ServicioNombreEdicion", out var servicioNombreObj) && servicioNombreObj is string sn)
+                {
+                    nombreServicio = sn;
+                }
+                _ = CargarServiciosParaEdicionAsync(nombreServicio);
+            }
 
             if (query.TryGetValue("HorarioSeleccionado", out var horarioObj) && horarioObj is RangoHorario horario)
             {
@@ -247,9 +275,65 @@ namespace slotsi_citas.ViewModel
             {
                 FechaSeleccionada = fecha;
             }
+
+            if (query.TryGetValue("EsEdicion", out var esEdicionObj2) && esEdicionObj2 is bool esEdicion2)
+            {
+                EsEdicion = esEdicion2;
+            }
+
+            if (query.TryGetValue("CitaId", out var citaIdObj) && citaIdObj is string citaId)
+            {
+                CitaIdEdicion = citaId;
+            }
         }
 
-        private void OnSeleccionarEspecialistaServicio(Trabajador? trabajador)
+        private async Task CargarServiciosParaEdicionAsync(string nombreServicio)
+        {
+            try
+            {
+                if (NegocioActualObj == null) return;
+
+                var resultados = await _catalogoService.ObtenerServiciosPorNegocioAsync(NegocioActualObj.Id);
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    _serviciosSeleccionados.Clear();
+                    ServiciosTarjetas.Clear();
+
+                    // 👇 BUSCAMOS EL SERVICIO POR COINCIDENCIA PARCIAL
+                    string nombreBuscado = nombreServicio.Trim().ToLower();
+                    var servicio = resultados.FirstOrDefault(s =>
+                        s.Nombre.Trim().ToLower() == nombreBuscado)
+                        ?? resultados.FirstOrDefault(s =>
+                            nombreBuscado.Contains(s.Nombre.Trim().ToLower()) ||
+                            s.Nombre.Trim().ToLower().Contains(nombreBuscado));
+
+                    if (servicio != null)
+                    {
+                        servicio.EsSeleccionado = true;
+                        _serviciosSeleccionados.Add(servicio);
+                        ServiciosTarjetas.Add(servicio);
+
+                        if (servicio.ColaboradoresDelServicio != null)
+                        {
+                            foreach (var t in servicio.ColaboradoresDelServicio)
+                            {
+                                t.ServicioPadre = servicio;
+                            }
+                        }
+                    }
+
+                    OnPropertyChanged(nameof(ServicioNombreResumen));
+                    OnPropertyChanged(nameof(ServicioPrecioResumen));
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[ERROR CARGAR SERVICIOS EDICION]: {ex.Message}");
+            }
+        }
+
+        private async void OnSeleccionarEspecialistaServicio(Trabajador? trabajador)
         {
             if (trabajador?.ServicioPadre == null) return;
 
@@ -262,6 +346,18 @@ namespace slotsi_citas.ViewModel
             }
             else
             {
+                var serviciosConEspecialista = ServiciosTarjetas
+                    .Where(s => s.ColaboradorSeleccionado != null)
+                    .ToList();
+
+                if (serviciosConEspecialista.Any() &&
+                    serviciosConEspecialista.All(s => s.ColaboradorSeleccionado?.Id != trabajador.Id))
+                {
+                    await Application.Current.MainPage.DisplayAlert("Especialista único",
+                        "Solo puedes seleccionar un especialista por cita. Si quieres cambiar, primero deselecciona el actual.", "OK");
+                    return;
+                }
+
                 foreach (var s in ServiciosTarjetas)
                 {
                     if (s.ColaboradorSeleccionado?.Id == trabajador.Id)
@@ -403,6 +499,7 @@ namespace slotsi_citas.ViewModel
 
                 var citaDto = new CitaDto
                 {
+                    Id = EsEdicion ? CitaIdEdicion : null,
                     NegocioId = negocioIdFinal,
                     TrabajadorId = trabajadorIdAsignado,
                     ServicioId = servicioPrincipal.Id,
@@ -421,14 +518,29 @@ namespace slotsi_citas.ViewModel
                     Notas = ""
                 };
 
-                await _citaService.CrearAsync(citaDto);
+                if (string.IsNullOrEmpty(CitaIdEdicion))
+                {
+                    EsEdicion = false;
+                }
 
-                await Application.Current.MainPage.DisplayAlert("Éxito", "¡Cita registrada correctamente en la API!", "OK");
+                if (EsEdicion && !string.IsNullOrEmpty(CitaIdEdicion))
+                {
+                    citaDto.Id = CitaIdEdicion;
+                    await _citaService.ActualizarEstadoAsync(citaDto.Id, citaDto);
+                    await Application.Current.MainPage.DisplayAlert("Éxito", "¡Cita actualizada correctamente!", "OK");
+                }
+                else
+                {
+                    citaDto.Id = null;
+                    await _citaService.CrearAsync(citaDto);
+                    await Application.Current.MainPage.DisplayAlert("Éxito", "¡Cita registrada correctamente!", "OK");
+                }
+
                 await Shell.Current.GoToAsync("..");
             }
             catch (Exception ex)
             {
-                await Application.Current.MainPage.DisplayAlert("Error", $"No se pudo agendar la cita: {ex.Message}", "OK");
+                await Application.Current.MainPage.DisplayAlert("Error", $"No se pudo guardar la cita: {ex.Message}", "OK");
             }
         }
     }
