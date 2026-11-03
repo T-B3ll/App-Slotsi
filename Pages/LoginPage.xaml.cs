@@ -76,6 +76,7 @@ public partial class LoginPage : ContentPage
             Preferences.Set("UsuarioIdSesion", idUsuario);
             Preferences.Set("EsDuenoNegocio", usuario.TipoUsuario);
             Preferences.Set("UsuarioCorreo", usuario.Correo);
+            Preferences.Set("NombreUsuario", usuario.NombreCompleto);
 
             Preferences.Remove("negocio_id");
             if (usuario.TipoUsuario)

@@ -15,7 +15,7 @@ namespace slotsi_citas.ViewModel
         private readonly ResumenService _service;
 
         private string UsuarioId => Preferences.Get("UsuarioId", string.Empty);
-        private string NombreUsuario => Preferences.Get("NombreUsuario", "Cliente");
+        private string NombreCompleto => Preferences.Get("NombreUsuario", "Cliente");
 
         [ObservableProperty] private string saludo = string.Empty;
         [ObservableProperty] private string iniciales = string.Empty;
