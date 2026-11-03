@@ -4,7 +4,7 @@
              xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
              x:Class="slotsi_citas.Pages.ResumenPage"
              x:DataType="vm:ResumenViewModel"
-             Title="Inicio"
+             Title="Resumen del Día"
              Shell.NavBarIsVisible="True"
              BackgroundColor="#F8FAFC">
 

@@ -17,7 +17,7 @@ namespace slotsi_citas.Services
         public ResumenService(HttpClient http) => _http = http;
 
         public async Task<ResumenDiaDto?> ObtenerResumenAsync(
-            string negocioId, DateTime desde, DateTime hasta, CancellationToken ct = default)
+             string negocioId, DateTime desde, DateTime hasta, CancellationToken ct = default)
         {
             var d = desde.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             var h = hasta.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);

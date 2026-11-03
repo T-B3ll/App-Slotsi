@@ -70,13 +70,6 @@
         <ShellContent ContentTemplate="{DataTemplate pages:RegistroUsuariosPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Calendario" Route="CalendarioPage" IsVisible="{x:Static app:MenuUsuario.EsDueno}">
-        <FlyoutItem.Icon>
-            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE916;" Color="#2563EB" Size="22" />
-        </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:CalendarioPage}" />
-    </FlyoutItem>
-
     <FlyoutItem Title="Horarios Disponibles" Route="CalendarioPage" IsVisible="{x:Static app:MenuUsuario.EsCliente}">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE924;" Color="#2563EB" Size="22" />

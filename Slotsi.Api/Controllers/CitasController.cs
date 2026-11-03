@@ -16,8 +16,6 @@ public class CitasController : ControllerBase
     private readonly INegocioRepository _negocio;
     private readonly ITrabajadorRepository _trabajadores;
 
-
-
     public CitasController(ICitaRepository citas, INegocioRepository negocio, ITrabajadorRepository trabajadores)
     {
         _citas = citas;
