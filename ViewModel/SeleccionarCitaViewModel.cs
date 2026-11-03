@@ -17,6 +17,7 @@ namespace slotsi_citas.ViewModel
 {
     public class SeleccionarCitaViewModel : BindableObject, IQueryAttributable
     {
+        private readonly UsuarioService _usuarioService;
         private readonly CitaService _citaService;
         private readonly NegocioService _negocioService;
 
@@ -141,10 +142,11 @@ namespace slotsi_citas.ViewModel
         public ICommand NavegarPerfilCommand { get; }
         public ICommand NadaCommand { get; }
 
-        public SeleccionarCitaViewModel(CitaService citaService, NegocioService negocioService)
+        public SeleccionarCitaViewModel(CitaService citaService, NegocioService negocioService, UsuarioService usuarioService)
         {
             _citaService = citaService;
             _negocioService = negocioService;
+            _usuarioService = usuarioService;
 
             HorarioSeleccionado = CitaSession.HorarioSeleccionado;
             FechaSeleccionada = CitaSession.FechaSeleccionada != default
@@ -303,12 +305,40 @@ namespace slotsi_citas.ViewModel
                 if (string.IsNullOrEmpty(ClienteId))
                     ClienteId = Preferences.Get("UsuarioIdSesion", string.Empty);
 
-                string nombreLocal = Preferences.Get("UsuarioNombre", string.Empty);
+                string nombreLocal = Preferences.Get("NombreUsuario", string.Empty);
+                if (string.IsNullOrWhiteSpace(nombreLocal))
+                    nombreLocal = Preferences.Get("UsuarioNombre", string.Empty); 
+
+                string telefono = Preferences.Get("UsuarioTelefono", string.Empty);
                 string correo = Preferences.Get("UsuarioCorreo", string.Empty);
 
-                if (string.IsNullOrEmpty(nombreLocal) && !string.IsNullOrEmpty(correo))
+                if ((string.IsNullOrWhiteSpace(nombreLocal) || string.IsNullOrWhiteSpace(telefono))
+                    && !string.IsNullOrEmpty(correo))
                 {
-                    nombreLocal = correo.Split('@')[0];
+                    try
+                    {
+                        var usuario = await _usuarioService.ObtenerPorCorreoAsync(correo);
+                        if (usuario != null)
+                        {
+                            if (string.IsNullOrWhiteSpace(nombreLocal))
+                            {
+                                nombreLocal = usuario.NombreCompleto ?? string.Empty;
+                                if (!string.IsNullOrWhiteSpace(nombreLocal))
+                                    Preferences.Set("NombreUsuario", nombreLocal);
+                            }
+
+                            if (string.IsNullOrWhiteSpace(telefono))
+                            {
+                                telefono = usuario.Telefono ?? string.Empty;
+                                if (!string.IsNullOrWhiteSpace(telefono))
+                                    Preferences.Set("UsuarioTelefono", telefono);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine(ex);
+                    }
                 }
 
                 MainThread.BeginInvokeOnMainThread(() =>
@@ -395,10 +425,18 @@ namespace slotsi_citas.ViewModel
 
                 string trabajadorIdAsignado = servicioPrincipal.ColaboradorSeleccionado?.Id;
 
+                if (string.IsNullOrEmpty(ClienteId))
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error",
+                        "No se encontró tu sesión. Vuelve a iniciar sesión.", "OK");
+                    return;
+                }
+
                 string negocioIdFinal = NegocioActualObj?.Id ?? Preferences.Get("NegocioSeleccionadoId", CitaSession.NegocioId);
                 if (string.IsNullOrEmpty(negocioIdFinal))
                 {
-                    negocioIdFinal = "652b1234567890abcdef1234";
+                    await Application.Current.MainPage.DisplayAlert("Error", "No se encontró el negocio seleccionado.", "OK");
+                    return;
                 }
 
                 var citaDto = new CitaDto
@@ -406,7 +444,7 @@ namespace slotsi_citas.ViewModel
                     NegocioId = negocioIdFinal,
                     TrabajadorId = trabajadorIdAsignado,
                     ServicioId = servicioPrincipal.Id,
-                    ClienteId = string.IsNullOrEmpty(ClienteId) ? "652b1234567890abcdef1237" : ClienteId,
+                    ClienteId = ClienteId,
                     ClienteNombre = ClienteNombre,
                     ClienteTelefono = telefonoCliente,
                     ServicioNombre = ServicioNombreResumen,
@@ -423,7 +461,7 @@ namespace slotsi_citas.ViewModel
 
                 await _citaService.CrearAsync(citaDto);
 
-                await Application.Current.MainPage.DisplayAlert("Éxito", "¡Cita registrada correctamente en la API!", "OK");
+                await Application.Current.MainPage.DisplayAlert("Éxito", "¡Cita registrada correctamente", "OK");
                 await Shell.Current.GoToAsync("..");
             }
             catch (Exception ex)

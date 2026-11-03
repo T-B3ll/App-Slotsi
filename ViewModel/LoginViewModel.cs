@@ -122,6 +122,7 @@ namespace slotsi_citas.ViewModel
             Preferences.Set("UsuarioIdSesion", idUsuarioString);
             Preferences.Set("EsDuenoNegocio", usuario.TipoUsuario);
             Preferences.Set("UsuarioCorreo", usuario.Correo);
+            Preferences.Set("NombreUsuario", usuario.NombreCompleto);
 
             Preferences.Remove("negocio_id");
             if (usuario.TipoUsuario)
@@ -140,7 +141,7 @@ namespace slotsi_citas.ViewModel
 
             Application.Current.MainPage = new AppShell(_auth);
 
-            string ruta = usuario.TipoUsuario ? "//ResumenPage" : "//dueñosnegocios";
+            string ruta = usuario.TipoUsuario ? "//ResumenPage" : "//ResumenCliente";
 
             System.Diagnostics.Debug.WriteLine($" [LOGIN] Navegando a: {ruta}");
 
@@ -151,7 +152,7 @@ namespace slotsi_citas.ViewModel
             catch (Exception navEx)
             {
                 System.Diagnostics.Debug.WriteLine($"⚠️ [LOGIN] Error navegando: {navEx.Message}");
-                await Shell.Current.GoToAsync("//Inicio");
+                await Shell.Current.GoToAsync(usuario.TipoUsuario ? "//ResumenPage" : "//ResumenCliente");
             }
         }
 

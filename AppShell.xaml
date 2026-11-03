@@ -28,6 +28,13 @@
         </Grid>
     </Shell.FlyoutHeader>
 
+    <FlyoutItem Title="Inicio" Route="ResumenCliente" IsVisible="{x:Static app:MenuUsuario.EsCliente}">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#2563EB" Size="22" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:ResumenCliente}" />
+    </FlyoutItem>
+
     <FlyoutItem Title="Inicio" Route="ResumenPage" IsVisible="{x:Static app:MenuUsuario.EsDueno}">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#2563EB" Size="22" />

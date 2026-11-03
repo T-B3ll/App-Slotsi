@@ -1,4 +1,5 @@
 ﻿using Slotsi.Shared.Dtos;
+using slotsi_citas.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -23,6 +24,20 @@ namespace slotsi_citas.Services
 
             var url = $"api/citas/resumen?negocioId={negocioId}&desde={d}&hasta={h}";
             return await _http.GetFromJsonAsync<ResumenDiaDto>(url, ct);
+        }
+
+        public async Task<List<CitaDto>> ObtenerCitasClienteAsync(string clienteId, CancellationToken ct = default)
+        {
+            var resp = await _http.GetAsync($"api/citas/usuario/{clienteId}", ct);
+
+            if (!resp.IsSuccessStatusCode)
+            {
+                var cuerpo = await resp.Content.ReadAsStringAsync(ct);
+                throw new HttpRequestException($"{(int)resp.StatusCode}: {cuerpo}");
+            }
+
+            return await resp.Content.ReadFromJsonAsync<List<CitaDto>>(cancellationToken: ct)
+                   ?? new List<CitaDto>();
         }
     }
 }

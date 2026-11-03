@@ -12,7 +12,6 @@ public partial class LoginPage : ContentPage
     private readonly UsuarioService _usuarioService;
     private readonly NegocioService _negocioService;
 
-    // Evita doble toque
     private bool _isNavigating = false;
 
     public LoginPage(IAuthApiService auth, ISesionService sesion,
@@ -45,7 +44,7 @@ public partial class LoginPage : ContentPage
         else
             app.MainPage = shell;
 
-        await shell.GoToAsync(esDueno ? "//ResumenPage" : "//dueñosnegocios");
+        await shell.GoToAsync(esDueno ? "//ResumenPage" : "//ResumenCliente");
     }
 
     private async void OnIniciarSesionClicked(object? sender, EventArgs e)

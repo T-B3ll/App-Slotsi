@@ -13,22 +13,13 @@
 
         <VerticalStackLayout Grid.Row="0" BackgroundColor="#2563EB" Spacing="0">
             <Grid ColumnDefinitions="Auto, *, Auto" Padding="16,12">
-                <ImageButton Grid.Column="0" BackgroundColor="Transparent" Clicked="OnMenuClicked" WidthRequest="24" HeightRequest="24">
-                    <ImageButton.Source>
-                        <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE5D2;" Color="White" Size="26"/>
-                    </ImageButton.Source>
-                </ImageButton>
-                <Label Grid.Column="1" Text="Seleccionar Cita" FontSize="20" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
-                <BoxView Grid.Column="2" WidthRequest="24" Color="Transparent"/>
-            </Grid>
-
-            <Grid ColumnDefinitions="Auto, *" Padding="16,0,16,16" ColumnSpacing="8">
                 <ImageButton Grid.Column="0" BackgroundColor="Transparent" Command="{Binding VolverCommand}" WidthRequest="24" HeightRequest="24" VerticalOptions="Center">
                     <ImageButton.Source>
                         <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE5C4;" Color="White" Size="24"/>
                     </ImageButton.Source>
                 </ImageButton>
-                <BoxView Grid.Column="1" Color="Transparent"/>
+                <Label Grid.Column="1" Text="Seleccionar Cita" FontSize="20" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
+                <BoxView Grid.Column="2" WidthRequest="24" Color="Transparent"/>
             </Grid>
         </VerticalStackLayout>
 
@@ -201,36 +192,5 @@
         </ScrollView>
 
         <Button Grid.Row="2" Text="Confirmar cita" Command="{Binding ConfirmarCitaCommand}" IsEnabled="True" BackgroundColor="#2563EB" TextColor="White" FontAttributes="Bold" FontSize="15" CornerRadius="12" HeightRequest="50" Margin="16,8,16,8"/>
-
-        <Grid Grid.Row="3" ColumnDefinitions="*, *, *, *" BackgroundColor="#FFFFFF" HeightRequest="60" Padding="0,6">
-            <VerticalStackLayout Grid.Column="0" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
-                <VerticalStackLayout.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding NavegarInicioCommand}"/>
-                </VerticalStackLayout.GestureRecognizers>
-                <Image Source="home.png" HeightRequest="22" WidthRequest="22"/>
-                <Label Text="Inicio" FontSize="11" TextColor="#2563EB" FontAttributes="Bold"/>
-            </VerticalStackLayout>
-            <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
-                <VerticalStackLayout.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding NavegarCitasCommand}"/>
-                </VerticalStackLayout.GestureRecognizers>
-                <Image Source="calendar.png" HeightRequest="22" WidthRequest="22"/>
-                <Label Text="Citas" FontSize="11" TextColor="#6B7280"/>
-            </VerticalStackLayout>
-            <VerticalStackLayout Grid.Column="2" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
-                <VerticalStackLayout.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding NavegarSucursalCommand}"/>
-                </VerticalStackLayout.GestureRecognizers>
-                <Image Source="location.png" HeightRequest="22" WidthRequest="22"/>
-                <Label Text="Sucursal" FontSize="11" TextColor="#6B7280"/>
-            </VerticalStackLayout>
-            <VerticalStackLayout Grid.Column="3" HorizontalOptions="Center" VerticalOptions="Center" Spacing="2">
-                <VerticalStackLayout.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding NavegarPerfilCommand}"/>
-                </VerticalStackLayout.GestureRecognizers>
-                <Image Source="profile.png" HeightRequest="22" WidthRequest="22"/>
-                <Label Text="Perfil" FontSize="11" TextColor="#6B7280"/>
-            </VerticalStackLayout>
-        </Grid>
     </Grid>
 </ContentPage>
