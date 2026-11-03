@@ -12,10 +12,8 @@
 
     <Grid RowDefinitions="Auto, *">
 
-        <!-- NUEVO ENCABEZADO CON MENÚ Y BOTÓN ATRÁS -->
         <VerticalStackLayout Grid.Row="0" BackgroundColor="#2563EB" Spacing="0">
 
-            <!-- Fila 1: Menú y Título -->
             <Grid ColumnDefinitions="Auto, *, Auto" Padding="16,12">
                 <Label Grid.Column="1" Text="Calendario de citas..." FontSize="20" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
                 <BoxView Grid.Column="2" WidthRequest="24" Color="Transparent"/>
@@ -46,7 +44,6 @@
             </Grid>
         </VerticalStackLayout>
 
-        <!-- RESTO DEL CUERPO (LISTA DE HORARIOS) -->
         <Grid Grid.Row="1" BackgroundColor="#FFFFFF">
             <ActivityIndicator IsRunning="{Binding EstaCargando}" IsVisible="{Binding EstaCargando}" Color="#2563EB" HorizontalOptions="Center" VerticalOptions="Center"/>
 

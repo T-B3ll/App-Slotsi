@@ -9,7 +9,7 @@
              Shell.NavBarIsVisible="False"
              NavigationPage.HasNavigationBar="False">
 
-    <Grid RowDefinitions="Auto, *, Auto, Auto">
+    <Grid RowDefinitions="Auto, *, Auto">
 
         <VerticalStackLayout Grid.Row="0" BackgroundColor="#2563EB" Spacing="0">
             <Grid ColumnDefinitions="Auto, *, Auto" Padding="16,12">
@@ -191,6 +191,6 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <Button Grid.Row="2" Text="Confirmar cita" Command="{Binding ConfirmarCitaCommand}" IsEnabled="True" BackgroundColor="#2563EB" TextColor="White" FontAttributes="Bold" FontSize="15" CornerRadius="12" HeightRequest="50" Margin="16,8,16,8"/>
+        <Button Grid.Row="2" Text="Confirmar cita" Command="{Binding ConfirmarCitaCommand}" IsEnabled="True" BackgroundColor="#2563EB" TextColor="White" FontAttributes="Bold" FontSize="15" CornerRadius="12" HeightRequest="50" Margin="16,8,16,20"/>
     </Grid>
 </ContentPage>

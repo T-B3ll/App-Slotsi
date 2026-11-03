@@ -136,10 +136,6 @@ namespace slotsi_citas.ViewModel
         public ICommand ConfirmarCitaCommand { get; }
         public ICommand VolverCommand { get; }
         public ICommand IrAHorariosCommand { get; }
-        public ICommand NavegarInicioCommand { get; }
-        public ICommand NavegarCitasCommand { get; }
-        public ICommand NavegarSucursalCommand { get; }
-        public ICommand NavegarPerfilCommand { get; }
         public ICommand NadaCommand { get; }
 
         public SeleccionarCitaViewModel(CitaService citaService, NegocioService negocioService, UsuarioService usuarioService)
@@ -168,25 +164,8 @@ namespace slotsi_citas.ViewModel
             SeleccionarEspecialistaServicioCommand = new Microsoft.Maui.Controls.Command<Trabajador>(OnSeleccionarEspecialistaServicio);
             ConfirmarCitaCommand = new Command(OnConfirmarCita);
             VolverCommand = new Command(async () => await RegresarPantallaAnterior());
+
             IrAHorariosCommand = new Command(async () => await IrAHorariosAsync());
-
-            NavegarInicioCommand = new Command(async () =>
-            {
-                if (Shell.Current != null) await Shell.Current.GoToAsync("//dueñosnegocios");
-            });
-            NavegarCitasCommand = new Command(async () =>
-            {
-                await IrAHorariosAsync();
-            });
-            NavegarSucursalCommand = new Command(async () =>
-            {
-                if (Shell.Current != null) await Shell.Current.GoToAsync("//dueñosnegocios");
-            });
-            NavegarPerfilCommand = new Command(async () =>
-            {
-                if (Shell.Current != null) await Shell.Current.GoToAsync("//EditarPerfilPage");
-            });
-
             NadaCommand = new Command(() => { });
 
             _ = CargarDatosSesionClienteAsync();
@@ -194,9 +173,21 @@ namespace slotsi_citas.ViewModel
 
         public async Task IrAHorariosAsync()
         {
+            if (!_serviciosSeleccionados.Any())
+            {
+                await Application.Current.MainPage.DisplayAlert("Atención", "Por favor selecciona al menos un servicio antes de elegir un horario.", "OK");
+                return;
+            }
+
             if (Shell.Current != null)
             {
-                await Shell.Current.GoToAsync(nameof(HorariosDisponiblesPage));
+                var parametros = new Dictionary<string, object>
+                {
+                    { "ServiciosSeleccionados", _serviciosSeleccionados },
+                    { "Negocio", NegocioActualObj ?? new Negocio() }
+                };
+
+                await Shell.Current.GoToAsync(nameof(CalendarioPage), parametros);
             }
         }
 
@@ -235,6 +226,9 @@ namespace slotsi_citas.ViewModel
                         }
                     }
                 }
+
+                // 👇 ESTA ES LA LÍNEA QUE FALTABA PARA GUARDARLOS EN LA SESIÓN 👇
+                CitaSession.ServiciosSeleccionados = servicios;
 
                 OnPropertyChanged(nameof(ServicioNombreResumen));
                 OnPropertyChanged(nameof(ServicioPrecioResumen));

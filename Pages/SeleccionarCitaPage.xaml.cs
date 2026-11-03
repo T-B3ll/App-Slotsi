@@ -1,7 +1,9 @@
 using Microsoft.Maui.Controls;
+using slotsi_citas.Models;
 using slotsi_citas.Services;
 using slotsi_citas.ViewModel;
-using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace slotsi_citas.Pages
 {
@@ -31,17 +33,14 @@ namespace slotsi_citas.Pages
                     _viewModel.FechaSeleccionada = CitaSession.FechaSeleccionada;
                 }
 
-                if (_viewModel.NegocioActualObj == null && CitaSession.NegocioActual != null)
+                // 👇 Recuperar los servicios si se perdieron al volver del calendario 👇
+                if (_viewModel.ServiciosTarjetas.Count == 0 && CitaSession.ServiciosSeleccionados != null && CitaSession.ServiciosSeleccionados.Any())
                 {
-                    _viewModel.NegocioActualObj = CitaSession.NegocioActual;
-                    _viewModel.NegocioNombre = !string.IsNullOrEmpty(CitaSession.NegocioActual.NombreNegocio)
-                        ? CitaSession.NegocioActual.NombreNegocio
-                        : CitaSession.NegocioActual.Nombre;
-                    _viewModel.NegocioFoto = CitaSession.NegocioActual.UrlFotoPerfil;
-                    if (!string.IsNullOrEmpty(CitaSession.NegocioActual.DireccionNegocio))
+                    var query = new Dictionary<string, object>
                     {
-                        _viewModel.DireccionCliente = CitaSession.NegocioActual.DireccionNegocio;
-                    }
+                        { "ServiciosSeleccionados", CitaSession.ServiciosSeleccionados }
+                    };
+                    _viewModel.ApplyQueryAttributes(query);
                 }
 
                 await _viewModel.CargarDatosSesionClienteAsync();
