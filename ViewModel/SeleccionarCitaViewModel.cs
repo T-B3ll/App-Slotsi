@@ -226,8 +226,6 @@ namespace slotsi_citas.ViewModel
                         }
                     }
                 }
-
-                // 👇 ESTA ES LA LÍNEA QUE FALTABA PARA GUARDARLOS EN LA SESIÓN 👇
                 CitaSession.ServiciosSeleccionados = servicios;
 
                 OnPropertyChanged(nameof(ServicioNombreResumen));
