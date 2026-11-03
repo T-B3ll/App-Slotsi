@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:slotsi_citas.ViewModel"
+             x:DataType="vm:ResumenClienteViewModel"
+             x:Class="slotsi_citas.Pages.ResumenCliente"
+             Title="Inicio"
+             Shell.NavBarIsVisible="True"
+             BackgroundColor="#F8FAFC">
+    
+    <RefreshView Command="{Binding CargarCommand}" IsRefreshing="{Binding IsBusy}">
+        <CollectionView ItemsSource="{Binding Citas}" SelectionMode="None">
+
+            <CollectionView.Header>
+                <VerticalStackLayout Padding="16,16,16,8" Spacing="12">
+
+                    <Border BackgroundColor="White" Stroke="#E2E8F0" Padding="14">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="56,*" ColumnSpacing="14">
+                            <Border StrokeShape="RoundRectangle 28" BackgroundColor="#EFF6FF"
+                                    HeightRequest="56" WidthRequest="56" StrokeThickness="0">
+                                <Label Text="{Binding Iniciales}" TextColor="#2563EB" FontSize="18"
+                                       FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                <Label Text="{Binding Saludo}" FontSize="17" FontAttributes="Bold" TextColor="#0F172A"/>
+                                <Label Text="Bienvenido a Slotsi Citas" FontSize="13" TextColor="#64748B"/>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+
+                    <!-- Próxima cita -->
+                    <Border BackgroundColor="#2563EB" StrokeThickness="0" Padding="16"
+                            IsVisible="{Binding TieneProxima}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="14" />
+                        </Border.StrokeShape>
+                        <VerticalStackLayout Spacing="4" x:DataType="vm:ResumenClienteViewModel">
+                            <Label Text="TU PRÓXIMA CITA" FontSize="11" FontAttributes="Bold" TextColor="#BFDBFE" />
+                            <Label Text="{Binding ProximaCita.Servicio}" FontSize="20" FontAttributes="Bold" TextColor="White" />
+                            <Label Text="{Binding ProximaCita.Negocio}" FontSize="14" TextColor="#DBEAFE" />
+                            <HorizontalStackLayout Spacing="8" Margin="0,6,0,0">
+                                <Label Text="{Binding ProximaCita.Fecha}" FontSize="14" FontAttributes="Bold" TextColor="White" />
+                                <Label Text="·" TextColor="#BFDBFE" />
+                                <Label Text="{Binding ProximaCita.Hora}" FontSize="14" FontAttributes="Bold" TextColor="White" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Contadores -->
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Border Grid.Column="0" BackgroundColor="White" Stroke="#E2E8F0" Padding="12">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+                            <VerticalStackLayout Spacing="6">
+                                <HorizontalStackLayout Spacing="6">
+                                    <Ellipse Fill="#10B981" WidthRequest="8" HeightRequest="8" VerticalOptions="Center" />
+                                    <Label Text="Citas Confirmadas" FontSize="11" TextColor="#64748B" />
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding CitasProximas}" FontSize="28" FontAttributes="Bold" TextColor="#0F172A" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Column="1" BackgroundColor="White" Stroke="#E2E8F0" Padding="12">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12" />
+                            </Border.StrokeShape>
+                            <VerticalStackLayout Spacing="6">
+                                <HorizontalStackLayout Spacing="6">
+                                    <Ellipse Fill="#F59E0B" WidthRequest="8" HeightRequest="8" VerticalOptions="Center" />
+                                    <Label Text="Citas Pendientes" FontSize="11" TextColor="#64748B" />
+                                </HorizontalStackLayout>
+                                <Label Text="{Binding CitasPendientes}" FontSize="28" FontAttributes="Bold" TextColor="#0F172A" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+
+                    <!-- Accesos rápidos (ajusta las rutas a las de tu AppShell) -->
+                    <Label Text="Accesos rápidos" FontSize="16" FontAttributes="Bold" TextColor="#0F172A" />
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                        <Button Grid.Column="0" Text="Buscar negocios" BackgroundColor="#2563EB" TextColor="White"
+                                CornerRadius="10" HeightRequest="44" FontSize="13"
+                                Command="{Binding IrACommand}" CommandParameter="//dueñosnegocios" />
+                        <Button Grid.Column="1" Text="Mejor calificados" BackgroundColor="White" TextColor="#2563EB"
+                                BorderColor="#2563EB" BorderWidth="1" CornerRadius="10" HeightRequest="44" FontSize="13"
+                                Command="{Binding IrACommand}" CommandParameter="//MejoresNegocios" />
+                    </Grid>
+
+                    <Label Text="{Binding Error}" IsVisible="{Binding HasError}" TextColor="#DC2626" FontSize="13" />
+                    <Label Text="Mis próximas citas" FontSize="16" FontAttributes="Bold" TextColor="#0F172A" />
+                </VerticalStackLayout>
+            </CollectionView.Header>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="vm:CitaClienteItemViewModel">
+                    <Border Margin="16,0,16,10" Padding="0" BackgroundColor="White" Stroke="#E2E8F0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="5,*">
+                            <BoxView Color="{Binding ColorPrincipal}" />
+                            <VerticalStackLayout Grid.Column="1" Padding="14,12" Spacing="4">
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                        <Label Text="{Binding Fecha}" FontAttributes="Bold" FontSize="14" TextColor="#0F172A" />
+                                        <Label Text="·" TextColor="#64748B" />
+                                        <Label Text="{Binding Hora}" FontAttributes="Bold" FontSize="14" TextColor="#0F172A" />
+                                    </HorizontalStackLayout>
+                                    <Border Grid.Column="1" BackgroundColor="{Binding ColorChipFondo}" StrokeThickness="0" Padding="8,2">
+                                        <Border.StrokeShape>
+                                            <RoundRectangle CornerRadius="6" />
+                                        </Border.StrokeShape>
+                                        <Label Text="{Binding EstadoTexto}" TextColor="{Binding ColorChipTexto}"
+                                               FontSize="10" FontAttributes="Bold" />
+                                    </Border>
+                                </Grid>
+                                <Label Text="{Binding Servicio}" FontAttributes="Bold" FontSize="16" TextColor="#0F172A" />
+                                <Label Text="{Binding Negocio}" FontSize="13" TextColor="#64748B" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout Margin="0,24" Spacing="4" HorizontalOptions="Center">
+                    <Label Text="Aún no tienes citas próximas." HorizontalOptions="Center" TextColor="#0F172A" FontAttributes="Bold" />
+                    <Label Text="Busca un negocio y agenda tu primera cita." HorizontalOptions="Center" TextColor="#64748B" FontSize="13" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+        </CollectionView>
+    </RefreshView>
+</ContentPage>

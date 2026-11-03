@@ -44,7 +44,7 @@ public partial class ResumenViewModel : ObservableObject
     {
         _service = service;
         _negocioService = negocioService;
-    
+
     }
 
     private async Task CargarDatosNegocioAsync()
@@ -62,7 +62,7 @@ public partial class ResumenViewModel : ObservableObject
                 if (!string.IsNullOrEmpty(usuarioId))
                 {
                     negocio = await _negocioService.ObtenerPorUsuarioIdAsync(usuarioId);
-                 
+
                     if (negocio != null && !string.IsNullOrEmpty(negocio.Id))
                     {
                         Preferences.Set("negocio_id", negocio.Id);

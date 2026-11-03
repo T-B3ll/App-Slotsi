@@ -28,6 +28,13 @@
         </Grid>
     </Shell.FlyoutHeader>
 
+    <FlyoutItem Title="Inicio" Route="ResumenCliente" IsVisible="{x:Static app:MenuUsuario.EsCliente}">
+        <FlyoutItem.Icon>
+            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#2563EB" Size="22" />
+        </FlyoutItem.Icon>
+        <ShellContent ContentTemplate="{DataTemplate pages:ResumenCliente}" />
+    </FlyoutItem>
+
     <FlyoutItem Title="Inicio" Route="ResumenPage" IsVisible="{x:Static app:MenuUsuario.EsDueno}">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE88A;" Color="#2563EB" Size="22" />
@@ -42,11 +49,11 @@
         <ShellContent ContentTemplate="{DataTemplate pages:PagoSuscripcionPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Ver citas agendadas" Route="Cita_UsuarioPage" IsVisible="{x:Static app:MenuUsuario.EsCliente}">
+    <FlyoutItem Title="Ver citas agendadas" Route="CalendarioPage" IsVisible="{x:Static app:MenuUsuario.EsCliente}">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE878;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:Cita_UsuarioPage}" />
+        <ShellContent ContentTemplate="{DataTemplate pages:CalendarioPage}" />
     </FlyoutItem>
 
     <FlyoutItem Title="Catálogo de Servicios" Route="catalogoservicios" IsVisible="{x:Static app:MenuUsuario.EsDueno}">
@@ -61,13 +68,6 @@
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE7FE;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
         <ShellContent ContentTemplate="{DataTemplate pages:RegistroUsuariosPage}" />
-    </FlyoutItem>
-
-    <FlyoutItem Title="Calendario" Route="CalendarioPage" IsVisible="{x:Static app:MenuUsuario.EsDueno}">
-        <FlyoutItem.Icon>
-            <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE916;" Color="#2563EB" Size="22" />
-        </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:CalendarioPage}" />
     </FlyoutItem>
 
     <FlyoutItem Title="Horarios Disponibles" Route="CalendarioPage" IsVisible="{x:Static app:MenuUsuario.EsCliente}">

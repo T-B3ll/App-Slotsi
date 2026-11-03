@@ -17,6 +17,7 @@ namespace slotsi_citas.ViewModel
 {
     public class SeleccionarCitaViewModel : BindableObject, IQueryAttributable
     {
+        private readonly UsuarioService _usuarioService;
         private readonly CitaService _citaService;
         private readonly NegocioService _negocioService;
         private readonly CatalogoService _catalogoService;
@@ -138,17 +139,21 @@ namespace slotsi_citas.ViewModel
         public ICommand ConfirmarCitaCommand { get; }
         public ICommand VolverCommand { get; }
         public ICommand IrAHorariosCommand { get; }
-        public ICommand NavegarInicioCommand { get; }
-        public ICommand NavegarCitasCommand { get; }
-        public ICommand NavegarSucursalCommand { get; }
-        public ICommand NavegarPerfilCommand { get; }
         public ICommand NadaCommand { get; }
 
+<<<<<<< HEAD
         public SeleccionarCitaViewModel(CitaService citaService, NegocioService negocioService, CatalogoService catalogoService)
         {
             _citaService = citaService;
             _negocioService = negocioService;
             _catalogoService = catalogoService;
+=======
+        public SeleccionarCitaViewModel(CitaService citaService, NegocioService negocioService, UsuarioService usuarioService)
+        {
+            _citaService = citaService;
+            _negocioService = negocioService;
+            _usuarioService = usuarioService;
+>>>>>>> origin/main
 
             HorarioSeleccionado = CitaSession.HorarioSeleccionado;
             FechaSeleccionada = CitaSession.FechaSeleccionada != default
@@ -170,25 +175,8 @@ namespace slotsi_citas.ViewModel
             SeleccionarEspecialistaServicioCommand = new Microsoft.Maui.Controls.Command<Trabajador>(OnSeleccionarEspecialistaServicio);
             ConfirmarCitaCommand = new Command(OnConfirmarCita);
             VolverCommand = new Command(async () => await RegresarPantallaAnterior());
+
             IrAHorariosCommand = new Command(async () => await IrAHorariosAsync());
-
-            NavegarInicioCommand = new Command(async () =>
-            {
-                if (Shell.Current != null) await Shell.Current.GoToAsync("//dueñosnegocios");
-            });
-            NavegarCitasCommand = new Command(async () =>
-            {
-                await IrAHorariosAsync();
-            });
-            NavegarSucursalCommand = new Command(async () =>
-            {
-                if (Shell.Current != null) await Shell.Current.GoToAsync("//dueñosnegocios");
-            });
-            NavegarPerfilCommand = new Command(async () =>
-            {
-                if (Shell.Current != null) await Shell.Current.GoToAsync("//EditarPerfilPage");
-            });
-
             NadaCommand = new Command(() => { });
 
             _ = CargarDatosSesionClienteAsync();
@@ -196,8 +184,15 @@ namespace slotsi_citas.ViewModel
 
         public async Task IrAHorariosAsync()
         {
+            if (!_serviciosSeleccionados.Any())
+            {
+                await Application.Current.MainPage.DisplayAlert("Atención", "Por favor selecciona al menos un servicio antes de elegir un horario.", "OK");
+                return;
+            }
+
             if (Shell.Current != null)
             {
+<<<<<<< HEAD
                 if (NegocioActualObj != null && !string.IsNullOrEmpty(NegocioActualObj.Id))
                 {
                     Preferences.Set("NegocioSeleccionadoId", NegocioActualObj.Id);
@@ -214,6 +209,15 @@ namespace slotsi_citas.ViewModel
                 }
 
                 await Shell.Current.GoToAsync(nameof(HorariosDisponiblesPage), navParams);
+=======
+                var parametros = new Dictionary<string, object>
+                {
+                    { "ServiciosSeleccionados", _serviciosSeleccionados },
+                    { "Negocio", NegocioActualObj ?? new Negocio() }
+                };
+
+                await Shell.Current.GoToAsync(nameof(CalendarioPage), parametros);
+>>>>>>> origin/main
             }
         }
 
@@ -252,6 +256,7 @@ namespace slotsi_citas.ViewModel
                         }
                     }
                 }
+                CitaSession.ServiciosSeleccionados = servicios;
 
                 OnPropertyChanged(nameof(ServicioNombreResumen));
                 OnPropertyChanged(nameof(ServicioPrecioResumen));
@@ -399,12 +404,40 @@ namespace slotsi_citas.ViewModel
                 if (string.IsNullOrEmpty(ClienteId))
                     ClienteId = Preferences.Get("UsuarioIdSesion", string.Empty);
 
-                string nombreLocal = Preferences.Get("UsuarioNombre", string.Empty);
+                string nombreLocal = Preferences.Get("NombreUsuario", string.Empty);
+                if (string.IsNullOrWhiteSpace(nombreLocal))
+                    nombreLocal = Preferences.Get("UsuarioNombre", string.Empty); 
+
+                string telefono = Preferences.Get("UsuarioTelefono", string.Empty);
                 string correo = Preferences.Get("UsuarioCorreo", string.Empty);
 
-                if (string.IsNullOrEmpty(nombreLocal) && !string.IsNullOrEmpty(correo))
+                if ((string.IsNullOrWhiteSpace(nombreLocal) || string.IsNullOrWhiteSpace(telefono))
+                    && !string.IsNullOrEmpty(correo))
                 {
-                    nombreLocal = correo.Split('@')[0];
+                    try
+                    {
+                        var usuario = await _usuarioService.ObtenerPorCorreoAsync(correo);
+                        if (usuario != null)
+                        {
+                            if (string.IsNullOrWhiteSpace(nombreLocal))
+                            {
+                                nombreLocal = usuario.NombreCompleto ?? string.Empty;
+                                if (!string.IsNullOrWhiteSpace(nombreLocal))
+                                    Preferences.Set("NombreUsuario", nombreLocal);
+                            }
+
+                            if (string.IsNullOrWhiteSpace(telefono))
+                            {
+                                telefono = usuario.Telefono ?? string.Empty;
+                                if (!string.IsNullOrWhiteSpace(telefono))
+                                    Preferences.Set("UsuarioTelefono", telefono);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine(ex);
+                    }
                 }
 
                 MainThread.BeginInvokeOnMainThread(() =>
@@ -491,10 +524,18 @@ namespace slotsi_citas.ViewModel
 
                 string trabajadorIdAsignado = servicioPrincipal.ColaboradorSeleccionado?.Id;
 
+                if (string.IsNullOrEmpty(ClienteId))
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error",
+                        "No se encontró tu sesión. Vuelve a iniciar sesión.", "OK");
+                    return;
+                }
+
                 string negocioIdFinal = NegocioActualObj?.Id ?? Preferences.Get("NegocioSeleccionadoId", CitaSession.NegocioId);
                 if (string.IsNullOrEmpty(negocioIdFinal))
                 {
-                    negocioIdFinal = "652b1234567890abcdef1234";
+                    await Application.Current.MainPage.DisplayAlert("Error", "No se encontró el negocio seleccionado.", "OK");
+                    return;
                 }
 
                 var citaDto = new CitaDto
@@ -503,7 +544,7 @@ namespace slotsi_citas.ViewModel
                     NegocioId = negocioIdFinal,
                     TrabajadorId = trabajadorIdAsignado,
                     ServicioId = servicioPrincipal.Id,
-                    ClienteId = string.IsNullOrEmpty(ClienteId) ? "652b1234567890abcdef1237" : ClienteId,
+                    ClienteId = ClienteId,
                     ClienteNombre = ClienteNombre,
                     ClienteTelefono = telefonoCliente,
                     ServicioNombre = ServicioNombreResumen,
@@ -536,6 +577,10 @@ namespace slotsi_citas.ViewModel
                     await Application.Current.MainPage.DisplayAlert("Éxito", "¡Cita registrada correctamente!", "OK");
                 }
 
+<<<<<<< HEAD
+=======
+                await Application.Current.MainPage.DisplayAlert("Éxito", "¡Cita registrada correctamente", "OK");
+>>>>>>> origin/main
                 await Shell.Current.GoToAsync("..");
             }
             catch (Exception ex)

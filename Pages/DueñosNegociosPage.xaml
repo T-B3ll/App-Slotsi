@@ -42,7 +42,6 @@
 
         <Label x:Name="LblResultados" Grid.Row="1" Margin="24,12,24,0" FontSize="14" TextColor="#6B7280"/>
 
-        <!-- OPTIMIZACIÓN 1: SelectionMode="None" para que el sistema no calcule el estado táctil de la tarjeta -->
         <CollectionView x:Name="ListaNegocios" Grid.Row="2" ItemsSource="{Binding ListaDueños}" Margin="16,12,16,12"
                         SelectionMode="None">
             <CollectionView.ItemsLayout>
