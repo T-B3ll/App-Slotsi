@@ -17,16 +17,9 @@
 
             <!-- Fila 1: Menú y Título -->
             <Grid ColumnDefinitions="Auto, *, Auto" Padding="16,12">
-                <ImageButton Grid.Column="0" BackgroundColor="Transparent" Clicked="OnMenuClicked" WidthRequest="24" HeightRequest="24">
-                    <ImageButton.Source>
-                        <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE5D2;" Color="White" Size="26"/>
-                    </ImageButton.Source>
-                </ImageButton>
                 <Label Grid.Column="1" Text="Calendario de citas..." FontSize="20" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center"/>
                 <BoxView Grid.Column="2" WidthRequest="24" Color="Transparent"/>
             </Grid>
-
-            <!-- Fila 2: Botón Atrás y Selector de Fecha -->
             <Grid ColumnDefinitions="Auto, *, Auto" Padding="16,0,16,16" ColumnSpacing="8">
                 <ImageButton Grid.Column="0" BackgroundColor="Transparent" Command="{Binding VolverCommand}" WidthRequest="24" HeightRequest="24" VerticalOptions="Center">
                     <ImageButton.Source>

@@ -42,11 +42,11 @@
         <ShellContent ContentTemplate="{DataTemplate pages:PagoSuscripcionPage}" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Ver citas agendadas" Route="Cita_UsuarioPage" IsVisible="{x:Static app:MenuUsuario.EsCliente}">
+    <FlyoutItem Title="Ver citas agendadas" Route="CalendarioPage" IsVisible="{x:Static app:MenuUsuario.EsCliente}">
         <FlyoutItem.Icon>
             <FontImageSource FontFamily="MaterialIcons" Glyph="&#xE878;" Color="#2563EB" Size="22" />
         </FlyoutItem.Icon>
-        <ShellContent ContentTemplate="{DataTemplate pages:Cita_UsuarioPage}" />
+        <ShellContent ContentTemplate="{DataTemplate pages:CalendarioPage}" />
     </FlyoutItem>
 
     <FlyoutItem Title="Catálogo de Servicios" Route="catalogoservicios" IsVisible="{x:Static app:MenuUsuario.EsDueno}">
