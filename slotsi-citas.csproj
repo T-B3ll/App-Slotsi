@@ -170,6 +170,9 @@
 	  <MauiXaml Update="Pages\SeleccionarCitaPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Pages\SeleccionarHorarioPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	 <MauiXaml Update="Pages\Servicios a domicilio.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

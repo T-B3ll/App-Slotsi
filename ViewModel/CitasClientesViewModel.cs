@@ -405,20 +405,17 @@ namespace slotsi_citas.ViewModel
             }
 
             var navParams = new Dictionary<string, object>
-            {
-                { "HorarioSeleccionado", rango },
-                { "FechaSeleccionada", FechaSeleccionada }
-            };
+    {
+        { "HorarioSeleccionado", rango },
+        { "FechaSeleccionada", FechaSeleccionada }
+    };
 
             if (NegocioActual != null)
             {
                 navParams["Negocio"] = NegocioActual;
             }
 
-            if (CitaSession.ServiciosSeleccionados != null && CitaSession.ServiciosSeleccionados.Any())
-            {
-                navParams["ServiciosSeleccionados"] = CitaSession.ServiciosSeleccionados;
-            }
+            // ❌ SE ELIMINÓ EL BLOQUE QUE ENVIABA "ServiciosSeleccionados" EN EL navParams
 
             try
             {
