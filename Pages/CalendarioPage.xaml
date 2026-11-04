@@ -31,7 +31,7 @@
                             <Label Grid.Column="0" Text="{Binding TextoFechaSeleccionada}" FontSize="13" FontAttributes="Bold" TextColor="#111827" VerticalOptions="Center" MaxLines="1"/>
                             <Image Grid.Column="1" Source="calendar.png" HeightRequest="16" WidthRequest="16" VerticalOptions="Center" Margin="6,0,0,0"/>
                         </Grid>
-                        <DatePicker Date="{Binding FechaSeleccionada, Mode=TwoWay}" Opacity="0.01" HorizontalOptions="Fill" VerticalOptions="Fill"/>
+                        <DatePicker x:Name="FechaPicker" Date="{Binding FechaSeleccionada, Mode=TwoWay}" Opacity="0.01" HorizontalOptions="Fill" VerticalOptions="Fill"/>
                     </Grid>
                 </Border>
 

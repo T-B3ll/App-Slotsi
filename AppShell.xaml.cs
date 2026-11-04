@@ -24,10 +24,19 @@ namespace slotsi_citas
             Routing.RegisterRoute(nameof(ReportesMenuPage), typeof(ReportesMenuPage));
             Routing.RegisterRoute(nameof(ReporteTopServiciosPage), typeof(ReporteTopServiciosPage));
             Routing.RegisterRoute(nameof(CancelacionesPage), typeof(CancelacionesPage));
-       
+            Routing.RegisterRoute(nameof(ReporteDemandaPage), typeof(ReporteDemandaPage));
         }
         private async void OnCerrarSesionClicked(object? sender, EventArgs e)
         {
+            bool confirmar = await DisplayAlert(
+                "Cerrar sesión",
+                "¿Estás seguro de que quieres cerrar sesión?",
+                "OK",
+                "Cancelar");
+
+            if (!confirmar)
+                return;
+
             botonCerrarSesion.IsEnabled = false;
             FlyoutIsPresented = false;
             try

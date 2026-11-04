@@ -24,6 +24,8 @@ namespace slotsi_citas.Pages
         protected override async void OnAppearing()
         {
             base.OnAppearing();
+
+            FechaPicker.MinimumDate = DateTime.Today;
             if (_viewModel != null)
             {
                 await Task.Run(async () => await _viewModel.InicializarAsync());

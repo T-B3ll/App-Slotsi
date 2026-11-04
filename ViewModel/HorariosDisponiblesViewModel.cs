@@ -31,6 +31,9 @@ namespace slotsi_citas.ViewModel
             get => _fechaSeleccionada;
             set
             {
+                if (value.Date < DateTime.Today)
+                    value = DateTime.Today;
+
                 if (_fechaSeleccionada.Date != value.Date)
                 {
                     _fechaSeleccionada = value;
@@ -119,6 +122,7 @@ namespace slotsi_citas.ViewModel
                     var inicioBloque = FechaSeleccionada.Date.Add(hora);
                     var finBloque = inicioBloque.AddHours(1);
 
+                    if (finBloque <= DateTime.Now) continue;
                     bool esHorarioPausa = tienePausa && (hora >= pausaInicio && hora < pausaFin);
                     var citaOcupadaDto = citasDelDiaDto.FirstOrDefault(c => c.FechaHoraInicio < finBloque && c.FechaHoraFin > inicioBloque);
                     bool esOcupado = citaOcupadaDto != null;
